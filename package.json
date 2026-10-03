@@ -1,0 +1,22 @@
+{
+  "name": "gate-authority-network-developer-preview",
+  "version": "0.1.0-dev.1",
+  "private": true,
+  "type": "module",
+  "description": "GATE Authority Verification Network developer preview",
+  "scripts": {
+    "demo": "node examples/sdk-quickstart.mjs",
+    "test": "node --test --test-concurrency=1 test/*.test.mjs test/integration/*.test.mjs",
+    "check": "find . -name '*.mjs' -not -path './node_modules/*' -print0 | xargs -0 -n1 node --check",
+    "publish:github": "./scripts/publish-github.sh"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/client": "2.2.0",
+    "@modelcontextprotocol/server": "2.2.0",
+    "zod": "4.6.5"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "Apache-2.0"
+}

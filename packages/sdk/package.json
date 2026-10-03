@@ -1,0 +1,14 @@
+{
+  "name": "@gate-avn/sdk",
+  "version": "0.1.0-dev.1",
+  "type": "module",
+  "private": true,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": ["dist"],
+  "engines": { "node": ">=20" }
+}
