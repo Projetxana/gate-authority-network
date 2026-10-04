@@ -1,3 +1,12 @@
+export class GateDeniedError extends Error {
+  constructor(decision) {
+    super(decision?.reason || 'gate_authority_denied');
+    this.name = 'GateDeniedError';
+    this.code = 'GATE_AUTHORITY_DENIED';
+    this.decision = decision;
+  }
+}
+
 export class GateClient {
   constructor({ endpoint, apiKey, timeoutMs = 2000, fetchImpl = globalThis.fetch }) {
     if (!endpoint) throw new TypeError('endpoint is required');
@@ -17,7 +26,6 @@ export class GateClient {
     const timeout = controller ? setTimeout(() => controller.abort(new Error('gate_verify_timeout')), this.timeoutMs) : null;
     const body = { principal, actor, consistency };
     if (Number.isFinite(maxStalenessMs)) body.maxStalenessMs = maxStalenessMs;
-    // GATE verifies authority, not business policy. Action is carried for correlation/audit only.
     if (action) body.action = action;
 
     try {
@@ -40,6 +48,16 @@ export class GateClient {
       if (timeout) clearTimeout(timeout);
     }
   }
+
+  async enforce(request, effect) {
+    if (typeof effect !== 'function') throw new TypeError('effect must be a function');
+    const decision = await this.verify(request);
+    if (decision.decision !== 'ALLOW') throw new GateDeniedError(decision);
+    const result = await effect(decision);
+    return { decision, result };
+  }
 }
 
-export function createGateClient(options) { return new GateClient(options); }
+export function createGateClient(options) {
+  return new GateClient(options);
+}

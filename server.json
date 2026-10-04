@@ -1,0 +1,36 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.projetxana/gate-authority-network",
+  "description": "Live authority-state verification for agent actions at effect time.",
+  "repository": {
+    "url": "https://github.com/Projetxana/gate-authority-network",
+    "source": "github"
+  },
+  "version": "0.1.0-dev.1",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "@gate-avn/mcp",
+      "version": "0.1.0-dev.1",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "description": "GATE edge URL",
+          "isRequired": true,
+          "format": "string",
+          "isSecret": false,
+          "name": "GATE_URL"
+        },
+        {
+          "description": "Optional GATE API bearer token",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": true,
+          "name": "GATE_API_KEY"
+        }
+      ]
+    }
+  ]
+}

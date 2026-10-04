@@ -4,10 +4,15 @@
   "private": true,
   "type": "module",
   "description": "GATE Authority Verification Network developer preview",
+  "workspaces": [
+    "packages/sdk",
+    "packages/mcp"
+  ],
   "scripts": {
     "demo": "node examples/sdk-quickstart.mjs",
     "test": "node --test --test-concurrency=1 test/*.test.mjs test/integration/*.test.mjs",
     "check": "find . -name '*.mjs' -not -path './node_modules/*' -print0 | xargs -0 -n1 node --check",
+    "pack:check": "npm pack --dry-run --workspace @gate-avn/sdk && npm pack --dry-run --workspace @gate-avn/mcp",
     "publish:github": "./scripts/publish-github.sh"
   },
   "dependencies": {
