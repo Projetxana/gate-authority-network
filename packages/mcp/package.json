@@ -1,36 +1,36 @@
 {
-  "name": "@gate-avn/sdk",
+  "name": "@gate-avn/mcp",
   "version": "0.1.0-dev.1",
-  "description": "Protocol-neutral client for live authority-state verification at action time.",
+  "description": "MCP server for live authority-state verification before agent actions.",
   "type": "module",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    }
+  "bin": {
+    "gate-mcp": "./bin/gate-mcp.mjs"
   },
   "files": [
-    "dist",
+    "bin",
     "README.md"
   ],
   "engines": {
     "node": ">=20"
   },
+  "dependencies": {
+    "@gate-avn/sdk": "0.1.0-dev.1",
+    "@modelcontextprotocol/server": "2.2.0",
+    "zod": "4.6.5"
+  },
   "keywords": [
+    "mcp",
     "authorization",
     "agents",
-    "mcp",
-    "oauth",
     "delegation",
     "revocation",
     "security"
   ],
+  "mcpName": "io.github.projetxana/gate-authority-network",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Projetxana/gate-authority-network.git",
-    "directory": "packages/sdk"
+    "directory": "packages/mcp"
   },
   "homepage": "https://github.com/Projetxana/gate-authority-network#readme",
   "bugs": {

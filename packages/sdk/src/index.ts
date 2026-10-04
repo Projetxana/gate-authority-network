@@ -43,9 +43,16 @@ export interface GateClientOptions {
   fetchImpl?: typeof fetch;
 }
 
-export class GateClient {
-  constructor(options: GateClientOptions);
-  verify(request: VerifyRequest): Promise<GateDecision>;
+export declare class GateDeniedError extends Error {
+  readonly code: "GATE_AUTHORITY_DENIED";
+  readonly decision: GateDecision;
+  constructor(decision: GateDecision);
 }
 
-export function createGateClient(options: GateClientOptions): GateClient;
+export declare class GateClient {
+  constructor(options: GateClientOptions);
+  verify(request: VerifyRequest): Promise<GateDecision>;
+  enforce<T>(request: VerifyRequest, effect: (decision: GateDecision) => Promise<T> | T): Promise<{ decision: GateDecision; result: T }>;
+}
+
+export declare function createGateClient(options: GateClientOptions): GateClient;
