@@ -75,9 +75,37 @@ test/              SDK + distributed consistency tests
 docs/              architecture, integration contract, due diligence
 ```
 
+## Install
+
+### SDK
+
+```bash
+npm install @gate-avn/sdk@dev
+```
+
+Current SDK Developer Preview: `0.1.0-dev.2`
+
+### MCP server
+
+```bash
+npm install @gate-avn/mcp@dev
+```
+
+Current MCP Developer Preview: `0.1.0-dev.4`
+
+Official MCP Registry:
+
+```text
+io.github.Projetxana/gate-authority-network
+```
+
 ## Status
 
-This is a developer preview built to validate the architecture and integration surface. It is not production software and is not yet published to npm.
+GATE is publicly available as a Developer Preview on npm and in the Official MCP Registry.
+
+The SDK and MCP server are installable independently from the public npm registry. The MCP server is discoverable through the Official MCP Registry.
+
+This remains experimental Developer Preview software and is not production-ready.
 
 Read next: `docs/DUE-DILIGENCE-2026-10-02.md` and `docs/PUBLIC-VALIDATION-PLAN.md`.
 
