@@ -1,6 +1,6 @@
 {
   "name": "@gate-avn/mcp",
-  "version": "0.1.0-dev.1",
+  "version": "0.1.0-dev.2",
   "description": "MCP server for live authority-state verification before agent actions.",
   "type": "module",
   "bin": {
@@ -14,7 +14,7 @@
     "node": ">=20"
   },
   "dependencies": {
-    "@gate-avn/sdk": "0.1.0-dev.1",
+    "@gate-avn/sdk": "0.1.0-dev.2",
     "@modelcontextprotocol/server": "2.2.0",
     "zod": "4.6.5"
   },
