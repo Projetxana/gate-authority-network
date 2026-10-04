@@ -5,7 +5,7 @@ import { serveStdio } from '@modelcontextprotocol/server/stdio';
 import * as z from 'zod/v4';
 import { GateClient } from '@gate-avn/sdk';
 
-const VERSION = '0.1.0-dev.3';
+const VERSION = '0.1.0-dev.4';
 const args = new Set(process.argv.slice(2));
 
 if (args.has('--help') || args.has('-h')) {
