@@ -6,12 +6,12 @@
     "url": "https://github.com/Projetxana/gate-authority-network",
     "source": "github"
   },
-  "version": "0.1.0-dev.2",
+  "version": "0.1.0-dev.3",
   "packages": [
     {
       "registryType": "npm",
       "identifier": "@gate-avn/mcp",
-      "version": "0.1.0-dev.2",
+      "version": "0.1.0-dev.3",
       "transport": {
         "type": "stdio"
       },
