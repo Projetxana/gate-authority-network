@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <title>GATE — Adoption Dashboard</title>
+  <meta name="description" content="Tableau de suivi public de l'adoption de GATE — Authority Verification Network." />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo-mark">G</div>
+        <div>
+          <div class="eyebrow">AUTHORITY VERIFICATION NETWORK</div>
+          <h1>GATE — Suivi de l’adoption</h1>
+        </div>
+      </div>
+      <div class="top-actions">
+        <span class="live-pill"><span class="pulse"></span> Données publiques</span>
+        <button id="refreshButton" class="refresh-button" type="button">
+          <span>↻</span> Actualiser
+        </button>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero-panel">
+        <div>
+          <div class="section-kicker">OBJECTIF</div>
+          <h2>Voir clairement si GATE est découvert, installé et réellement utilisé.</h2>
+          <p>
+            Cette page sépare volontairement les <strong>données mesurables aujourd’hui</strong>
+            des métriques qui nécessitent encore l’instrumentation du service GATE.
+          </p>
+        </div>
+        <div class="hero-status">
+          <span class="status-label">Dernière mise à jour</span>
+          <strong id="lastUpdated">—</strong>
+          <span id="globalStatus" class="status-ok">Chargement…</span>
+        </div>
+      </section>
+
+      <section class="metrics-grid" aria-label="Indicateurs principaux">
+        <article class="metric-card accent-blue">
+          <div class="metric-head">
+            <div>
+              <span class="metric-label">SDK — téléchargements</span>
+              <span class="metric-source">npm · 30 derniers jours</span>
+            </div>
+            <div class="metric-icon">↓</div>
+          </div>
+          <div class="metric-value" id="sdk30">—</div>
+          <div class="metric-foot">
+            <span><strong id="sdk7">—</strong> sur 7 jours</span>
+            <span><strong id="sdkTotal">—</strong> depuis publication</span>
+          </div>
+        </article>
+
+        <article class="metric-card accent-teal">
+          <div class="metric-head">
+            <div>
+              <span class="metric-label">MCP — téléchargements</span>
+              <span class="metric-source">npm · 30 derniers jours</span>
+            </div>
+            <div class="metric-icon">⇩</div>
+          </div>
+          <div class="metric-value" id="mcp30">—</div>
+          <div class="metric-foot">
+            <span><strong id="mcp7">—</strong> sur 7 jours</span>
+            <span><strong id="mcpTotal">—</strong> depuis publication</span>
+          </div>
+        </article>
+
+        <article class="metric-card accent-green">
+          <div class="metric-head">
+            <div>
+              <span class="metric-label">MCP Registry</span>
+              <span class="metric-source">Official MCP Registry</span>
+            </div>
+            <div class="metric-icon">✓</div>
+          </div>
+          <div class="metric-value compact" id="registryStatus">—</div>
+          <div class="metric-foot">
+            <span>Version <strong id="registryVersion">—</strong></span>
+            <span id="registryPublished">—</span>
+          </div>
+        </article>
+
+        <article class="metric-card accent-violet">
+          <div class="metric-head">
+            <div>
+              <span class="metric-label">GitHub</span>
+              <span class="metric-source">Projetxana/gate-authority-network</span>
+            </div>
+            <div class="metric-icon">★</div>
+          </div>
+          <div class="github-values">
+            <div><strong id="stars">—</strong><span>Stars</span></div>
+            <div><strong id="forks">—</strong><span>Forks</span></div>
+            <div><strong id="issues">—</strong><span>Issues</span></div>
+          </div>
+          <div class="metric-foot">
+            <span>Branche <strong id="branch">—</strong></span>
+            <span>Public</span>
+          </div>
+        </article>
+      </section>
+
+      <section class="funnel-panel">
+        <div class="panel-title-row">
+          <div>
+            <div class="section-kicker">PARCOURS D’ADOPTION</div>
+            <h3>Découverte → Installation → Activation → Usage → Revenus</h3>
+          </div>
+          <div class="legend">
+            <span><i class="dot measured"></i> Mesuré</span>
+            <span><i class="dot partial"></i> Partiel</span>
+            <span><i class="dot pending"></i> À instrumenter</span>
+          </div>
+        </div>
+
+        <div class="funnel">
+          <article class="funnel-step measured-step">
+            <div class="step-top">
+              <span class="step-number">1</span>
+              <span class="step-state measured-badge">MESURÉ</span>
+            </div>
+            <h4>Découverte</h4>
+            <p>Présence publique et découvrabilité.</p>
+            <ul>
+              <li><span>GitHub public</span><strong>✓</strong></li>
+              <li><span>MCP Registry</span><strong>✓</strong></li>
+              <li><span>npm public</span><strong>✓</strong></li>
+            </ul>
+          </article>
+
+          <div class="flow-arrow">→</div>
+
+          <article class="funnel-step measured-step">
+            <div class="step-top">
+              <span class="step-number">2</span>
+              <span class="step-state measured-badge">MESURÉ</span>
+            </div>
+            <h4>Installation</h4>
+            <p>Téléchargements publics npm.</p>
+            <ul>
+              <li><span>SDK · 30 j</span><strong id="funnelSdk">—</strong></li>
+              <li><span>MCP · 30 j</span><strong id="funnelMcp">—</strong></li>
+              <li class="note"><span>Pas des utilisateurs uniques</span></li>
+            </ul>
+          </article>
+
+          <div class="flow-arrow">→</div>
+
+          <article class="funnel-step pending-step">
+            <div class="step-top">
+              <span class="step-number">3</span>
+              <span class="step-state pending-badge">À FAIRE</span>
+            </div>
+            <h4>Activation</h4>
+            <p>Premier usage réel de GATE.</p>
+            <ul>
+              <li><span>Premier gate.verify()</span><strong>—</strong></li>
+              <li><span>Première clé API</span><strong>—</strong></li>
+              <li><span>Premier projet</span><strong>—</strong></li>
+            </ul>
+          </article>
+
+          <div class="flow-arrow">→</div>
+
+          <article class="funnel-step pending-step emphasis-step">
+            <div class="step-top">
+              <span class="step-number">4</span>
+              <span class="step-state pending-badge">KPI CENTRAL</span>
+            </div>
+            <h4>Usage</h4>
+            <p>Le signal produit le plus important.</p>
+            <div class="big-kpi">—</div>
+            <div class="big-kpi-label">vérifications GATE / jour</div>
+            <span class="telemetry-callout">Télémétrie service à activer</span>
+          </article>
+
+          <div class="flow-arrow">→</div>
+
+          <article class="funnel-step future-step">
+            <div class="step-top">
+              <span class="step-number">5</span>
+              <span class="step-state future-badge">FUTUR</span>
+            </div>
+            <h4>Revenus</h4>
+            <p>Monétisation à l’usage.</p>
+            <ul>
+              <li><span>Client actif</span><strong>—</strong></li>
+              <li><span>Vérifications / client</span><strong>—</strong></li>
+              <li><span>Facturation</span><strong>—</strong></li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section class="lower-grid">
+        <article class="chart-panel">
+          <div class="panel-title-row">
+            <div>
+              <div class="section-kicker">TENDANCE</div>
+              <h3>Téléchargements npm — 30 derniers jours</h3>
+            </div>
+            <div class="chart-legend">
+              <span><i class="line sdk-line"></i> SDK</span>
+              <span><i class="line mcp-line"></i> MCP</span>
+            </div>
+          </div>
+          <div class="chart-wrap">
+            <svg id="downloadsChart" viewBox="0 0 900 270" role="img" aria-label="Téléchargements npm quotidiens">
+              <text x="450" y="135" text-anchor="middle" class="chart-loading">Chargement des données…</text>
+            </svg>
+          </div>
+          <p class="data-note">
+            Les téléchargements npm comptent des téléchargements de paquets, pas des personnes uniques.
+            Les réinstallations, CI et automatisations peuvent être incluses.
+          </p>
+        </article>
+
+        <article class="next-panel">
+          <div class="section-kicker">PROCHAINE COUCHE</div>
+          <h3>Ce qu’il faut instrumenter pour connaître l’usage réel</h3>
+
+          <div class="next-item">
+            <div class="next-icon">1</div>
+            <div>
+              <strong>Identifiant client / projet</strong>
+              <span>Une clé API ou un project_id non nominatif pour attribuer les vérifications.</span>
+            </div>
+          </div>
+
+          <div class="next-item">
+            <div class="next-icon">2</div>
+            <div>
+              <strong>Compteur gate.verify()</strong>
+              <span>Nombre de vérifications, décision, latence et date — sans stocker les données sensibles.</span>
+            </div>
+          </div>
+
+          <div class="next-item">
+            <div class="next-icon">3</div>
+            <div>
+              <strong>Dashboard client</strong>
+              <span>Vérifications / jour, clients actifs, erreurs et usage par projet.</span>
+            </div>
+          </div>
+
+          <div class="next-item">
+            <div class="next-icon">4</div>
+            <div>
+              <strong>Base de facturation</strong>
+              <span>Le même compteur d’usage pourra alimenter les quotas et la facturation.</span>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section class="truth-panel">
+        <div>
+          <span class="truth-icon">i</span>
+          <div>
+            <strong>Principe de cette page</strong>
+            <p>Afficher uniquement ce que les sources publiques permettent réellement de mesurer. Aucune “installation unique”, activation ou vérification n’est inventée.</p>
+          </div>
+        </div>
+        <div class="source-links">
+          <a href="https://www.npmjs.com/org/gate-avn" target="_blank" rel="noreferrer">npm ↗</a>
+          <a href="https://github.com/Projetxana/gate-authority-network" target="_blank" rel="noreferrer">GitHub ↗</a>
+          <a href="https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.Projetxana/gate-authority-network" target="_blank" rel="noreferrer">MCP Registry ↗</a>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <span>GATE Developer Preview</span>
+      <span>Public adoption dashboard · <span id="footerTime">—</span></span>
+    </footer>
+  </div>
+
+  <script src="./app.js"></script>
+</body>
+</html>
