@@ -1,6 +1,6 @@
 {
   "functions": {
-    "api/npm-stats.cjs": {
+    "api/npm-stats.js": {
       "maxDuration": 10
     }
   }
