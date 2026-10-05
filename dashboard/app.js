@@ -1,7 +1,5 @@
 const CONFIG = {
-  npmStartDate: "2026-10-04",
-  sdkPackage: "@gate-avn/sdk",
-  mcpPackage: "@gate-avn/mcp",
+  npmMetricsEndpoint: "/api/npm-stats",
   githubRepo: "Projetxana/gate-authority-network",
   registryName: "io.github.Projetxana/gate-authority-network",
   refreshMs: 5 * 60 * 1000
@@ -14,68 +12,14 @@ function formatNumber(value) {
   return Number.isFinite(Number(value)) ? numberFmt.format(Number(value)) : "—";
 }
 
-function yesterdayISO() {
-  const d = new Date();
-  d.setUTCDate(d.getUTCDate() - 1);
-  return d.toISOString().slice(0, 10);
-}
-
-function npmDownloadUrl(period, pkg) {
-  return `https://api.npmjs.org/downloads/point/${period}/${encodeURIComponent(pkg)}`;
-}
-
-function npmRangeUrl(period, pkg) {
-  return `https://api.npmjs.org/downloads/range/${period}/${encodeURIComponent(pkg)}`;
-}
-
 async function getJSON(url) {
   const response = await fetch(url, { cache: "no-store" });
   if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
   return response.json();
 }
 
-async function safeJSON(url, fallback) {
-  try {
-    return await getJSON(url);
-  } catch (error) {
-    console.warn("Source indisponible:", url, error);
-    return fallback;
-  }
-}
-
-async function loadNpmMetrics(pkg) {
-  const end = yesterdayISO();
-  const totalPromise =
-    CONFIG.npmStartDate <= end
-      ? safeJSON(
-          npmDownloadUrl(`${CONFIG.npmStartDate}:${end}`, pkg),
-          { downloads: null }
-        )
-      : Promise.resolve({ downloads: 0 });
-
-  const [week, month, total, range] = await Promise.all([
-    safeJSON(npmDownloadUrl("last-week", pkg), { downloads: null }),
-    safeJSON(npmDownloadUrl("last-month", pkg), { downloads: null }),
-    totalPromise,
-    safeJSON(npmRangeUrl("last-month", pkg), { downloads: [] })
-  ]);
-
-  const hasAnyData =
-    week.downloads !== null ||
-    month.downloads !== null ||
-    total.downloads !== null ||
-    (range.downloads && range.downloads.length > 0);
-
-  if (!hasAnyData) {
-    throw new Error(`npm indisponible pour ${pkg}`);
-  }
-
-  return {
-    week: week.downloads,
-    month: month.downloads,
-    total: total.downloads,
-    daily: range.downloads ?? []
-  };
+async function loadNpmMetrics() {
+  return getJSON(CONFIG.npmMetricsEndpoint);
 }
 
 async function loadGitHub() {
@@ -102,7 +46,7 @@ function setText(id, value) {
 }
 
 function renderSdk(sdk) {
-  if (!sdk) return;
+  if (!sdk?.ok) return;
   setText("sdk30", formatNumber(sdk.month));
   setText("sdk7", formatNumber(sdk.week));
   setText("sdkTotal", formatNumber(sdk.total));
@@ -110,7 +54,7 @@ function renderSdk(sdk) {
 }
 
 function renderMcp(mcp) {
-  if (!mcp) return;
+  if (!mcp?.ok) return;
   setText("mcp30", formatNumber(mcp.month));
   setText("mcp7", formatNumber(mcp.week));
   setText("mcpTotal", formatNumber(mcp.total));
@@ -180,7 +124,9 @@ function drawChart(sdkDaily = [], mcpDaily = []) {
 
   const x = (i) =>
     pad.left +
-    (dates.length === 1 ? innerW / 2 : (i / (dates.length - 1)) * innerW);
+    (dates.length === 1
+      ? innerW / 2
+      : (i / (dates.length - 1)) * innerW);
 
   const y = (v) => pad.top + innerH - (v / yMax) * innerH;
 
@@ -229,8 +175,9 @@ function drawChart(sdkDaily = [], mcpDaily = []) {
 
     markup +=
       `<text x="${x(i)}" y="${height - 10}" ` +
-      `text-anchor="${i === 0 ? "start" : i === dates.length - 1 ? "end" : "middle"}" ` +
-      `class="chart-axis-text">${label}</text>`;
+      `text-anchor="${
+        i === 0 ? "start" : i === dates.length - 1 ? "end" : "middle"
+      }" class="chart-axis-text">${label}</text>`;
   }
 
   if (sdkVals.length) {
@@ -255,33 +202,46 @@ async function refreshDashboard() {
   $("globalStatus").className = "status-ok";
 
   const results = await Promise.allSettled([
-    loadNpmMetrics(CONFIG.sdkPackage),
-    loadNpmMetrics(CONFIG.mcpPackage),
+    loadNpmMetrics(),
     loadGitHub(),
     loadRegistry()
   ]);
 
-  const [sdkResult, mcpResult, githubResult, registryResult] = results;
+  const [npmResult, githubResult, registryResult] = results;
 
-  const sdk = sdkResult.status === "fulfilled" ? sdkResult.value : null;
-  const mcp = mcpResult.status === "fulfilled" ? mcpResult.value : null;
+  const npm =
+    npmResult.status === "fulfilled" ? npmResult.value : null;
   const github =
     githubResult.status === "fulfilled" ? githubResult.value : null;
   const registry =
     registryResult.status === "fulfilled" ? registryResult.value : null;
 
-  renderSdk(sdk);
-  renderMcp(mcp);
+  renderSdk(npm?.sdk);
+  renderMcp(npm?.mcp);
   renderGitHub(github);
   renderRegistry(registry);
-  drawChart(sdk?.daily ?? [], mcp?.daily ?? []);
+  drawChart(
+    npm?.sdk?.ok ? npm.sdk.daily ?? [] : [],
+    npm?.mcp?.ok ? npm.mcp.daily ?? [] : []
+  );
 
-  const names = ["npm SDK", "npm MCP", "GitHub", "MCP Registry"];
-  results.forEach((result, index) => {
-    if (result.status === "rejected") {
-      console.warn(`${names[index]} indisponible:`, result.reason);
-    }
-  });
+  if (npmResult.status === "rejected") {
+    console.warn("Backend npm indisponible:", npmResult.reason);
+  }
+  if (githubResult.status === "rejected") {
+    console.warn("GitHub indisponible:", githubResult.reason);
+  }
+  if (registryResult.status === "rejected") {
+    console.warn("MCP Registry indisponible:", registryResult.reason);
+  }
+
+  const sourceStates = [
+    Boolean(npm?.sdk?.ok),
+    Boolean(npm?.mcp?.ok),
+    Boolean(github),
+    Boolean(registry)
+  ];
+  const okCount = sourceStates.filter(Boolean).length;
 
   const now = new Date();
   setText(
@@ -299,13 +259,11 @@ async function refreshDashboard() {
     })
   );
 
-  const okCount = results.filter((r) => r.status === "fulfilled").length;
-
-  if (okCount === results.length) {
+  if (okCount === 4) {
     setText("globalStatus", "Toutes les sources ont répondu");
     $("globalStatus").className = "status-ok";
   } else if (okCount > 0) {
-    setText("globalStatus", `${okCount}/${results.length} sources disponibles`);
+    setText("globalStatus", `${okCount}/4 sources disponibles`);
     $("globalStatus").className = "status-warn";
   } else {
     setText("globalStatus", "Sources publiques indisponibles");

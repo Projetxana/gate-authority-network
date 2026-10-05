@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "api/npm-stats.js": {
+      "maxDuration": 10
+    }
+  }
+}
