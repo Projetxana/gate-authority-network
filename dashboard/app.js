@@ -100,16 +100,20 @@ function renderUsage(data) {
   if (!data?.ok || !data?.summary) return;
 
   const s = data.summary;
-  const activated = Number(s.activated_projects || 0);
-  const activeToday = Number(s.active_projects_today || 0);
+  const previewActivated = Number(s.preview_activated_projects || 0);
+  const pilotActivated = Number(s.pilot_activated_projects || 0);
+  const paidActivated = Number(s.paid_activated_projects || 0);
   const today = Number(s.verifications_today || 0);
   const last30 = Number(s.verifications_30d || 0);
+  const preview30 = Number(s.preview_verifications_30d || 0);
+  const pilotPaid30 = Number(s.pilot_paid_verifications_30d || 0);
 
-  setText("activatedProjects", formatNumber(activated));
-  setText("activeProjectsToday", formatNumber(activeToday));
-  setText("firstVerifyStatus", activated > 0 ? "✓" : "En attente");
+  setText("previewActivatedProjects", formatNumber(previewActivated));
+  setText("pilotActivatedProjects", formatNumber(pilotActivated));
+  setText("paidActivatedProjects", formatNumber(paidActivated));
   setText("verificationsToday", formatNumber(today));
   setText("usage30", `${formatNumber(last30)} vérifications / 30 j`);
+  setText("usageMix", `Preview ${formatNumber(preview30)} · Pilot/paid ${formatNumber(pilotPaid30)}`);
 }
 
 function drawChart(sdkDaily = [], mcpDaily = []) {

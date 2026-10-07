@@ -1,17 +1,19 @@
 # @gate-avn/sdk
 
-Experimental Node.js client for the GATE Authority Verification Network.
+Developer Preview client for GATE, the live authority-state resolver for delegated agents across trust domains.
 
 GATE answers one narrow question at effect time:
 
-> Does this actor still have a live authority path from this principal right now?
+> Does a live delegation path from this principal to this actor still exist right now?
 
 GATE does not replace OAuth, AuthZEN, Cedar, OPA, Permit, Cerbos, OpenFGA, MCP, A2A, or your business-policy PDP.
+
+MCP is one integration surface for GATE, not the product boundary. GATE also does not issue credentials or currently claim a portable signed authority proof.
 
 ## Install
 
 ```bash
-npm install @gate-avn/sdk@dev@dev
+npm install @gate-avn/sdk@dev
 ```
 
 ## Public Developer Preview sandbox

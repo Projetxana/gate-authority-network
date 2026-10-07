@@ -1,7 +1,7 @@
 {
   "name": "@gate-avn/sdk",
   "version": "0.1.0-dev.3",
-  "description": "Protocol-neutral client for live authority-state verification at action time.",
+  "description": "Client for live cross-domain delegated authority-state resolution at effect time.",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -25,7 +25,11 @@
     "oauth",
     "delegation",
     "revocation",
-    "security"
+    "security",
+    "delegated-authority",
+    "authority-state",
+    "cross-domain",
+    "runtime-security"
   ],
   "repository": {
     "type": "git",

@@ -1,6 +1,8 @@
 # @gate-avn/mcp
 
-MCP server exposing GATE live authority verification.
+MCP is an adapter for GATE, not GATE's product boundary. The core resolver remains protocol-neutral through `gate.verify()`.
+
+MCP adapter exposing GATE live cross-domain delegated authority-state resolution.
 
 ## Public Developer Preview sandbox
 

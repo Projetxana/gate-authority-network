@@ -1,7 +1,7 @@
 {
   "name": "@gate-avn/mcp",
   "version": "0.1.0-dev.5",
-  "description": "MCP server for live authority-state verification before agent actions.",
+  "description": "MCP adapter for GATE live cross-domain delegated authority-state resolution.",
   "type": "module",
   "bin": {
     "gate-mcp": "bin/gate-mcp.mjs"
@@ -24,7 +24,11 @@
     "agents",
     "delegation",
     "revocation",
-    "security"
+    "security",
+    "delegated-authority",
+    "authority-state",
+    "cross-domain",
+    "runtime-security"
   ],
   "mcpName": "io.github.Projetxana/gate-authority-network",
   "repository": {

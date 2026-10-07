@@ -2,9 +2,36 @@
 
 **Developer Preview · 2026-10-07**
 
-> Is this agent still authorized to act **right now**?
+> Does a live delegation path from this principal to this actor still exist **right now**?
 
-GATE is an experimental network verifier for live, cross-domain authority. It does **not** mint a proprietary delegation token, replace OAuth, or replace your policy engine. It consumes authority state from external domains and answers whether a currently valid authority path still exists at action time.
+**GATE is the live authority-state resolver for delegated agents across trust domains.**
+
+It resolves whether a currently valid authority path still exists at effect time using live authority state from external trust domains. GATE does **not** mint a proprietary delegation token, replace OAuth, replace your policy engine, or require MCP.
+
+## Where GATE fits
+
+```text
+Identity / credentials / policy / issuer systems
+                      |
+                      | authority state + trust signals
+                      v
+             +-------------------+
+             |       GATE        |
+             | live authority    |
+             | state resolver    |
+             +-------------------+
+                      |
+                 gate.verify()
+                      |
+                      v
+             trusted effect boundary
+```
+
+GATE complements identity, credential, policy and gateway systems. **MCP is one integration surface, not GATE's definition.**
+
+The differentiator is not multi-hop alone. It is the combination of live upstream revocation, alternate-path preservation, federated issuer state, freshness semantics and protocol-neutral effect-time resolution.
+
+Read: `docs/POSITIONING.md`, `docs/INTEGRATION-MODEL.md`, `docs/RELEASE-BOUNDARY.md`.
 
 ## Public Developer Quickstart
 
@@ -60,7 +87,9 @@ if (result.decision !== 'ALLOW') throw new Error(result.reason);
 
 ## What GATE verifies
 
-GATE answers a deliberately narrow question: whether the actor still has at least one live authority path from the principal, according to verified external authority state.
+GATE answers a deliberately narrow question: whether the actor still has at least one live delegation path from the principal, according to sufficiently fresh external authority state.
+
+The public contract separates **authority state** from application policy. A credential can remain syntactically valid while GATE returns `INVALID` or `UNKNOWN` because the authority behind it is no longer live or cannot be established with the requested freshness.
 
 It can return:
 
@@ -72,7 +101,9 @@ It can return:
 
 GATE is **not** your business-policy PDP. The action object is carried for integration/audit context in this preview; policy such as "may this principal delete customer 3456?" belongs in AuthZEN, Cedar, OPA, Permit, Cerbos, OpenFGA, or your existing authorization system.
 
-GATE is also not trying to replace OAuth, MCP, A2A, OpenID Federation, Security Event Tokens, or Shared Signals. The intended role is to sit underneath/alongside them as a live authority-state verifier.
+GATE is also not trying to replace OAuth, MCP, A2A, OpenID Federation, Security Event Tokens, Shared Signals, an IdP, or an API/AI gateway. The intended role is to sit underneath/alongside them as a live authority-state resolver.
+
+The Developer Preview does **not** claim a portable cryptographically signed authority proof. It returns a live resolution result; a signed GATE receipt is a possible future layer, not a current release promise.
 
 ## Why a network service?
 

@@ -31,10 +31,10 @@
       <section class="hero-panel">
         <div>
           <div class="section-kicker">OBJECTIF</div>
-          <h2>Voir clairement si GATE est découvert, installé et réellement utilisé.</h2>
+          <h2>Voir clairement si GATE est découvert, testé et réellement appelé.</h2>
           <p>
-            Cette page sépare volontairement les <strong>données mesurables aujourd’hui</strong>
-            des métriques qui nécessitent encore l’instrumentation du service GATE.
+            Cette page sépare les téléchargements, l’usage Developer Preview et les futurs pilotes.
+            Une activation sandbox n’est pas présentée comme un déploiement production.
           </p>
         </div>
         <div class="hero-status">
@@ -162,11 +162,11 @@
               <span class="step-state measured-badge">MESURÉ</span>
             </div>
             <h4>Activation</h4>
-            <p>Premier usage réel de GATE.</p>
+            <p>Premier <code>gate.verify()</code> d’un projet non interne.</p>
             <ul>
-              <li><span>Projets activés</span><strong id="activatedProjects">0</strong></li>
-              <li><span>Actifs aujourd’hui</span><strong id="activeProjectsToday">0</strong></li>
-              <li><span>Premier gate.verify()</span><strong id="firstVerifyStatus">En attente</strong></li>
+              <li><span>Preview / sandbox</span><strong id="previewActivatedProjects">0</strong></li>
+              <li><span>Pilotes</span><strong id="pilotActivatedProjects">0</strong></li>
+              <li><span>Payants</span><strong id="paidActivatedProjects">0</strong></li>
             </ul>
           </article>
 
@@ -182,6 +182,7 @@
             <div class="big-kpi" id="verificationsToday">0</div>
             <div class="big-kpi-label">vérifications GATE aujourd’hui</div>
             <span class="telemetry-callout" id="usage30">0 vérification / 30 j</span>
+            <span class="telemetry-callout" id="usageMix">Preview 0 · Pilot/paid 0</span>
           </article>
 
           <div class="flow-arrow">→</div>
@@ -268,7 +269,7 @@
           <span class="truth-icon">i</span>
           <div>
             <strong>Principe de cette page</strong>
-            <p>Afficher uniquement des données mesurées. Les téléchargements viennent de npm ; les activations et vérifications viennent de la télémétrie GATE, sans stocker les identités ou contenus d’action.</p>
+            <p>Afficher uniquement des données mesurées. Les téléchargements viennent de npm ; les activations et vérifications viennent de la télémétrie GATE, sans stocker les identités ou contenus d’action. Les projets sandbox sont comptés comme Developer Preview et non comme pilotes ou déploiements production.</p>
           </div>
         </div>
         <div class="source-links">

@@ -2,15 +2,15 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>GATE — Developer Quickstart</title>
+<title>GATE — Live Authority-State Resolver · Developer Quickstart</title>
 <style>
 *{box-sizing:border-box}:root{--bg:#07111f;--p:#0d1b2b;--l:#213953;--t:#eef6ff;--m:#9bb0c3;--c:#47d7ff;--g:#57e389;--r:#ff6b6b;--y:#ffd166}body{margin:0;background:radial-gradient(circle at 85% 0,rgba(71,215,255,.13),transparent 28rem),var(--bg);color:var(--t);font-family:Inter,system-ui,-apple-system,sans-serif}.s{width:min(1100px,calc(100% - 30px));margin:auto;padding:28px 0 60px}nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:45px}.b{font-weight:800}.g{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--c),#ad8cff);color:#06121d;margin-right:10px}a{color:var(--c)}h1{font-size:clamp(38px,7vw,68px);line-height:.98;letter-spacing:-.045em;max-width:850px;margin:10px 0 18px}.k{color:var(--c);font-size:12px;font-weight:900;letter-spacing:.15em}.lead{font-size:19px;line-height:1.6;color:#bfd0df;max-width:800px}.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:18px;margin-top:30px}.card{grid-column:span 12;border:1px solid var(--l);background:rgba(13,27,43,.9);border-radius:20px;padding:24px}.half{grid-column:span 6}h2{margin:0 0 10px}p{color:#b3c4d3;line-height:1.55}input{width:100%;padding:13px;border:1px solid var(--l);border-radius:11px;background:#071522;color:var(--t)}button{border:0;border-radius:11px;padding:12px 16px;font-weight:850;background:linear-gradient(135deg,var(--c),#7fe3ff);color:#06121d;cursor:pointer}button.alt{background:#18324a;color:var(--t);border:1px solid #2c4a65}button:disabled{opacity:.45}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}pre,.secret{background:#06101a;border:1px solid #1a334a;border-radius:13px;padding:16px;overflow:auto;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;line-height:1.5}.secret{word-break:break-all;color:#bfefff}.results{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px}.res{background:#091827;border:1px solid var(--l);border-radius:14px;padding:16px}.res small{color:var(--m)}.v{font-size:23px;font-weight:900;margin:7px 0}.allow{color:var(--g)}.deny{color:var(--r)}.wait{color:var(--y)}.note{font-size:13px;color:var(--m)}.online{color:var(--g)}footer{margin-top:35px;border-top:1px solid var(--l);padding-top:20px;color:var(--m);font-size:13px}@media(max-width:780px){.half{grid-column:span 12}.results{grid-template-columns:1fr}}
 </style>
 </head>
 <body><div class="s">
-<nav><div class="b"><span class="g">G</span>GATE · Authority Verification Network</div><div><a href="./">Adoption dashboard</a></div></nav>
-<div class="k">DEVELOPER PREVIEW · PUBLIC SANDBOX</div><h1>Verify live authority in under 2 minutes.</h1>
-<p class="lead">Create a temporary API key, run a real <code>gate.verify()</code>, then revoke two upstream authority paths and watch GATE move from ALLOW → ALLOW → DENY.</p>
+<nav><div class="b"><span class="g">G</span>GATE · Live Authority-State Resolver</div><div><a href="./">Adoption dashboard</a></div></nav>
+<div class="k">DEVELOPER PREVIEW · PUBLIC SANDBOX</div><h1>Resolve live delegated authority across trust domains.</h1>
+<p class="lead">Create a temporary API key, run a real <code>gate.verify()</code>, then revoke upstream authority and watch alternate-path preservation move GATE from ALLOW → ALLOW → DENY. The sandbox demonstrates GATE's resolver semantics; it is not a production issuer federation.</p>
 <p id="health" class="online">Checking GATE Network…</p>
 <div class="grid">
 <section class="card half"><h2>1. Create a sandbox project</h2><p>No account required for this preview. The key expires after 7 days and is kept only in this browser tab.</p><input id="name" value="My first GATE project" maxlength="80"><div class="actions"><button id="create">Create project + API key</button></div><div id="out" hidden><p class="note">GATE_API_KEY</p><div class="secret" id="key"></div><div class="actions"><button class="alt" id="copyKey">Copy key</button></div><p class="note" id="expiry"></p></div></section>
@@ -33,7 +33,7 @@ console.log(result.authority, result.decision);</pre><button class="alt" id="cop
 <section class="card half"><h2>5. MCP</h2><pre>GATE_URL="https://ufqtoyakmrddqytrkcje.supabase.co/functions/v1/gate-sandbox" \
 GATE_API_KEY="gate_sk_..." \
 npx @gate-avn/mcp@dev</pre><p class="note">Developer Preview only. Not a production trust source or SLA-backed service.</p></section>
-</div><footer>GATE · Apache-2.0 · Live authority-state verification at effect time.</footer>
+</div><footer>GATE · Apache-2.0 · Live delegated authority-state resolution at effect time.</footer>
 </div>
 <script>
 const BASE='https://ufqtoyakmrddqytrkcje.supabase.co/functions/v1/gate-sandbox';let key=null;const $=x=>document.getElementById(x);
