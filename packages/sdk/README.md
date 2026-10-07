@@ -11,7 +11,7 @@ GATE does not replace OAuth, AuthZEN, Cedar, OPA, Permit, Cerbos, OpenFGA, MCP, 
 ## Install
 
 ```bash
-npm install @gate-avn/sdk@dev
+npm install @gate-avn/sdk@dev@dev
 ```
 
 ## Public Developer Preview sandbox
