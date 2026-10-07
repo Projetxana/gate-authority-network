@@ -1,3 +1,6 @@
+export const GATE_SDK_VERSION = '0.1.0-dev.3';
+export const GATE_SANDBOX_URL = 'https://ufqtoyakmrddqytrkcje.supabase.co/functions/v1/gate-sandbox';
+
 export class GateDeniedError extends Error {
   constructor(decision) {
     super(decision?.reason || 'gate_authority_denied');
@@ -8,13 +11,15 @@ export class GateDeniedError extends Error {
 }
 
 export class GateClient {
-  constructor({ endpoint, apiKey, timeoutMs = 2000, fetchImpl = globalThis.fetch }) {
+  constructor({ endpoint, apiKey, timeoutMs = 2000, fetchImpl = globalThis.fetch, source = 'sdk', clientVersion = GATE_SDK_VERSION }) {
     if (!endpoint) throw new TypeError('endpoint is required');
     if (typeof fetchImpl !== 'function') throw new TypeError('fetch implementation is required');
     this.endpoint = endpoint.replace(/\/$/, '');
     this.apiKey = apiKey;
     this.timeoutMs = timeoutMs;
     this.fetch = fetchImpl;
+    this.source = source;
+    this.clientVersion = clientVersion;
   }
 
   async verify({ principal, actor, action, consistency = 'bounded', maxStalenessMs, signal } = {}) {
@@ -33,6 +38,8 @@ export class GateClient {
         method: 'POST',
         headers: {
           'content-type': 'application/json',
+          'x-gate-source': this.source,
+          'x-gate-client-version': this.clientVersion,
           ...(this.apiKey ? { authorization: `Bearer ${this.apiKey}` } : {})
         },
         body: JSON.stringify(body),
@@ -60,4 +67,8 @@ export class GateClient {
 
 export function createGateClient(options) {
   return new GateClient(options);
+}
+
+export function createSandboxClient({ apiKey, ...options } = {}) {
+  return new GateClient({ ...options, endpoint: GATE_SANDBOX_URL, apiKey, source: options.source || 'sdk', clientVersion: options.clientVersion || GATE_SDK_VERSION });
 }

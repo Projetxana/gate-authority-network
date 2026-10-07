@@ -1,3 +1,7 @@
+export type GateSource = "sdk" | "mcp" | "api" | "internal" | "unknown";
+export declare const GATE_SDK_VERSION = "0.1.0-dev.3";
+export declare const GATE_SANDBOX_URL = "https://ufqtoyakmrddqytrkcje.supabase.co/functions/v1/gate-sandbox";
+
 export type Consistency = "bounded" | "strict";
 
 export interface GateAction {
@@ -26,6 +30,13 @@ export interface GateDecision {
   servedBy?: string;
   region?: string;
   revision?: number;
+  evaluation?: {
+    established: boolean;
+    source?: string;
+    fresh?: boolean;
+    ageMs?: number;
+    [key: string]: unknown;
+  };
   freshness?: {
     ageMs: number;
     leaseRemainingMs: number;
@@ -41,6 +52,8 @@ export interface GateClientOptions {
   apiKey?: string;
   timeoutMs?: number;
   fetchImpl?: typeof fetch;
+  source?: GateSource;
+  clientVersion?: string;
 }
 
 export declare class GateDeniedError extends Error {
@@ -56,3 +69,6 @@ export declare class GateClient {
 }
 
 export declare function createGateClient(options: GateClientOptions): GateClient;
+
+export interface SandboxClientOptions extends Omit<GateClientOptions, "endpoint"> { apiKey: string; }
+export declare function createSandboxClient(options: SandboxClientOptions): GateClient;

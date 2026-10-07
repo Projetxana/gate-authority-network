@@ -1,10 +1,30 @@
 # GATE — Authority Verification Network
 
-**Developer Preview · 2026-10-02**
+**Developer Preview · 2026-10-07**
 
 > Is this agent still authorized to act **right now**?
 
 GATE is an experimental network verifier for live, cross-domain authority. It does **not** mint a proprietary delegation token, replace OAuth, or replace your policy engine. It consumes authority state from external domains and answers whether a currently valid authority path still exists at action time.
+
+## Public Developer Quickstart
+
+- Quickstart: https://gate-phi-eosin.vercel.app/quickstart.html
+- Hosted sandbox: `https://ufqtoyakmrddqytrkcje.supabase.co/functions/v1/gate-sandbox`
+- Temporary API keys: 7 days
+- Quota: 500 verifications/project/day
+
+```bash
+npm install @gate-avn/sdk@dev
+```
+
+```js
+import { createSandboxClient } from '@gate-avn/sdk';
+const gate = createSandboxClient({ apiKey: process.env.GATE_API_KEY });
+const result = await gate.verify({ principal: 'user:demo', actor: 'agent:C@company-c' });
+console.log(result.authority, result.decision);
+```
+
+See `docs/QUICKSTART.md`.
 
 ## 5-minute demo
 
@@ -83,7 +103,7 @@ docs/              architecture, integration contract, due diligence
 npm install @gate-avn/sdk@dev
 ```
 
-Current SDK Developer Preview: `0.1.0-dev.2`
+Current SDK Developer Preview: `0.1.0-dev.3`
 
 ### MCP server
 
@@ -91,7 +111,7 @@ Current SDK Developer Preview: `0.1.0-dev.2`
 npm install @gate-avn/mcp@dev
 ```
 
-Current MCP Developer Preview: `0.1.0-dev.4`
+Current MCP Developer Preview: `0.1.0-dev.5`
 
 Official MCP Registry:
 

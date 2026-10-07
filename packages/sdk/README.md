@@ -11,8 +11,21 @@ GATE does not replace OAuth, AuthZEN, Cedar, OPA, Permit, Cerbos, OpenFGA, MCP, 
 ## Install
 
 ```bash
-npm install @gate-avn/sdk
+npm install @gate-avn/sdk@dev
 ```
+
+## Public Developer Preview sandbox
+
+Create a temporary API key at https://gate-phi-eosin.vercel.app/quickstart.html, then:
+
+```js
+import { createSandboxClient } from '@gate-avn/sdk';
+const gate = createSandboxClient({ apiKey: process.env.GATE_API_KEY });
+const decision = await gate.verify({ principal: 'user:demo', actor: 'agent:C@company-c' });
+console.log(decision.authority, decision.decision);
+```
+
+Sandbox keys expire after 7 days. Developer Preview only.
 
 ## Verify
 

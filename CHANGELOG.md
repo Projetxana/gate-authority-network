@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.0-dev.5 / SDK 0.1.0-dev.3 — 2026-10-07
+
+- Hosted public Developer Preview sandbox and temporary API-key flow.
+- Browser Quickstart with live ALLOW → ALLOW → DENY scenario.
+- SDK `createSandboxClient()` + source/version metadata.
+- MCP source/version attribution.
+- Typed evaluation metadata.
+
+
 ## 0.1.0-dev.1 — 2026-10-02
 
 - Introduces the public `GateClient.verify()` integration surface.

@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GATE — Developer Quickstart</title>
+<style>
+*{box-sizing:border-box}:root{--bg:#07111f;--p:#0d1b2b;--l:#213953;--t:#eef6ff;--m:#9bb0c3;--c:#47d7ff;--g:#57e389;--r:#ff6b6b;--y:#ffd166}body{margin:0;background:radial-gradient(circle at 85% 0,rgba(71,215,255,.13),transparent 28rem),var(--bg);color:var(--t);font-family:Inter,system-ui,-apple-system,sans-serif}.s{width:min(1100px,calc(100% - 30px));margin:auto;padding:28px 0 60px}nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:45px}.b{font-weight:800}.g{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--c),#ad8cff);color:#06121d;margin-right:10px}a{color:var(--c)}h1{font-size:clamp(38px,7vw,68px);line-height:.98;letter-spacing:-.045em;max-width:850px;margin:10px 0 18px}.k{color:var(--c);font-size:12px;font-weight:900;letter-spacing:.15em}.lead{font-size:19px;line-height:1.6;color:#bfd0df;max-width:800px}.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:18px;margin-top:30px}.card{grid-column:span 12;border:1px solid var(--l);background:rgba(13,27,43,.9);border-radius:20px;padding:24px}.half{grid-column:span 6}h2{margin:0 0 10px}p{color:#b3c4d3;line-height:1.55}input{width:100%;padding:13px;border:1px solid var(--l);border-radius:11px;background:#071522;color:var(--t)}button{border:0;border-radius:11px;padding:12px 16px;font-weight:850;background:linear-gradient(135deg,var(--c),#7fe3ff);color:#06121d;cursor:pointer}button.alt{background:#18324a;color:var(--t);border:1px solid #2c4a65}button:disabled{opacity:.45}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}pre,.secret{background:#06101a;border:1px solid #1a334a;border-radius:13px;padding:16px;overflow:auto;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;line-height:1.5}.secret{word-break:break-all;color:#bfefff}.results{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px}.res{background:#091827;border:1px solid var(--l);border-radius:14px;padding:16px}.res small{color:var(--m)}.v{font-size:23px;font-weight:900;margin:7px 0}.allow{color:var(--g)}.deny{color:var(--r)}.wait{color:var(--y)}.note{font-size:13px;color:var(--m)}.online{color:var(--g)}footer{margin-top:35px;border-top:1px solid var(--l);padding-top:20px;color:var(--m);font-size:13px}@media(max-width:780px){.half{grid-column:span 12}.results{grid-template-columns:1fr}}
+</style>
+</head>
+<body><div class="s">
+<nav><div class="b"><span class="g">G</span>GATE · Authority Verification Network</div><div><a href="./">Adoption dashboard</a></div></nav>
+<div class="k">DEVELOPER PREVIEW · PUBLIC SANDBOX</div><h1>Verify live authority in under 2 minutes.</h1>
+<p class="lead">Create a temporary API key, run a real <code>gate.verify()</code>, then revoke two upstream authority paths and watch GATE move from ALLOW → ALLOW → DENY.</p>
+<p id="health" class="online">Checking GATE Network…</p>
+<div class="grid">
+<section class="card half"><h2>1. Create a sandbox project</h2><p>No account required for this preview. The key expires after 7 days and is kept only in this browser tab.</p><input id="name" value="My first GATE project" maxlength="80"><div class="actions"><button id="create">Create project + API key</button></div><div id="out" hidden><p class="note">GATE_API_KEY</p><div class="secret" id="key"></div><div class="actions"><button class="alt" id="copyKey">Copy key</button></div><p class="note" id="expiry"></p></div></section>
+<section class="card half"><h2>2. Install the SDK</h2><pre>npm install @gate-avn/sdk@dev</pre><p class="note">Node.js 20+. Use <code>createSandboxClient()</code> for the public preview.</p></section>
+<section class="card"><h2>3. Run the revocation scenario</h2><pre>user:demo
+  ├── agent:A@company-a ──┐
+  └── agent:B@company-b ──┴── agent:C@company-c</pre><div class="actions"><button id="scenario" disabled>Run ALLOW → ALLOW → DENY</button><button class="alt" id="reset" disabled>Reset</button></div><div class="results"><div class="res"><small>INITIAL</small><div id="r0" class="v wait">Waiting</div><small id="m0">2 live paths expected</small></div><div class="res"><small>AFTER REVOKE A</small><div id="r1" class="v wait">Waiting</div><small id="m1">1 live path expected</small></div><div class="res"><small>AFTER REVOKE B</small><div id="r2" class="v wait">Waiting</div><small id="m2">0 live paths expected</small></div></div><pre id="raw">Create a project, then run the scenario.</pre></section>
+<section class="card half"><h2>4. SDK code</h2><pre id="code">import { createSandboxClient } from '@gate-avn/sdk';
+
+const gate = createSandboxClient({
+  apiKey: process.env.GATE_API_KEY
+});
+
+const result = await gate.verify({
+  principal: 'user:demo',
+  actor: 'agent:C@company-c'
+});
+
+console.log(result.authority, result.decision);</pre><button class="alt" id="copyCode">Copy code</button></section>
+<section class="card half"><h2>5. MCP</h2><pre>GATE_URL="https://ufqtoyakmrddqytrkcje.supabase.co/functions/v1/gate-sandbox" \
+GATE_API_KEY="gate_sk_..." \
+npx @gate-avn/mcp@dev</pre><p class="note">Developer Preview only. Not a production trust source or SLA-backed service.</p></section>
+</div><footer>GATE · Apache-2.0 · Live authority-state verification at effect time.</footer>
+</div>
+<script>
+const BASE='https://ufqtoyakmrddqytrkcje.supabase.co/functions/v1/gate-sandbox';let key=null;const $=x=>document.getElementById(x);
+async function j(url,o={}){const r=await fetch(url,{cache:'no-store',...o}),t=await r.text();let d;try{d=t?JSON.parse(t):{}}catch{throw Error('Invalid JSON')}if(!r.ok){const e=Error(d.error||`HTTP ${r.status}`);e.details=d;throw e}return d}
+const h=()=>({'content-type':'application/json','authorization':`Bearer ${key}`,'x-gate-source':'api','x-gate-client-version':'quickstart-web-v1'});
+async function verify(){return j(`${BASE}/v1/authority/verify`,{method:'POST',headers:h(),body:JSON.stringify({principal:'user:demo',actor:'agent:C@company-c',consistency:'bounded'})})}
+async function revoke(path){return j(`${BASE}/sandbox/revoke`,{method:'POST',headers:h(),body:JSON.stringify({path})})}
+async function reset(){return j(`${BASE}/sandbox/reset`,{method:'POST',headers:h(),body:'{}'})}
+function render(i,d){const n=$(`r${i}`);n.textContent=d.decision;n.className=`v ${d.decision==='ALLOW'?'allow':'deny'}`;const v=Number(d.validPathCount||0);$(`m${i}`).textContent=`${d.authority} · ${v} live path${v===1?'':'s'}`}
+$('create').onclick=async()=>{const b=$('create');b.disabled=true;b.textContent='Creating…';try{const d=await j(`${BASE}/projects/register`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({name:$('name').value||'GATE Sandbox Project'})});key=d.apiKey;$('key').textContent=key;$('out').hidden=false;$('scenario').disabled=false;$('reset').disabled=false;$('expiry').textContent=`Expires ${new Date(d.project.expiresAt).toLocaleString()} · ${d.limits.verificationsPerDay} verifications/day`;b.textContent='Project created'}catch(e){b.disabled=false;b.textContent='Create project + API key';alert(e.message)}};
+$('scenario').onclick=async()=>{const b=$('scenario');b.disabled=true;$('raw').textContent='Running…';try{await reset();const a=await verify();render(0,a);await revoke('A');const c=await verify();render(1,c);await revoke('B');const d=await verify();render(2,d);$('raw').textContent=JSON.stringify({initial:{authority:a.authority,decision:a.decision,validPathCount:a.validPathCount},afterRevokeA:{authority:c.authority,decision:c.decision,validPathCount:c.validPathCount},afterRevokeB:{authority:d.authority,decision:d.decision,reason:d.reason}},null,2)}catch(e){$('raw').textContent=JSON.stringify({error:e.message,details:e.details||null},null,2)}finally{b.disabled=false}};
+$('reset').onclick=async()=>{await reset();for(let i=0;i<3;i++){const n=$(`r${i}`);n.textContent='Waiting';n.className='v wait'}$('m0').textContent='2 live paths expected';$('m1').textContent='1 live path expected';$('m2').textContent='0 live paths expected';$('raw').textContent='Sandbox reset.'};
+$('copyKey').onclick=()=>navigator.clipboard.writeText(key||'');$('copyCode').onclick=()=>navigator.clipboard.writeText($('code').textContent);
+j(`${BASE}/health`).then(d=>$('health').textContent=d.ok?'● GATE Network sandbox online':'GATE Network unavailable').catch(()=>$('health').textContent='GATE Network sandbox unavailable');
+</script></body></html>

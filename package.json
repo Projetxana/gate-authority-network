@@ -1,6 +1,6 @@
 {
   "name": "gate-authority-network-developer-preview",
-  "version": "0.1.0-dev.1",
+  "version": "0.1.0-dev.2",
   "private": true,
   "type": "module",
   "description": "GATE Authority Verification Network developer preview",

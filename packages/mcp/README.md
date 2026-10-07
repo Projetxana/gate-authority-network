@@ -2,6 +2,16 @@
 
 MCP server exposing GATE live authority verification.
 
+## Public Developer Preview sandbox
+
+Create a temporary API key at https://gate-phi-eosin.vercel.app/quickstart.html, then:
+
+```bash
+GATE_URL="https://ufqtoyakmrddqytrkcje.supabase.co/functions/v1/gate-sandbox" \
+GATE_API_KEY="gate_sk_..." \
+npx @gate-avn/mcp@dev
+```
+
 ## Real mode
 
 ```bash

@@ -5,7 +5,7 @@ import { serveStdio } from '@modelcontextprotocol/server/stdio';
 import * as z from 'zod/v4';
 import { GateClient } from '@gate-avn/sdk';
 
-const VERSION = '0.1.0-dev.4';
+const VERSION = '0.1.0-dev.5';
 const args = new Set(process.argv.slice(2));
 
 if (args.has('--help') || args.has('-h')) {
@@ -45,7 +45,9 @@ const gate = demoMode
   : new GateClient({
       endpoint,
       apiKey: process.env.GATE_API_KEY,
-      timeoutMs
+      timeoutMs,
+      source: 'mcp',
+      clientVersion: VERSION
     });
 
 const server = new McpServer({
