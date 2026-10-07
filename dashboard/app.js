@@ -1,5 +1,6 @@
 const CONFIG = {
   npmMetricsEndpoint: "/api/npm-stats",
+  usageMetricsEndpoint: "https://ufqtoyakmrddqytrkcje.supabase.co/functions/v1/gate-metrics/summary",
   githubRepo: "Projetxana/gate-authority-network",
   registryName: "io.github.Projetxana/gate-authority-network",
   refreshMs: 5 * 60 * 1000
@@ -24,6 +25,10 @@ async function loadNpmMetrics() {
 
 async function loadGitHub() {
   return getJSON(`https://api.github.com/repos/${CONFIG.githubRepo}`);
+}
+
+async function loadUsageMetrics() {
+  return getJSON(CONFIG.usageMetricsEndpoint);
 }
 
 async function loadRegistry() {
@@ -89,6 +94,22 @@ function renderRegistry(registry) {
         })}`
       : "Publication confirmée"
   );
+}
+
+function renderUsage(data) {
+  if (!data?.ok || !data?.summary) return;
+
+  const s = data.summary;
+  const activated = Number(s.activated_projects || 0);
+  const activeToday = Number(s.active_projects_today || 0);
+  const today = Number(s.verifications_today || 0);
+  const last30 = Number(s.verifications_30d || 0);
+
+  setText("activatedProjects", formatNumber(activated));
+  setText("activeProjectsToday", formatNumber(activeToday));
+  setText("firstVerifyStatus", activated > 0 ? "✓" : "En attente");
+  setText("verificationsToday", formatNumber(today));
+  setText("usage30", `${formatNumber(last30)} vérifications / 30 j`);
 }
 
 function drawChart(sdkDaily = [], mcpDaily = []) {
@@ -204,10 +225,11 @@ async function refreshDashboard() {
   const results = await Promise.allSettled([
     loadNpmMetrics(),
     loadGitHub(),
-    loadRegistry()
+    loadRegistry(),
+    loadUsageMetrics()
   ]);
 
-  const [npmResult, githubResult, registryResult] = results;
+  const [npmResult, githubResult, registryResult, usageResult] = results;
 
   const npm =
     npmResult.status === "fulfilled" ? npmResult.value : null;
@@ -215,11 +237,14 @@ async function refreshDashboard() {
     githubResult.status === "fulfilled" ? githubResult.value : null;
   const registry =
     registryResult.status === "fulfilled" ? registryResult.value : null;
+  const usage =
+    usageResult.status === "fulfilled" ? usageResult.value : null;
 
   renderSdk(npm?.sdk);
   renderMcp(npm?.mcp);
   renderGitHub(github);
   renderRegistry(registry);
+  renderUsage(usage);
   drawChart(
     npm?.sdk?.ok ? npm.sdk.daily ?? [] : [],
     npm?.mcp?.ok ? npm.mcp.daily ?? [] : []
@@ -234,12 +259,16 @@ async function refreshDashboard() {
   if (registryResult.status === "rejected") {
     console.warn("MCP Registry indisponible:", registryResult.reason);
   }
+  if (usageResult.status === "rejected") {
+    console.warn("Télémétrie GATE indisponible:", usageResult.reason);
+  }
 
   const sourceStates = [
     Boolean(npm?.sdk?.ok),
     Boolean(npm?.mcp?.ok),
     Boolean(github),
-    Boolean(registry)
+    Boolean(registry),
+    Boolean(usage?.ok)
   ];
   const okCount = sourceStates.filter(Boolean).length;
 
@@ -259,11 +288,11 @@ async function refreshDashboard() {
     })
   );
 
-  if (okCount === 4) {
+  if (okCount === 5) {
     setText("globalStatus", "Toutes les sources ont répondu");
     $("globalStatus").className = "status-ok";
   } else if (okCount > 0) {
-    setText("globalStatus", `${okCount}/4 sources disponibles`);
+    setText("globalStatus", `${okCount}/5 sources disponibles`);
     $("globalStatus").className = "status-warn";
   } else {
     setText("globalStatus", "Sources publiques indisponibles");

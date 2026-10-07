@@ -155,32 +155,32 @@
 
           <div class="flow-arrow">→</div>
 
-          <article class="funnel-step pending-step">
+          <article class="funnel-step measured-step">
             <div class="step-top">
               <span class="step-number">3</span>
-              <span class="step-state pending-badge">À FAIRE</span>
+              <span class="step-state measured-badge">MESURÉ</span>
             </div>
             <h4>Activation</h4>
             <p>Premier usage réel de GATE.</p>
             <ul>
-              <li><span>Premier gate.verify()</span><strong>—</strong></li>
-              <li><span>Première clé API</span><strong>—</strong></li>
-              <li><span>Premier projet</span><strong>—</strong></li>
+              <li><span>Projets activés</span><strong id="activatedProjects">0</strong></li>
+              <li><span>Actifs aujourd’hui</span><strong id="activeProjectsToday">0</strong></li>
+              <li><span>Premier gate.verify()</span><strong id="firstVerifyStatus">En attente</strong></li>
             </ul>
           </article>
 
           <div class="flow-arrow">→</div>
 
-          <article class="funnel-step pending-step emphasis-step">
+          <article class="funnel-step measured-step emphasis-step">
             <div class="step-top">
               <span class="step-number">4</span>
-              <span class="step-state pending-badge">KPI CENTRAL</span>
+              <span class="step-state measured-badge">KPI CENTRAL</span>
             </div>
             <h4>Usage</h4>
             <p>Le signal produit le plus important.</p>
-            <div class="big-kpi">—</div>
-            <div class="big-kpi-label">vérifications GATE / jour</div>
-            <span class="telemetry-callout">Télémétrie service à activer</span>
+            <div class="big-kpi" id="verificationsToday">0</div>
+            <div class="big-kpi-label">vérifications GATE aujourd’hui</div>
+            <span class="telemetry-callout" id="usage30">0 vérification / 30 j</span>
           </article>
 
           <div class="flow-arrow">→</div>
@@ -226,13 +226,13 @@
 
         <article class="next-panel">
           <div class="section-kicker">PROCHAINE COUCHE</div>
-          <h3>Ce qu’il faut instrumenter pour connaître l’usage réel</h3>
+          <h3>Télémétrie GATE : infrastructure active</h3>
 
           <div class="next-item">
             <div class="next-icon">1</div>
             <div>
               <strong>Identifiant client / projet</strong>
-              <span>Une clé API ou un project_id non nominatif pour attribuer les vérifications.</span>
+              <span>Clé API hachée et project_id non nominatif pour attribuer les vérifications.</span>
             </div>
           </div>
 
@@ -240,7 +240,7 @@
             <div class="next-icon">2</div>
             <div>
               <strong>Compteur gate.verify()</strong>
-              <span>Nombre de vérifications, décision, latence et date — sans stocker les données sensibles.</span>
+              <span>Compteur actif : décision, latence et date — sans principal, actor, ressource ni paramètres.</span>
             </div>
           </div>
 
@@ -248,7 +248,7 @@
             <div class="next-icon">3</div>
             <div>
               <strong>Dashboard client</strong>
-              <span>Vérifications / jour, clients actifs, erreurs et usage par projet.</span>
+              <span>Activations, projets actifs, vérifications / jour et latence sont maintenant disponibles.</span>
             </div>
           </div>
 
@@ -267,7 +267,7 @@
           <span class="truth-icon">i</span>
           <div>
             <strong>Principe de cette page</strong>
-            <p>Afficher uniquement ce que les sources publiques permettent réellement de mesurer. Aucune “installation unique”, activation ou vérification n’est inventée.</p>
+            <p>Afficher uniquement des données mesurées. Les téléchargements viennent de npm ; les activations et vérifications viennent de la télémétrie GATE, sans stocker les identités ou contenus d’action.</p>
           </div>
         </div>
         <div class="source-links">
