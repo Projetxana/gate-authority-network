@@ -1,7 +1,7 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.Projetxana/gate-authority-network",
-  "description": "Protocol-neutral live authority-state resolution for delegated agents across trust domains, exposed through MCP.",
+  "description": "Live cross-domain authority-state resolution for delegated agents through MCP.",
   "repository": {
     "url": "https://github.com/Projetxana/gate-authority-network",
     "source": "github"
