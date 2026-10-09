@@ -8,6 +8,18 @@
 
 It resolves whether a currently valid authority path still exists at effect time using live authority state from external trust domains. GATE does **not** mint a proprietary delegation token, replace OAuth, replace your policy engine, or require MCP.
 
+
+## GATE v7 — current Developer Preview
+
+> **Current operational boundary:** one Canadian primary database, **no production regional replicas**, and no independent third-party issuer propagation SLA. `maxStalenessMs` measures primary snapshot age only. The Developer Preview is **not enterprise GA**.
+
+- [Try the real hosted two-minute sandbox](https://gate-beta-nu.vercel.app/demo.html) — actual HTTP calls on a clearly labeled **synthetic** two-path graph.
+- [Connect your own ES256 signer](https://gate-beta-nu.vercel.app/integration.html) — live GATE v7 network API, using a disposable Free project.
+- [Read: A valid signature is not live authority](https://gate-beta-nu.vercel.app/article.html).
+- [Apply for the independent developer beta](https://gate-beta-nu.vercel.app/).
+- [V7 API, topology and limitations](docs/GATE-V7-LIVE-STATUS.md).
+- [Real ES256 quickstart](docs/LIVE-ISSUER-QUICKSTART.md).
+
 ## Where GATE fits
 
 ```text
@@ -111,8 +123,8 @@ A local verifier can validate signatures, expiry, scopes and token chains. It ca
 
 ## Consistency contracts
 
-- `bounded`: edge-local verification against a signed replica lease, with caller-defined maximum staleness; stale replicas fail closed.
-- `strict`: synchronous control-plane confirmation; higher latency and lower partition availability in exchange for current-state confirmation.
+- `bounded`: live verification from the canonical primary on v7, with a bounded primary-read snapshot age; **regional replicas are not yet deployed**.
+- `strict`: canonical primary-read verification available only to eligible plans; **not** synchronous confirmation of external issuer systems.
 
 ## Repository map
 
