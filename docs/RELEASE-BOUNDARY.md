@@ -18,8 +18,8 @@ The fail-closed rule is intentional.
 
 ## Consistency
 
-- `bounded` — allow resolution from sufficiently fresh replicated state.
-- `strict` — require current confirmation from the authoritative path/control plane.
+- `bounded` — verify against a canonical primary database snapshot within the configured freshness budget. No production regional replica is currently configured.
+- `strict` — require an authoritative primary database read where the plan permits it; this does not synchronously confirm external issuer systems.
 
 The sandbox demonstrates the decision semantics but is not a production trust source.
 
@@ -57,7 +57,7 @@ Do not market `multi-hop` alone as unique.
 - public sandbox is rate-limited;
 - real external issuer adapters are still an integration track;
 - signed portable GATE receipts are not part of this release;
-- billing is not enabled.
+- billing endpoints exist, but the complete production payment and subscription lifecycle has not yet been validated.
 
 ## Release freeze
 
