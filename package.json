@@ -8,17 +8,21 @@
     "packages/sdk",
     "packages/mcp",
     "packages/http",
-    "packages/x402"
+    "packages/x402",
+    "packages/authzen",
+    "packages/a2a"
   ],
   "scripts": {
     "demo": "node examples/sdk-quickstart.mjs",
     "test": "node --test --test-concurrency=1 test/*.test.mjs test/integration/*.test.mjs",
     "check": "find . -name '*.mjs' -not -path './node_modules/*' -print0 | xargs -0 -n1 node --check",
-    "pack:check": "npm pack --dry-run --workspace @gate-avn/sdk && npm pack --dry-run --workspace @gate-avn/mcp && npm pack --dry-run --workspace @gate-avn/http && npm pack --dry-run --workspace @gate-avn/x402",
+    "pack:check": "npm pack --dry-run --workspace @gate-avn/sdk && npm pack --dry-run --workspace @gate-avn/mcp && npm pack --dry-run --workspace @gate-avn/http && npm pack --dry-run --workspace @gate-avn/x402 && npm pack --dry-run --workspace @gate-avn/authzen && npm pack --dry-run --workspace @gate-avn/a2a",
     "publish:github": "./scripts/publish-github.sh",
     "smoke:mcp:hosted": "node scripts/run-hosted-mcp-verified-effect.mjs",
     "smoke:http:hosted": "node scripts/run-hosted-http-verified-effect.mjs",
-    "smoke:x402:hosted": "node scripts/run-hosted-x402-verified-effect.mjs"
+    "smoke:x402:hosted": "node scripts/run-hosted-x402-verified-effect.mjs",
+    "smoke:authzen:hosted": "node scripts/run-hosted-authzen-verified-effect.mjs",
+    "smoke:a2a:hosted": "node scripts/run-hosted-a2a-verified-effect.mjs"
   },
   "dependencies": {
     "@modelcontextprotocol/client": "2.2.0",

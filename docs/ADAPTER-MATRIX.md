@@ -5,8 +5,8 @@
 | MCP | Tool server before handler execution | `principal`, `actor`, `action.protocol=mcp`, tool name/resource | A real tool call blocked after upstream authority loss |
 | HTTP/API | Middleware / gateway before state-changing route | `protocol=http`, method+operation, resource | ✅ POST route protected by hosted `gate.verify()` and metered as a Verified Effect |
 | x402 | Resource-server lifecycle after payment verification / before paid effect | `protocol=x402`, paid resource operation | ✅ x402 V2 lifecycle hook protected by hosted `gate.verify()` and metered as a Verified Effect |
-| AuthZEN | Alongside policy decision flow, before PEP effect | `protocol=authzen`, action/resource | Business policy permits but GATE denies stale/revoked authority |
-| A2A | Receiving task executor before side effect | `protocol=a2a`, task operation/resource | Delegated agent-to-agent task loses authority live |
+| AuthZEN | PEP-side after Authorization API decision, before effect | `protocol=authzen`, action/resource | ✅ AuthZEN 1.0 evaluation permit composed with hosted GATE live authority and network metering |
+| A2A | Receiving task executor before side effect | `protocol=a2a`, method/task resource | ✅ A2A 0.3 JSON-RPC `message/send` protected by hosted GATE and network metering |
 | AP2 / FIDO | Consume/bridge intent and delegated-authority evidence | `protocol=ap2` or source evidence mapping | Human intent evidence plus live authority verification |
 | OAuth / SSF | Source connector and resource-server integration | authority state / revocation / events | External issuer state changes GATE result without app rewrite |
 
