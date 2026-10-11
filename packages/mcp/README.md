@@ -97,3 +97,25 @@ server.registerTool('send_email', toolDefinition, async input => {
 Each completed authority decision guarding a concrete MCP effect produces one privacy-minimized **Verified Effect** event. `DENY` and `UNKNOWN / DENY` are counted as verification events but the underlying effect is never invoked.
 
 The local counter is a Stage 2 integration primitive, not billing infrastructure. Managed-network metering remains server-side.
+
+## Network Verified Effects
+
+The effect-boundary guard can persist the same privacy-minimized `gate.verified_effect` event to the managed GATE metrics plane:
+
+```js
+import { createVerifiedEffectReporter } from '@gate-avn/mcp/verified-effect-reporter';
+
+const reporter = createVerifiedEffectReporter({
+  endpoint: process.env.GATE_METRICS_URL,
+  apiKey: process.env.GATE_API_KEY
+});
+
+const guard = createMcpEffectGuard({
+  gate,
+  principal,
+  actor,
+  reporter
+});
+```
+
+The network meter stores the verification ID, protocol, normalized operation, authority/decision and serving metadata. It does not send principal, actor, resource, parameters, prompts, credentials, tokens or payload content.

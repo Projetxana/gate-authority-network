@@ -177,11 +177,15 @@
               <span class="step-number">4</span>
               <span class="step-state measured-badge">KPI CENTRAL</span>
             </div>
-            <h4>Usage</h4>
-            <p>Le signal produit le plus important.</p>
-            <div class="big-kpi" id="verificationsToday">0</div>
-            <div class="big-kpi-label">vérifications GATE aujourd’hui</div>
-            <span class="telemetry-callout" id="usage30">0 vérification / 30 j</span>
+            <h4>Verified Effects</h4>
+            <p>Autorité vérifiée immédiatement avant un effet concret.</p>
+            <div class="big-kpi" id="verifiedEffectsToday">0</div>
+            <div class="big-kpi-label">Verified Effects aujourd’hui</div>
+            <span class="telemetry-callout" id="verifiedEffects30">0 Verified Effects / 30 j</span>
+            <span class="telemetry-callout" id="verifiedEffectDecisionMix">ALLOW 0 · DENY 0 · UNKNOWN 0</span>
+            <span class="telemetry-callout" id="verifiedEffectProtocolMix">MCP 0 · HTTP 0 · x402 0</span>
+            <span class="telemetry-callout">gate.verify aujourd’hui : <strong id="verificationsToday">0</strong></span>
+            <span class="telemetry-callout" id="usage30">0 gate.verify() / 30 j</span>
             <span class="telemetry-callout" id="usageMix">Preview 0 · Pilot/paid 0</span>
           </article>
 
@@ -257,8 +261,8 @@
           <div class="next-item">
             <div class="next-icon">4</div>
             <div>
-              <strong>Base de facturation</strong>
-              <span>Le même compteur d’usage pourra alimenter les quotas et la facturation.</span>
+              <strong>Verified Effects / day</strong>
+              <span>Compteur réseau actif, idempotent par projet et protocole : la base de l’unité économique GATE.</span>
             </div>
           </div>
         </article>
@@ -269,7 +273,7 @@
           <span class="truth-icon">i</span>
           <div>
             <strong>Principe de cette page</strong>
-            <p>Afficher uniquement des données mesurées. Les téléchargements viennent de npm ; les activations et vérifications viennent de la télémétrie GATE, sans stocker les identités ou contenus d’action. Les projets sandbox sont comptés comme Developer Preview et non comme pilotes ou déploiements production.</p>
+            <p>Afficher uniquement des données mesurées. Les Verified Effects viennent du compteur réseau GATE et sont séparés du volume brut de gate.verify(). Le meter ne stocke ni principal, actor, ressource, paramètres, prompt, jeton ni contenu d’action.</p>
           </div>
         </div>
         <div class="source-links">

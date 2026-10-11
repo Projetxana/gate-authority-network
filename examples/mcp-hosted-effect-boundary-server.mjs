@@ -7,13 +7,16 @@ import {
   createMcpEffectGuard,
   createVerifiedEffectCounter
 } from '../packages/mcp/src/effect-boundary.mjs';
+import { createVerifiedEffectReporter } from '../packages/mcp/src/verified-effect-reporter.mjs';
 
 const endpoint = process.env.GATE_URL;
 const apiKey = process.env.GATE_API_KEY;
+const metricsEndpoint = process.env.GATE_METRICS_URL;
 const effectFile = process.env.GATE_EFFECT_FILE;
 
 if (!endpoint) throw new Error('GATE_URL is required');
 if (!apiKey) throw new Error('GATE_API_KEY is required');
+if (!metricsEndpoint) throw new Error('GATE_METRICS_URL is required');
 if (!effectFile) throw new Error('GATE_EFFECT_FILE is required');
 
 const gate = new GateClient({
@@ -21,17 +24,22 @@ const gate = new GateClient({
   apiKey,
   timeoutMs: 5000,
   source: 'mcp',
-  clientVersion: 'network-v1-stage3'
+  clientVersion: 'network-v1-stage4'
 });
 
 const counter = createVerifiedEffectCounter();
+const reporter = createVerifiedEffectReporter({
+  endpoint: metricsEndpoint,
+  apiKey
+});
 
 const guard = createMcpEffectGuard({
   gate,
   principal: 'user:demo',
   actor: 'agent:C@company-c',
   consistency: 'bounded',
-  counter
+  counter,
+  reporter
 });
 
 const server = new McpServer({
@@ -85,7 +93,8 @@ server.registerTool(
               executed: false,
               error: error.code,
               decision: error.decision,
-              verifiedEffect: error.verifiedEffect
+              verifiedEffect: error.verifiedEffect,
+              networkMetering: error.networkMetering ?? null
             })
           }]
         };

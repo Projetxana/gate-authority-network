@@ -7,9 +7,22 @@ import { StdioClientTransport } from '@modelcontextprotocol/client/stdio';
 
 const endpoint = process.env.GATE_URL;
 const apiKey = process.env.GATE_API_KEY;
+const metricsEndpoint = process.env.GATE_METRICS_URL;
 
 if (!endpoint) throw new Error('GATE_URL is required');
 if (!apiKey) throw new Error('GATE_API_KEY is required');
+if (!metricsEndpoint) throw new Error('GATE_METRICS_URL is required');
+
+async function verifiedEffectsToday() {
+  const response = await fetch(`${metricsEndpoint.replace(/\/$/, '')}/summary`, {
+    cache: 'no-store'
+  });
+  if (!response.ok) throw new Error(`Metrics summary HTTP ${response.status}`);
+  const body = await response.json();
+  return Number(body?.verifiedEffects?.verified_effects_today ?? 0);
+}
+
+const networkCountBefore = await verifiedEffectsToday();
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, '..');
@@ -24,6 +37,7 @@ const env = {
   ),
   GATE_URL: endpoint,
   GATE_API_KEY: apiKey,
+  GATE_METRICS_URL: metricsEndpoint,
   GATE_EFFECT_FILE: effectFile
 };
 
@@ -68,6 +82,19 @@ try {
     throw new Error('Effect callback did not execute');
   }
 
+  if (body?.networkMetering?.sent !== true || body?.networkMetering?.metered !== true) {
+    throw new Error(
+      `Verified Effect was not persisted by GATE Network: ${JSON.stringify(body?.networkMetering)}`
+    );
+  }
+
+  const networkCountAfter = await verifiedEffectsToday();
+  if (networkCountAfter < networkCountBefore + 1) {
+    throw new Error(
+      `Network Verified Effects counter did not advance: before=${networkCountBefore} after=${networkCountAfter}`
+    );
+  }
+
   const effectValue = fs.readFileSync(effectFile, 'utf8').trim();
   if (effectValue !== 'hosted-gate-verified-effect') {
     throw new Error('Effect file did not contain expected value');
@@ -91,6 +118,12 @@ try {
     servedBy: body.decision.servedBy ?? null,
     selectedPath: body.decision.selectedPath ?? null,
     verifiedEffect: body.verifiedEffect,
+    networkMetering: body.networkMetering,
+    networkCounter: {
+      before: networkCountBefore,
+      after: networkCountAfter,
+      delta: networkCountAfter - networkCountBefore
+    },
     effectExecuted: true,
     effectValue,
     counter: {

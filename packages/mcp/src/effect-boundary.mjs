@@ -63,7 +63,8 @@ export function createMcpEffectGuard({
   actor,
   consistency = 'strict',
   maxStalenessMs,
-  counter = createVerifiedEffectCounter()
+  counter = createVerifiedEffectCounter(),
+  reporter = null
 } = {}) {
   if (!gate || typeof gate.verify !== 'function') {
     throw new TypeError('gate.verify is required');
@@ -125,9 +126,15 @@ export function createMcpEffectGuard({
         region: decisionResult.region ?? null
       });
 
+      const networkMetering =
+        reporter && typeof reporter.report === 'function'
+          ? await reporter.report(verifiedEffect)
+          : null;
+
       if (decisionResult.decision !== 'ALLOW') {
         const error = new GateDeniedError(decisionResult);
         error.verifiedEffect = verifiedEffect;
+        error.networkMetering = networkMetering;
         throw error;
       }
 
@@ -136,6 +143,7 @@ export function createMcpEffectGuard({
       return {
         decision: decisionResult,
         verifiedEffect,
+        networkMetering,
         result
       };
     }

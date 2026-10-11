@@ -1,6 +1,6 @@
 {
   "name": "@gate-avn/mcp",
-  "version": "0.1.0-dev.6",
+  "version": "0.1.0-dev.7",
   "description": "MCP adapter for GATE live cross-domain delegated authority-state resolution.",
   "type": "module",
   "bin": {
@@ -46,6 +46,7 @@
   },
   "license": "Apache-2.0",
   "exports": {
-    "./effect-boundary": "./src/effect-boundary.mjs"
+    "./effect-boundary": "./src/effect-boundary.mjs",
+    "./verified-effect-reporter": "./src/verified-effect-reporter.mjs"
   }
 }

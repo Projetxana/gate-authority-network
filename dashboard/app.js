@@ -100,6 +100,7 @@ function renderUsage(data) {
   if (!data?.ok || !data?.summary) return;
 
   const s = data.summary;
+  const ve = data.verifiedEffects || {};
   const previewActivated = Number(s.preview_activated_projects || 0);
   const pilotActivated = Number(s.pilot_activated_projects || 0);
   const paidActivated = Number(s.paid_activated_projects || 0);
@@ -111,8 +112,28 @@ function renderUsage(data) {
   setText("previewActivatedProjects", formatNumber(previewActivated));
   setText("pilotActivatedProjects", formatNumber(pilotActivated));
   setText("paidActivatedProjects", formatNumber(paidActivated));
+  const verifiedToday = Number(ve.verified_effects_today || 0);
+  const verified30 = Number(ve.verified_effects_30d || 0);
+  const verifiedAllow = Number(ve.allow_30d || 0);
+  const verifiedDeny = Number(ve.deny_30d || 0);
+  const verifiedUnknown = Number(ve.unknown_30d || 0);
+  const mcp30 = Number(ve.mcp_30d || 0);
+  const http30 = Number(ve.http_30d || 0);
+  const x40230 = Number(ve.x402_30d || 0);
+
+  setText("verifiedEffectsToday", formatNumber(verifiedToday));
+  setText("verifiedEffects30", `${formatNumber(verified30)} Verified Effects / 30 j`);
+  setText(
+    "verifiedEffectDecisionMix",
+    `ALLOW ${formatNumber(verifiedAllow)} · DENY ${formatNumber(verifiedDeny)} · UNKNOWN ${formatNumber(verifiedUnknown)}`
+  );
+  setText(
+    "verifiedEffectProtocolMix",
+    `MCP ${formatNumber(mcp30)} · HTTP ${formatNumber(http30)} · x402 ${formatNumber(x40230)}`
+  );
+
   setText("verificationsToday", formatNumber(today));
-  setText("usage30", `${formatNumber(last30)} vérifications / 30 j`);
+  setText("usage30", `${formatNumber(last30)} gate.verify() / 30 j`);
   setText("usageMix", `Preview ${formatNumber(preview30)} · Pilot/paid ${formatNumber(pilotPaid30)}`);
 }
 
