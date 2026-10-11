@@ -3,7 +3,7 @@
 | Surface | Where GATE sits | Normalization target | First public proof |
 |---|---|---|---|
 | MCP | Tool server before handler execution | `principal`, `actor`, `action.protocol=mcp`, tool name/resource | A real tool call blocked after upstream authority loss |
-| HTTP/API | Middleware / gateway before state-changing route | `protocol=http`, method+operation, resource | POST/DELETE route protected by the same `gate.verify()` |
+| HTTP/API | Middleware / gateway before state-changing route | `protocol=http`, method+operation, resource | ✅ POST route protected by hosted `gate.verify()` and metered as a Verified Effect |
 | x402 | Facilitator/resource server before payment/resource effect | `protocol=x402`, settlement/resource operation | Agent payment allowed then denied after authority revocation |
 | AuthZEN | Alongside policy decision flow, before PEP effect | `protocol=authzen`, action/resource | Business policy permits but GATE denies stale/revoked authority |
 | A2A | Receiving task executor before side effect | `protocol=a2a`, task operation/resource | Delegated agent-to-agent task loses authority live |

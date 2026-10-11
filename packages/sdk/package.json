@@ -1,6 +1,6 @@
 {
   "name": "@gate-avn/sdk",
-  "version": "0.1.0-dev.3",
+  "version": "0.1.0-dev.4",
   "description": "Client for live cross-domain delegated authority-state resolution at effect time.",
   "type": "module",
   "main": "./dist/index.js",

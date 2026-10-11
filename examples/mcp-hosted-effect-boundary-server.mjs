@@ -2,12 +2,11 @@ import fs from 'node:fs';
 import { McpServer } from '@modelcontextprotocol/server';
 import { serveStdio } from '@modelcontextprotocol/server/stdio';
 import * as z from 'zod/v4';
-import { GateClient } from '@gate-avn/sdk';
+import { GateClient, createVerifiedEffectReporter } from '@gate-avn/sdk';
 import {
   createMcpEffectGuard,
   createVerifiedEffectCounter
 } from '../packages/mcp/src/effect-boundary.mjs';
-import { createVerifiedEffectReporter } from '../packages/mcp/src/verified-effect-reporter.mjs';
 
 const endpoint = process.env.GATE_URL;
 const apiKey = process.env.GATE_API_KEY;

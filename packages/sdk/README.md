@@ -83,3 +83,16 @@ This helper cannot protect an effect that bypasses it. Production enforcement mu
 ## Status
 
 Developer Preview. Not production software.
+
+## Verified Effect reporter
+
+`createVerifiedEffectReporter()` is protocol-neutral. MCP, HTTP and future adapters use it to send the same privacy-minimized `gate.verified_effect` unit to the managed GATE metrics plane.
+
+```js
+import { createVerifiedEffectReporter } from '@gate-avn/sdk';
+
+const reporter = createVerifiedEffectReporter({
+  endpoint: process.env.GATE_METRICS_URL,
+  apiKey: process.env.GATE_API_KEY
+});
+```

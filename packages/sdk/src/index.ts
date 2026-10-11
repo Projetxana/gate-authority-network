@@ -1,5 +1,5 @@
 export type GateSource = "sdk" | "mcp" | "api" | "internal" | "unknown";
-export declare const GATE_SDK_VERSION = "0.1.0-dev.3";
+export declare const GATE_SDK_VERSION = "0.1.0-dev.4";
 export declare const GATE_SANDBOX_URL = "https://ufqtoyakmrddqytrkcje.supabase.co/functions/v1/gate-sandbox";
 
 export type Consistency = "bounded" | "strict";
@@ -137,3 +137,40 @@ export declare function createGateClient(options: GateClientOptions): GateClient
 
 export interface SandboxClientOptions extends Omit<GateClientOptions, "endpoint"> { apiKey: string; }
 export declare function createSandboxClient(options: SandboxClientOptions): GateClient;
+
+export interface VerifiedEffectEvent {
+  event: "gate.verified_effect";
+  verificationId: string;
+  occurredAt?: string;
+  protocol: string;
+  operation: string;
+  authority: "VALID" | "INVALID" | "UNKNOWN" | null;
+  decision: "ALLOW" | "DENY" | "ERROR";
+  receiptVersion?: string | null;
+  consistency?: Consistency | null;
+  servedBy?: string | null;
+  region?: string | null;
+}
+
+export interface VerifiedEffectReporterOptions {
+  endpoint: string;
+  apiKey?: string;
+  timeoutMs?: number;
+  fetchImpl?: typeof fetch;
+}
+
+export interface VerifiedEffectReportResult {
+  sent: boolean;
+  metered?: boolean;
+  deduplicated?: boolean;
+  eventId?: string | null;
+  verificationId?: string;
+  reason?: string;
+}
+
+export declare function createVerifiedEffectReporter(
+  options: VerifiedEffectReporterOptions
+): {
+  enabled: boolean;
+  report(event: VerifiedEffectEvent): Promise<VerifiedEffectReportResult>;
+};
