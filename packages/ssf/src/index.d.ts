@@ -45,8 +45,9 @@ export declare function caepSessionRevokedToGateAuthorityEvent(
   options: {
     signal: ReturnType<typeof normalizeCaepSessionRevoked>;
     mapping: {
-      subjectFormat: string;
-      subjectId: string;
+      subjectFormat?: string;
+      subjectId?: string;
+      subject?: Record<string, unknown>;
       edgeId: string;
       issuerPrincipal: string;
       subjectPrincipal: string;
@@ -68,3 +69,26 @@ export declare function addSsfStreamSubject(options: any): Promise<{supported:bo
 export declare function pollSsfStream(options: any): Promise<{sets:Record<string,string>,moreAvailable:boolean}>;
 export declare function deleteSsfStream(options: any): Promise<void>;
 export declare function verifySsfSetWithJwks(token: string, options: any): {header:Record<string,any>,payload:Record<string,any>,jwk:JsonWebKey};
+
+
+export interface SsfReceiverConnectorOptions {
+  issuer?: string;
+  metadataUrl?: string;
+  accessToken?: string;
+  getAccessToken?: () => string | undefined | Promise<string | undefined>;
+  expectedAudience?: string;
+  eventsRequested?: string[];
+  description?: string;
+  requireSubject?: boolean;
+  reuseExisting?: boolean;
+  fetchImpl?: typeof fetch;
+  onEvent?: (event: any) => void | Promise<void>;
+}
+export declare function acknowledgeSsfEvents(options: any): Promise<{acknowledged:string[]}>;
+export declare function createSsfReceiverConnector(options:SsfReceiverConnectorOptions): {
+  open(): Promise<Record<string,unknown>>;
+  pollOnce(options?:{maxEvents?:number}): Promise<{events:any[];acknowledged:string[];moreAvailable:boolean}>;
+  refreshJwks(): Promise<any>;
+  close(options?:{deleteOwnedStream?:boolean}): Promise<void>;
+  inspect(): Record<string,unknown>;
+};

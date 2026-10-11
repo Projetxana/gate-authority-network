@@ -25,3 +25,20 @@ same gate.verify() call changes ALLOW → DENY
 ```
 
 The mapping is explicit because a CAEP session identifier is not automatically equivalent to a GATE delegation edge.
+
+
+## Bring Your Own SSF Transmitter
+
+```js
+import { createSsfReceiverConnector } from '@gate-avn/ssf';
+const receiver=createSsfReceiverConnector({
+  issuer:'https://identity.example.com',
+  accessToken:process.env.SSF_ACCESS_TOKEN,
+  expectedAudience:'urn:gate:receiver:prod',
+  onEvent:async verified=>{/* explicit GATE authority mapping */}
+});
+await receiver.open();
+await receiver.pollOnce();
+```
+
+The connector discovers metadata/JWKS, creates or reuses an audience-bound POLL stream, verifies RS256/ES256 SETs, normalizes CAEP session revocation and ACKs only after the handler succeeds.

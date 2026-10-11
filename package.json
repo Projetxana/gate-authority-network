@@ -29,7 +29,8 @@
     "smoke:ssf:caep": "node scripts/run-signed-ssf-caep-smoke.mjs",
     "smoke:ssf:hosted": "node scripts/run-hosted-ssf-ingestion.mjs",
     "smoke:ssf:canonical": "node scripts/run-canonical-ssf-project-bridge.mjs",
-    "smoke:ssf:independent": "node scripts/run-independent-caepdev-interop.mjs"
+    "smoke:ssf:independent": "node scripts/run-independent-caepdev-interop.mjs",
+    "example:ssf:byo": "node examples/ssf-byo-receiver.mjs"
   },
   "dependencies": {
     "@modelcontextprotocol/client": "2.2.0",

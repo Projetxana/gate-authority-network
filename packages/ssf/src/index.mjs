@@ -242,17 +242,38 @@ function audienceMatches(actual, expected) {
   return Array.isArray(actual) ? actual.includes(expected) : actual === expected;
 }
 
-export async function discoverSsfTransmitter({ issuer, accessToken, fetchImpl = globalThis.fetch } = {}) {
-  const normalized = normalizeIssuer(issuer);
-  if (!normalized.startsWith('https://')) throw new TypeError('SSF transmitter issuer must use https');
-  const metadataUrl = `${normalized}/.well-known/ssf-configuration`;
-  const r = await fetchImpl(metadataUrl, { headers: accessToken ? { authorization: `Bearer ${accessToken}` } : {} });
+export async function discoverSsfTransmitter({
+  issuer,
+  metadataUrl,
+  accessToken,
+  fetchImpl = globalThis.fetch
+} = {}) {
+  let resolvedMetadataUrl;
+  if (metadataUrl) {
+    const u = new URL(String(metadataUrl));
+    if (u.protocol !== 'https:') throw new TypeError('SSF metadata URL must use https');
+    resolvedMetadataUrl = u.toString();
+  } else {
+    const normalized = normalizeIssuer(issuer);
+    if (!normalized.startsWith('https://')) throw new TypeError('SSF transmitter issuer must use https');
+    resolvedMetadataUrl = `${normalized}/.well-known/ssf-configuration`;
+  }
+  const r = await fetchImpl(resolvedMetadataUrl, {
+    headers: accessToken ? { authorization: `Bearer ${accessToken}` } : {}
+  });
   if (!r.ok) throw new Error(`ssf_metadata_http_${r.status}`);
   const metadata = await r.json();
   if (!metadata?.issuer || !metadata?.jwks_uri || !metadata?.configuration_endpoint || !Array.isArray(metadata?.delivery_methods_supported)) {
     throw new Error('invalid_ssf_transmitter_metadata');
   }
-  return { metadataUrl, metadata };
+  if (issuer && normalizeIssuer(metadata.issuer) !== normalizeIssuer(issuer)) {
+    throw new Error('ssf_metadata_issuer_mismatch');
+  }
+  for (const [name,value] of Object.entries({issuer:metadata.issuer,jwks_uri:metadata.jwks_uri,configuration_endpoint:metadata.configuration_endpoint})) {
+    const u = new URL(String(value));
+    if (u.protocol !== 'https:') throw new Error(`ssf_metadata_${name}_must_use_https`);
+  }
+  return { metadataUrl: resolvedMetadataUrl, metadata };
 }
 
 export async function fetchSsfJwks({ jwksUri, accessToken, fetchImpl = globalThis.fetch } = {}) {
@@ -277,7 +298,12 @@ export async function createSsfPollStream({ metadata, accessToken, eventsRequest
 }
 
 
-export async function getExistingSsfStream({ metadata, accessToken, fetchImpl = globalThis.fetch } = {}) {
+export async function getExistingSsfStream({
+  metadata,
+  accessToken,
+  expectedAudience,
+  fetchImpl = globalThis.fetch
+} = {}) {
   if (!metadata?.configuration_endpoint) throw new TypeError('SSF configuration endpoint is required');
   const r = await fetchImpl(metadata.configuration_endpoint, {
     headers: accessToken ? { authorization: `Bearer ${accessToken}` } : {}
@@ -285,10 +311,9 @@ export async function getExistingSsfStream({ metadata, accessToken, fetchImpl = 
   if (!r.ok) throw new Error(`ssf_stream_get_http_${r.status}:${await r.text()}`);
   const body = await r.json();
   const candidates = Array.isArray(body) ? body : (Array.isArray(body?.streams) ? body.streams : [body]);
-  const stream = candidates.find(x => x?.delivery?.method === SSF_POLL_DELIVERY) || candidates[0];
-  if (!stream?.stream_id || stream?.delivery?.method !== SSF_POLL_DELIVERY || !stream?.delivery?.endpoint_url) {
-    throw new Error('invalid_existing_ssf_poll_stream');
-  }
+  const pollStreams = candidates.filter(x => x?.delivery?.method === SSF_POLL_DELIVERY && x?.stream_id && x?.delivery?.endpoint_url);
+  const stream = expectedAudience ? pollStreams.find(x => audienceMatches(x?.aud, expectedAudience)) : pollStreams[0];
+  if (!stream) throw new Error(expectedAudience ? 'ssf_existing_stream_audience_not_found' : 'invalid_existing_ssf_poll_stream');
   return stream;
 }
 
@@ -309,7 +334,12 @@ export async function pollSsfStream({ stream, accessToken, ack = [], maxEvents =
   const r = await fetchImpl(endpoint, {
     method: 'POST',
     headers: { 'content-type': 'application/json', ...(accessToken ? { authorization: `Bearer ${accessToken}` } : {}) },
-    body: JSON.stringify({ stream_id: stream.stream_id, max_events: maxEvents, ack, returnImmediately: true })
+    body: JSON.stringify({
+      stream_id: stream.stream_id,
+      max_events: maxEvents,
+      ...(Array.isArray(ack) && ack.length ? { ack } : {}),
+      returnImmediately: true
+    })
   });
   if (!r.ok) throw new Error(`ssf_poll_http_${r.status}:${await r.text()}`);
   const body = await r.json();
@@ -355,4 +385,112 @@ export function verifySsfSetWithJwks(token, { jwks, issuer, audience, nowSec = M
   const ok = verifySetSignature(header.alg, key, `${parts[0]}.${parts[1]}`, Buffer.from(parts[2], 'base64url'));
   if (!ok) throw new Error('invalid_set_signature');
   return { header, payload, jwk };
+}
+
+export async function acknowledgeSsfEvents({ stream, accessToken, ack, fetchImpl = globalThis.fetch } = {}) {
+  const endpoint = stream?.delivery?.endpoint_url;
+  if (!endpoint) throw new TypeError('SSF poll endpoint is required');
+  if (!Array.isArray(ack) || !ack.length) return { acknowledged: [] };
+  const r = await fetchImpl(endpoint, {
+    method: 'POST',
+    headers: { 'content-type':'application/json', ...(accessToken ? {authorization:`Bearer ${accessToken}`} : {}) },
+    body: JSON.stringify({ stream_id:stream.stream_id, ack, returnImmediately:true })
+  });
+  if (!r.ok) throw new Error(`ssf_ack_http_${r.status}:${await r.text()}`);
+  return { acknowledged:[...ack] };
+}
+
+function resolveReceiverAudience(stream, expectedAudience) {
+  const actual = stream?.aud;
+  if (expectedAudience && !audienceMatches(actual, expectedAudience)) throw new Error('ssf_stream_audience_mismatch');
+  if (expectedAudience) return expectedAudience;
+  if (typeof actual === 'string' && actual) return actual;
+  if (Array.isArray(actual) && actual.length === 1) return actual[0];
+  throw new Error('ssf_stream_audience_required');
+}
+
+export function createSsfReceiverConnector({
+  issuer,
+  metadataUrl,
+  accessToken,
+  getAccessToken,
+  expectedAudience,
+  eventsRequested = [CAEP_SESSION_REVOKED],
+  description = 'GATE BYO SSF receiver',
+  requireSubject = true,
+  reuseExisting = true,
+  fetchImpl = globalThis.fetch,
+  onEvent
+} = {}) {
+  if (!issuer && !metadataUrl) throw new TypeError('SSF issuer or metadataUrl is required');
+  if (getAccessToken !== undefined && typeof getAccessToken !== 'function') throw new TypeError('getAccessToken must be a function');
+  if (onEvent !== undefined && typeof onEvent !== 'function') throw new TypeError('onEvent must be a function');
+
+  let discovery=null, jwks=null, stream=null, receiverAudience=null, streamOwned=false;
+  const seen=new Set(), seenOrder=[];
+  const remember=jti=>{ if(seen.has(jti))return; seen.add(jti); seenOrder.push(jti); while(seenOrder.length>10000) seen.delete(seenOrder.shift()); };
+  const token=async()=>{ const v=getAccessToken ? await getAccessToken() : accessToken; if(v!=null && typeof v!=='string') throw new TypeError('SSF access token must be a string'); return v || undefined; };
+
+  async function refreshJwks() {
+    jwks = await fetchSsfJwks({ jwksUri:discovery.metadata.jwks_uri, accessToken:await token(), fetchImpl });
+    return jwks;
+  }
+
+  async function open() {
+    const t=await token();
+    discovery=await discoverSsfTransmitter({issuer,metadataUrl,accessToken:t,fetchImpl});
+    await refreshJwks();
+    try {
+      stream=await createSsfPollStream({metadata:discovery.metadata,accessToken:t,eventsRequested,description,fetchImpl});
+      streamOwned=true;
+    } catch(e) {
+      const conflict=String(e?.message||e).startsWith('ssf_stream_create_http_409:');
+      if(!reuseExisting || !conflict) throw e;
+      stream=await getExistingSsfStream({metadata:discovery.metadata,accessToken:t,expectedAudience,fetchImpl});
+      streamOwned=false;
+    }
+    receiverAudience=resolveReceiverAudience(stream,expectedAudience);
+    return inspect();
+  }
+
+  async function verifyIncomingSet(set) {
+    const opts={jwks,issuer:discovery.metadata.issuer,audience:receiverAudience,requireSubject};
+    try { return verifySsfSetWithJwks(set,opts); }
+    catch(e) {
+      if(e?.message!=='set_signing_key_not_found') throw e;
+      await refreshJwks();
+      return verifySsfSetWithJwks(set,{...opts,jwks});
+    }
+  }
+
+  async function pollOnce({maxEvents=50}={}) {
+    if(!stream || !discovery || !jwks) throw new Error('ssf_receiver_not_open');
+    const t=await token();
+    const polled=await pollSsfStream({stream,accessToken:t,maxEvents,fetchImpl});
+    const events=[], ack=[];
+    for(const [jti,set] of Object.entries(polled.sets)) {
+      const verified=await verifyIncomingSet(set);
+      const eventTypes=Object.keys(verified.payload.events||{});
+      const signal=verified.payload.events?.[CAEP_SESSION_REVOKED] ? normalizeCaepSessionRevoked(verified.payload) : null;
+      const duplicate=seen.has(jti);
+      const envelope={jti,duplicate,transmitterIssuer:discovery.metadata.issuer,metadataUrl:discovery.metadataUrl,streamId:stream.stream_id,audience:receiverAudience,signingAlg:verified.header.alg,signingKeyId:verified.header.kid,eventTypes,signal,header:verified.header,payload:verified.payload};
+      if(!duplicate && onEvent) { await onEvent(envelope); remember(jti); }
+      if(onEvent) ack.push(jti);
+      events.push(envelope);
+    }
+    if(onEvent && ack.length) await acknowledgeSsfEvents({stream,accessToken:t,ack,fetchImpl});
+    return {events,acknowledged:onEvent?ack:[],moreAvailable:polled.moreAvailable};
+  }
+
+  async function close({deleteOwnedStream=false}={}) {
+    if(deleteOwnedStream && streamOwned && stream && discovery) {
+      await deleteSsfStream({metadata:discovery.metadata,streamId:stream.stream_id,accessToken:await token(),fetchImpl});
+    }
+  }
+
+  function inspect() {
+    return {state:stream?'open':'closed',issuer:discovery?.metadata?.issuer??issuer??null,metadataUrl:discovery?.metadataUrl??metadataUrl??null,streamId:stream?.stream_id??null,audience:receiverAudience,deliveryMethod:stream?.delivery?.method??null,eventsRequested:[...eventsRequested],requireSubject,streamOwned,reuseExisting,hasEventHandler:Boolean(onEvent)};
+  }
+
+  return {open,pollOnce,refreshJwks,close,inspect};
 }
