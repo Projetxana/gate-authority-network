@@ -1,75 +1,99 @@
-# Hosted GATE source-freshness migration plan
+# Hosted GATE Source Freshness — RC1 Migration Plan
 
-Status: design only — **not applied** to the public Supabase project.
+Status: canary semantics validated; **not promoted to the public v7 network**.
 
-The current hosted v7 already has hard `valid_until` on `gate_live_edges`, but it does not track a source-global contiguous event sequence or signed issuer checkpoint freshness. `gate_authority_snapshot_v1` currently returns graph state + issuer trust state only.
+The hosted v7 already has hard `valid_until` on `gate_live_edges`. It does not yet expose the RC1 combination of source-global sequence continuity, signed issuer checkpoints, receipt v2, and signing-key lifecycle windows.
 
-## New state table
+## Versioning rule
 
-Proposed table: `gate_authority_source_state`
+Do not mutate v7 semantics in place.
 
-```sql
-create table public.gate_authority_source_state (
-  project_id uuid not null references public.gate_projects(id) on delete cascade,
-  authority_issuer_id uuid not null references public.gate_authority_issuers(id) on delete cascade,
-  accepted_source_seq bigint not null default 0 check (accepted_source_seq >= 0),
-  checkpoint_source_seq bigint,
-  checkpoint_last_ts timestamptz,
-  checkpoint_method text,
-  checkpoint_not_after timestamptz,
-  last_refresh_at timestamptz,
-  last_error text,
-  updated_at timestamptz not null default now(),
-  primary key (project_id, authority_issuer_id)
-);
-```
+Introduce versioned state and RPC/function surfaces, validate them in canary, then promote deliberately.
 
-This table is internal control-plane state. Do not expose it directly through the public Data API.
+## Source state
 
-## Event schema change
-
-Authority events need an issuer-global `source_sequence` in addition to the existing edge-local `sequence`.
-
-Current:
+Target internal state:
 
 ```text
-edge-local sequence
+project_id
+authority_issuer_id
+accepted_source_seq
+checkpoint_source_seq
+checkpoint_last_ts
+checkpoint_method
+checkpoint_not_after
+last_refresh_at
+last_error
+updated_at
 ```
 
-Target:
+`accepted_source_seq` is the highest **contiguous** authority-event sequence accepted by GATE.
+
+`checkpoint_source_seq` is the latest verified issuer checkpoint sequence received by GATE.
+
+These are not the issuer's invisible private current state.
+
+## Event ingestion
+
+Authority events carry both:
 
 ```text
-sequence        = ordering for this edge
-source_sequence = contiguous ordering for this issuer source
+sequence        = edge-local ordering
+source_sequence = issuer/source-global ordering
 ```
 
-The hosted ingest RPC should reject:
+Ingestion rules:
 
 ```text
-source_sequence <= accepted_source_seq   -> stale/replay
-source_sequence > accepted_source_seq+1  -> source_sequence_gap
+source_sequence <= accepted_source_seq   -> stale/replay reject
+source_sequence > accepted_source_seq+1  -> source_sequence_gap reject
+source_sequence = accepted_source_seq+1  -> eligible for acceptance
 ```
 
-A gap must not be silently skipped.
+Never advance `accepted_source_seq` across a hole.
 
-## Signed checkpoint endpoint
+## Signed checkpoint
 
-Each live issuer adapter should provide or derive an authenticated checkpoint equivalent to:
+A checkpoint is issuer-authenticated and includes:
 
 ```json
 {
-  "last_seq": 8421,
-  "last_ts": "2026-10-10T16:41:03Z",
+  "iss": "issuer",
+  "aud": "gate",
+  "jti": "...",
+  "iat": 1791650403,
+  "checkpoint_seq": 8421,
+  "last_ts": "...",
   "method": "signed-checkpoint",
-  "not_after": "2026-10-10T16:41:08Z"
+  "not_after": "..."
 }
 ```
 
-The checkpoint must be cryptographically attributable to the issuer/trust domain. A timestamp produced by GATE itself is not issuer freshness.
+A GATE-generated timestamp is not source freshness.
+
+## Signing-key lifecycle
+
+The hosted source adapter/trust state must support:
+
+```text
+kid
+status = standby | active | retired | revoked
+valid_from
+valid_until
+```
+
+Verification must bind artifact `iat` to the key lifecycle window.
+
+- pre-activation artifact -> reject;
+- post-retirement artifact -> reject;
+- historical in-window artifact under graceful retirement -> verify;
+- emergency revoked key -> reject immediately.
+
+Key rotation should support an overlap window without making pre-activation artifacts valid retroactively.
 
 ## Snapshot v2
 
-Do not mutate `gate_authority_snapshot_v1` in place. Add a v2 RPC that returns:
+Add a versioned authority snapshot that includes:
 
 ```text
 snapshot_at
@@ -80,93 +104,70 @@ issuer_trust_states
 issuer_source_states
 ```
 
-Each source state returned to the verifier should include:
+Per source:
 
 ```text
 authority_issuer_id
 source
 accepted_seq
-last_seq
+checkpoint_seq
 last_ts
 method
 not_after
-freshness
-freshness_reason
+state = FRESH | STALE | UNKNOWN
+reason
 ```
 
-The snapshot remains atomic from GATE's database perspective, but the receipt must clearly say that source freshness came from issuer-derived checkpoints.
+The atomic database snapshot answers what GATE currently stores. The source state explains what issuer evidence GATE has actually received.
 
-## Verification semantics
+## Receipt v2
 
-For every candidate path:
+Hosted verification should emit `gate.authority-receipt.v2` and retain old freshness fields only as compatibility aliases during migration.
 
-1. issuer trust must be active;
-2. edge status must be active;
-3. hard `valid_until` must not have expired;
-4. the source state for each edge must be `FRESH` when fresh authority is required.
-
-Path outcome:
-
-```text
-revoked / hard-expired         -> INVALID
-source STALE / UNKNOWN         -> UNKNOWN
-all checks fresh and active    -> VALID
-```
-
-If one path is unknown but another independent path is fully fresh and valid, return `ALLOW` using the fresh path.
-
-## Receipt change
-
-Replace the ambiguous single freshness concept with:
+Receipt evidence must include:
 
 ```json
 {
-  "replicaFreshness": {
-    "scope": "gate-primary-or-replica",
-    "fresh": true
-  },
-  "sourceFreshness": [
-    {
-      "source": "issuer-a",
-      "lastSeq": 8421,
-      "acceptedSeq": 8421,
-      "lastTs": "...",
-      "method": "signed-checkpoint",
-      "freshness": "FRESH"
-    }
-  ]
+  "issuerCurrentStateIncluded": false,
+  "signedSourceEvidence": true,
+  "sequenceContinuityVerified": true,
+  "hardExpiryEnforced": true
 }
 ```
 
-Keep the current v7 `freshness` field only as a deprecated compatibility alias until the SDK/API major preview change is complete.
+Bounded decisions also include `gateReplica` freshness separately from source freshness.
 
 ## Strict vs bounded
 
 ### strict
 
-Before deciding, synchronously refresh the issuer checkpoint(s) required by candidate paths. Failure to refresh a required source is `UNKNOWN / DENY`.
+Synchronously refresh required issuer checkpoints before deciding. Refresh failure for a required source is `UNKNOWN / DENY` unless a fully fresh independent path survives.
 
 ### bounded
 
-Use cached issuer checkpoints only while their issuer-derived `not_after` is still valid. The GATE snapshot/replica lease must also be valid.
+Use replicated issuer checkpoint state only while the source checkpoint lease and GATE replica lease are both valid.
 
-## Offline rule
+## Hosted canary findings now required by promotion
 
-The hosted v7 already requires `valid_until` for ACTIVE authority events. Preserve that rule and make its purpose explicit:
+The isolated canaries validated:
 
-> hard expiry is the maximum authority lifetime when no revocation signal can be received.
+- ES256 signed checkpoints/events;
+- tamper, replay, wrong issuer/audience/binding/kid rejection;
+- source gap detection;
+- out-of-order event handling;
+- contiguous recovery;
+- alternate-path preservation;
+- no-fresh-path -> `UNKNOWN / DENY`;
+- offline checkpoint expiry;
+- hard `valid_until` expiry;
+- key activation window, overlap, retirement and emergency revocation;
+- receipt refusal to claim issuer state that was not received.
 
-Do not extend `valid_until` locally without a new issuer-authenticated event.
+## Promotion sequence
 
-## Canary rollout
-
-1. Add new table/RPCs under versioned names.
-2. Deploy a separate `gate-network-source-freshness-canary` function.
-3. Use synthetic issuer adapters with independent event and checkpoint channels.
-4. Deliberately withhold a revoke event while allowing checkpoint refresh.
-5. Confirm local graph remains unchanged but canary returns `UNKNOWN / DENY` from `source_sequence_lag`.
-6. Confirm a fully fresh alternate path still permits `ALLOW`.
-7. Confirm disconnected source becomes `UNKNOWN` when its checkpoint lease expires.
-8. Confirm hard `valid_until` expiry produces `INVALID / DENY`.
-9. Only after QA, wire the public SDK to an opt-in preview endpoint.
-10. Do not replace public v7 until the full regression suite passes.
+1. create versioned hosted schema/RPCs;
+2. deploy an RC1 preview function beside v7;
+3. run the adversarial suite against the preview function;
+4. compare hosted receipt bytes/semantics with SDK RC1 types;
+5. invite external adversarial review;
+6. only then promote the new semantics to the public endpoint.

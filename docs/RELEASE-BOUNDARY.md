@@ -1,94 +1,69 @@
-# GATE Developer Preview — Release Boundary
+# GATE Developer Preview — Source Freshness RC1 Boundary
 
-This document freezes the intended public contract for the Developer Preview and records the next correctness boundary before another public release.
+## Public question
 
-## Stable public semantics
+`gate.verify()` answers:
 
-`gate.verify()` answers one narrow question:
+> Does a sufficiently fresh authority path from the principal to the actor still exist now under the requested consistency contract?
 
-> Does a sufficiently fresh authority path from the principal to the actor still exist now?
+Results:
 
-The public result model is:
+- `VALID / ALLOW` — at least one sufficiently fresh live path exists.
+- `INVALID / DENY` — all known paths are revoked, invalid, or hard-expired.
+- `UNKNOWN / DENY` — GATE cannot establish sufficiently fresh authority state.
 
-- `VALID / ALLOW` — at least one sufficiently fresh live authority path exists.
-- `INVALID / DENY` — known authority paths are revoked, invalid or hard-expired.
-- `UNKNOWN / DENY` — GATE cannot establish sufficiently fresh authority state for the requested consistency contract.
+## RC1 correctness boundary
 
-The fail-closed rule is intentional.
+The next preview must keep these independent:
 
-## Freshness boundary
+- `replicaFreshness` — GATE's own copy;
+- `sourceFreshness` — received and verified issuer evidence;
+- `not_after` — hard authority lifetime;
+- signing-key lifecycle — whether the signer was authorized at artifact issue time.
 
-The next preview must distinguish:
+No field may imply knowledge of an issuer change that GATE did not observe.
 
-- `replicaFreshness` — freshness of GATE's own replicated state;
-- `sourceFreshness` — freshness of issuer-derived authority state;
-- hard delegation `not_after` — maximum offline lifetime of an authority edge.
+## Receipt contract
 
-A current GATE database read must never be described as proof that an external issuer is current.
+The next preview uses `gate.authority-receipt.v2` as the structured decision receipt. It must state:
 
-## Consistency
+```text
+issuerCurrentStateIncluded = false
+```
 
-Current public v7 behavior:
+The receipt includes source evidence from evaluated paths, selected-path provenance, replica freshness when relevant, sequence-continuity status, and hard-expiry enforcement.
 
-- `bounded` — verify against a canonical primary database snapshot within the configured GATE snapshot freshness budget.
-- `strict` — require an authoritative primary database read where the plan permits it; this does not synchronously confirm external issuer systems.
+Receipt v2 is not yet a portable GATE-signed proof format.
 
-Next-preview target:
+## Source sequence contract
 
-- `bounded` — require both a fresh GATE replica lease and unexpired issuer-derived source freshness evidence;
-- `strict` — synchronously refresh required issuer checkpoints before deciding.
+Source events must be accepted contiguously. If `acceptedSeq=17` and event 19 arrives before event 18, event 19 is rejected. The source remains unresolved until continuity is restored.
 
-Until that target is deployed, public documentation must retain the v7 limitation explicitly.
+## Key lifecycle contract
+
+- standby key -> reject;
+- pre-activation artifact -> reject, even after later activation;
+- active key in-window -> accept;
+- graceful retirement -> preserve historical in-window artifacts;
+- post-retirement artifact -> reject;
+- emergency-revoked key -> reject immediately.
+
+## Current v7 boundary
+
+The public v7 network remains unchanged during RC1 work. Its `strict` mode is still a canonical GATE primary read and does not synchronously prove external issuer freshness.
+
+## Promotion gates
+
+Before promoting RC1 semantics to the public network:
+
+- local full repository CI must be green;
+- hosted migration must be versioned rather than mutating v7 snapshot semantics in place;
+- signed issuer checkpoints/events must be validated in hosted canary;
+- sequence gaps, replay, reorder, channel loss, hard expiry, alternate paths and signing-key lifecycle must be reproducible;
+- SDK types and receipt v2 must match the hosted response;
+- docs must preserve the W1/W2 information boundary;
+- at least one external reviewer should be invited to find an unjustified `ALLOW`.
 
 ## Product boundary
 
-GATE is a **live authority-state resolver**, not:
-
-- a user/agent authentication product;
-- a credential issuer;
-- a business-policy PDP;
-- an API/MCP gateway;
-- a capability-policy replacement;
-- a portable signed-proof format yet.
-
-MCP support is an adapter. The core API remains protocol-neutral.
-
-## Release differentiators
-
-The release should be evaluated on the combination of:
-
-1. upstream revocation propagation;
-2. issuer-derived source freshness;
-3. alternate-path preservation;
-4. multi-hop path resolution;
-5. cross-domain/federated issuer state;
-6. explicit `VALID / INVALID / UNKNOWN` fail-closed semantics;
-7. hard expiry for offline authority;
-8. effect-time verification;
-9. protocol-neutral integration.
-
-Do not market `multi-hop` alone as unique.
-
-## Developer Preview limitations
-
-- no production SLA;
-- hosted sandbox authority graph is synthetic;
-- sandbox keys expire;
-- public sandbox is rate-limited;
-- real external issuer adapters are still an integration track;
-- signed portable GATE receipts are not part of the current public release;
-- current v7 does not prove upstream issuer freshness;
-- billing endpoints exist, but the complete production payment and subscription lifecycle has not yet been validated.
-
-## Release freeze
-
-Before the next major public article/loud launch, require:
-
-- issuer-plane stale-ALLOW fixture;
-- signed source checkpoint/sequence test;
-- disconnected-source fail-closed test;
-- hard `not_after` expiry test;
-- alternate-path regression tests;
-- receipt fields that separate source freshness from GATE replica freshness.
-
-The next validation target is correctness under delayed/missing upstream state, not feature count.
+GATE remains a live authority-state resolver, not an IdP, credential issuer, business-policy PDP, API gateway, payment consent manager, or portable proof format.

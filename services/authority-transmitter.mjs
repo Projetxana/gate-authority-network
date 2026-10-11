@@ -29,6 +29,8 @@ const templates = domain==='principal'
 if(!templates.size) throw new Error(`unsupported AUTHORITY_DOMAIN: ${domain}`);
 
 const {privateKey,publicJwk}=generateEs256KeyPair({kid:`${domain}-signing`});
+const signingKeyActivatedAt=new Date(Math.floor(Date.now()/1000)*1000).toISOString();
+const signingPublicJwk={...publicJwk,gate_status:'active',gate_valid_from:signingKeyActivatedAt};
 const edgeSeq=new Map();
 let sourceSequence=0;
 const eventType='https://gate.example/events/authority-edge-state';
@@ -37,19 +39,21 @@ function nowSec(){return Math.floor(Date.now()/1000)}
 function entityConfig(){
   const now=nowSec();
   return signJwt({
-    header:{alg:'ES256',kid:publicJwk.kid,typ:'entity-statement+jwt'},
-    payload:{iss:issuer,sub:issuer,iat:now,exp:now+3600,jwks:{keys:[publicJwk]},metadata:{gate_authority_issuer:{ssf_configuration_uri:`${issuer}/.well-known/ssf-configuration`}}},
+    header:{alg:'ES256',kid:signingPublicJwk.kid,typ:'entity-statement+jwt'},
+    payload:{iss:issuer,sub:issuer,iat:now,exp:now+3600,jwks:{keys:[signingPublicJwk]},metadata:{gate_authority_issuer:{ssf_configuration_uri:`${issuer}/.well-known/ssf-configuration`}}},
     privateKey
   });
 }
 function issueCheckpoint(){
   const nowMs=Date.now();
   return signJwt({
-    header:{alg:'ES256',kid:publicJwk.kid,typ:'gate-source-checkpoint+jwt'},
+    header:{alg:'ES256',kid:signingPublicJwk.kid,typ:'gate-source-checkpoint+jwt'},
     payload:{
       iss:issuer,
       aud:gateUrl,
       iat:nowSec(),
+      jti:crypto.randomUUID(),
+      checkpoint_seq:sourceSequence,
       last_seq:sourceSequence,
       last_ts:new Date(nowMs).toISOString(),
       method:'signed-checkpoint',
@@ -64,7 +68,7 @@ function issueSet({edgeId,status,reason=null,sequence=null,validForMs=defaultDel
   sourceSequence+=1;
   const nowMs=Date.now();
   const now=Math.floor(nowMs/1000);
-  return signJwt({header:{alg:'ES256',kid:publicJwk.kid,typ:'secevent+jwt'},payload:{
+  return signJwt({header:{alg:'ES256',kid:signingPublicJwk.kid,typ:'secevent+jwt'},payload:{
     iss:issuer,aud:gateUrl,iat:now,jti:crypto.randomUUID(),sub:`urn:gate:authority-edge:${edgeId}`,
     events:{[eventType]:{
       edge_id:edgeId,
@@ -82,7 +86,7 @@ function issueSet({edgeId,status,reason=null,sequence=null,validForMs=defaultDel
 async function emit(body){const set=issueSet(body);let gate;try{gate=await pushSet(`${gateUrl}/Events`,set)}catch(e){gate={error:e.message,body:e.body}}return {set,gate,sourceSequence}}
 const server=http.createServer(async(req,res)=>{
   if(req.method==='GET'&&req.url==='/health') return sendJson(res,200,{ok:true,domain,sourceSequence,sourceLeaseTtlMs});
-  if(req.method==='GET'&&req.url==='/jwks.json') return sendJson(res,200,{keys:[publicJwk]});
+  if(req.method==='GET'&&req.url==='/jwks.json') return sendJson(res,200,{keys:[signingPublicJwk]});
   if(req.method==='GET'&&req.url==='/.well-known/openid-federation'){
     const body=entityConfig(); res.writeHead(200,{'content-type':'application/entity-statement+jwt','content-length':Buffer.byteLength(body)}); return res.end(body);
   }

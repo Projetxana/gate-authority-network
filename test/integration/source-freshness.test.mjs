@@ -136,3 +136,42 @@ test('bounded edge carries issuer-source freshness separately from replica fresh
     await stop(edge);await stop(n.txB);await stop(n.txA);await stop(n.principal);await stop(n.control);await stop(n.trust);
   }
 });
+
+test('source sequence skipping is rejected until missing events arrive contiguously',async()=>{
+  const n=await buildNetwork({sourceLeaseTtlMs:600,sourcePollMs:20});
+  try{
+    await seedTwoPaths(n);
+
+    const seq2=await postJson(`${n.txA.url}/demo/sign-only`,{edgeId:'edge-agent-a-agent-c',status:'REVOKED',reason:'seq2_withheld'});
+    const seq3=await postJson(`${n.txA.url}/demo/sign-only`,{edgeId:'edge-agent-a-agent-c',status:'ACTIVE',reason:'seq3_after_gap'});
+
+    await assert.rejects(
+      pushSet(`${n.control.url}/Events`,seq3.set),
+      error=>error?.body?.description==='source_sequence_gap'
+    );
+
+    await sleep(60);
+    let duringGap=await verify(n);
+    assert.equal(duringGap.decision,'ALLOW');
+    assert.equal(duringGap.validPathCount,1);
+    const staleA=duringGap.receipt.freshness.sources.find(x=>x.source===n.txA.url);
+    assert.equal(staleA.state,'STALE');
+    assert.equal(staleA.reason,'event_sequence_gap');
+
+    await pushSet(`${n.control.url}/Events`,seq2.set);
+    await assert.rejects(
+      pushSet(`${n.control.url}/Events`,seq2.set),
+      error=>error?.body?.description==='set_replay_detected'
+    );
+
+    await pushSet(`${n.control.url}/Events`,seq3.set);
+    const reconciled=await verify(n);
+    assert.equal(reconciled.decision,'ALLOW');
+    assert.equal(reconciled.validPathCount,2);
+    const freshA=reconciled.receipt.freshness.sources.find(x=>x.source===n.txA.url);
+    assert.equal(freshA.state,'FRESH');
+    assert.equal(freshA.checkpointSeq,freshA.acceptedSeq);
+  }finally{
+    await stop(n.txB);await stop(n.txA);await stop(n.principal);await stop(n.control);await stop(n.trust);
+  }
+});

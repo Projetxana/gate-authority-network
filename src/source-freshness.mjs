@@ -22,51 +22,64 @@ export function evaluateSourceFreshness(state, { nowMs = Date.now() } = {}) {
   if (!state) {
     return {
       source: null,
+      checkpointSeq: null,
       lastSeq: null,
       acceptedSeq: null,
       lastTs: null,
       method: null,
       notAfterMs: null,
+      checkpointAgeMs: null,
+      state: 'UNKNOWN',
       freshness: 'UNKNOWN',
       reason: 'source_checkpoint_missing'
     };
   }
 
-  const lastSeq = toSeq(state.lastSeq ?? state.last_seq ?? state.issuerLastSeq);
+  const checkpointSeq = toSeq(
+    state.checkpointSeq ?? state.checkpoint_seq ?? state.lastSeq ?? state.last_seq ?? state.issuerLastSeq
+  );
   const acceptedSeq = toSeq(state.acceptedSeq ?? state.accepted_seq ?? state.localAcceptedSeq);
   const lastTs = state.lastTs ?? state.last_ts ?? null;
   const notAfterMs = toMs(state.notAfterMs ?? state.not_after_ms ?? state.notAfter);
   const method = state.method ?? 'unknown';
   const source = state.source ?? null;
+  const lastError = state.lastError ?? state.last_error ?? null;
 
   let freshness = 'FRESH';
   let reason = null;
 
-  if (lastSeq == null || acceptedSeq == null || notAfterMs == null) {
+  if (lastError) {
+    freshness = 'UNKNOWN';
+    reason = 'source_refresh_failed';
+  } else if (checkpointSeq == null || acceptedSeq == null || notAfterMs == null) {
     freshness = 'UNKNOWN';
     reason = 'source_checkpoint_incomplete';
   } else if (nowMs > notAfterMs) {
-    freshness = 'UNKNOWN';
-    reason = 'source_checkpoint_expired';
-  } else if (lastSeq > acceptedSeq) {
     freshness = 'STALE';
-    reason = 'source_sequence_lag';
-  } else if (lastSeq < acceptedSeq) {
+    reason = 'checkpoint_expired';
+  } else if (checkpointSeq > acceptedSeq) {
     freshness = 'STALE';
-    reason = 'source_checkpoint_behind';
+    reason = 'event_sequence_gap';
+  } else if (checkpointSeq < acceptedSeq) {
+    freshness = 'STALE';
+    reason = 'checkpoint_behind_accepted_sequence';
   }
 
   const lastTsMs = toMs(lastTs);
   return {
     source,
-    lastSeq,
+    checkpointSeq,
+    // Backward-compatible alias for the original v8 working set.
+    lastSeq: checkpointSeq,
     acceptedSeq,
     lastTs,
     method,
     notAfterMs,
     checkpointAgeMs: lastTsMs == null ? null : Math.max(0, nowMs - lastTsMs),
+    state: freshness,
     freshness,
-    reason
+    reason,
+    lastError
   };
 }
 
@@ -75,11 +88,14 @@ export function evaluateEdgeSourceFreshness(edge, sourceStates, options = {}) {
   if (!source) {
     return {
       source: null,
+      checkpointSeq: null,
       lastSeq: null,
       acceptedSeq: null,
       lastTs: null,
       method: null,
       notAfterMs: null,
+      checkpointAgeMs: null,
+      state: 'UNKNOWN',
       freshness: 'UNKNOWN',
       reason: 'source_provenance_missing'
     };

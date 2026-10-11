@@ -1,24 +1,20 @@
-# GATE architecture — Developer Preview
+# GATE architecture — Source Freshness RC1
 
 ## Public contract
-
-The developer surface should remain small:
 
 ```ts
 await gate.verify({ principal, actor, action, consistency, maxStalenessMs })
 ```
 
-The result is an authority-state decision, not a replacement business-policy decision.
+GATE returns an authority-state decision, not a business-policy decision.
 
-## Three separate freshness questions
+## Three independent clocks
 
-A correct decision must not collapse these clocks:
+1. **Authority lifetime** — every externally delegated edge has a hard `not_after`.
+2. **Issuer/source freshness** — signed source checkpoint plus contiguous accepted source-event sequence.
+3. **GATE replica freshness** — signed GATE snapshot lease / bounded staleness.
 
-1. **Delegation lifetime** — has the authority edge crossed its hard `not_after`?
-2. **Issuer/source freshness** — has GATE observed a sufficiently recent issuer-derived checkpoint and every sequence up to that checkpoint?
-3. **GATE replica freshness** — is the local GATE snapshot itself within its signed lease/staleness budget?
-
-A fresh local snapshot is not evidence that the upstream issuer has not changed.
+A fresh GATE copy is not evidence that an upstream issuer is current.
 
 ## Data plane
 
@@ -29,60 +25,82 @@ Agent / Resource Server
         v
 Nearest GATE Edge
         |
-        +-- bounded -> signed GATE snapshot
-        |              + issuer-derived source checkpoints
-        |              + hard delegation expiry
+        +-- bounded -> signed GATE replica lease
+        |              + signed issuer checkpoint state
+        |              + contiguous source sequence
+        |              + hard edge expiry
         |
         +-- strict --> canonical control plane
                        + synchronous issuer checkpoint refresh
+                       + contiguous source sequence
+                       + hard edge expiry
 ```
 
 ## Control plane
 
 ```text
-External authority domains
-  | signed authority events
-  | signed sequence checkpoints / freshness leases
-  v
-Trust resolution / issuer verification
-  v
-Contiguous accepted source sequence
-  + authority graph
-  + append-only accepted-event log
-  v
-Regional signed snapshots / leases
-  v
+External authority source
+   | signed authority events (source_sequence=N)
+   | signed source checkpoints (checkpoint_seq=N)
+   v
+Issuer trust + signing-key lifecycle validation
+   v
+Contiguous event acceptance
+   + append-only accepted-event log
+   + authority graph
+   + source freshness state
+   v
+Signed GATE replication bundle
+   v
 GATE edge replicas
 ```
 
-## Decision provenance
+A later event may not skip a missing earlier source event.
 
-A decision receipt should expose the lane that served it and the issuer-derived state it relied on:
+## Information boundary
+
+If the issuer changes authority but sends no event and no checkpoint, GATE cannot distinguish that world from one where nothing changed. GATE therefore never reports private issuer current state as if it were observed.
+
+Receipt v2 includes:
 
 ```text
-source
-lastSeq
-acceptedSeq
-lastTs
-method
-freshness = FRESH | STALE | UNKNOWN
+issuerCurrentStateIncluded = false
 ```
 
-Graph provenance (`selectedPath`, `selectedEdges`, path counts) explains *which known authority path* produced a decision. Source provenance explains *how current the upstream evidence is*. One cannot substitute for the other.
+Once a signed checkpoint advances beyond GATE's contiguous accepted sequence, the affected source becomes `STALE` even if the local graph itself did not change.
+
+## Alternate paths
+
+Freshness is path-scoped. A stale source invalidates confidence only in paths that depend on it. A fully fresh independent alternate path may remain `VALID / ALLOW`.
+
+Receipt v2 exposes evidence from all evaluated source branches so the excluded stale path remains auditable.
+
+## Key lifecycle
+
+Source artifact verification is not signature-only. GATE also enforces the signing key's lifecycle window:
+
+```text
+standby -> active -> retired
+              \
+               -> revoked (emergency)
+```
+
+Pre-activation artifacts never become valid retroactively. Graceful retirement preserves historical signatures inside the validity window. Emergency revocation distrusts the key immediately.
 
 ## Design rules
 
 1. Do not create a proprietary identity system.
 2. Do not create a proprietary delegation credential unless interoperability makes it unavoidable.
-3. Treat `UNKNOWN` as a real state; do not fake certainty.
-4. Preserve alternate valid authority paths after a partial revocation.
-5. Do not let the GATE operator arbitrarily manufacture external authority state.
-6. Keep business policy outside the core verifier.
-7. Make the verifier cheap enough to run on the critical path of every consequential agent action.
-8. Never equate GATE snapshot freshness with issuer authority freshness.
-9. Require issuer-derived freshness evidence for a fresh-authority `ALLOW`.
-10. Bound offline authority with hard expiry; no fresh upstream evidence means no fresh-authority claim.
+3. Treat `UNKNOWN` as a real state; never manufacture certainty.
+4. Preserve independent alternate paths.
+5. Never equate GATE replica freshness with issuer freshness.
+6. Do not claim access to issuer state that GATE did not receive.
+7. Require contiguous source-event sequences.
+8. Bound offline authority with hard expiry.
+9. Validate signing-key authority windows, not signatures alone.
+10. Keep business policy outside the core verifier.
+11. Keep `gate.verify()` protocol-neutral and cheap enough for the effect path.
 
-## Intended standards alignment
+## Standards direction
 
-Current PoCs exercise ideas from OAuth/JWT, AuthZEN, MCP, Security Event Tokens / Shared Signals-style event distribution, and OpenID Federation-style trust bootstrap. Production implementation must use final normative profiles rather than PoC approximations.
+The PoC uses OAuth/JWT-style artifacts, ES256, Security Event Token / Shared Signals-style distribution concepts, and OpenID Federation-style trust bootstrap. Production profiles must follow the relevant final normative specifications rather than PoC approximations.

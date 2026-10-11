@@ -3,6 +3,7 @@ import crypto from 'node:crypto';
 import { readJson, sendJson, postJson } from '../src/http-json.mjs';
 import { decodeJwtUnsafe, verifyEs256Jwt } from '../src/jws.mjs';
 import { verifyLiveAuthority } from '../src/verify-live-authority.mjs';
+import { buildAuthorityReceipt } from '../src/authority-receipt.mjs';
 import { createUsageReporter, readBearerToken } from '../src/usage-telemetry.mjs';
 
 const controlPlane=process.env.CONTROL_PLANE_URL;const region=process.env.GATE_REGION||'local';
@@ -33,8 +34,14 @@ async function verify(body){
     metrics.strict+=1;if(partitioned){metrics.deny+=1;metrics.unknown+=1;return{authority:'UNKNOWN',decision:'DENY',reason:'strict_control_plane_unreachable',consistency,servedBy:`edge:${region}`,region,revision,sourceRevision}}
     try{const out=await postJson(`${controlPlane}/v1/authority/verify`,{principal:body.principal,actor:body.actor});if(out.decision==='ALLOW')metrics.allow+=1;else metrics.deny+=1;return{...out,consistency,servedBy:`edge:${region}->control-plane`,region,edgeRevision:revision,edgeSourceRevision:sourceRevision}}catch(e){metrics.deny+=1;metrics.unknown+=1;return{authority:'UNKNOWN',decision:'DENY',reason:'strict_control_plane_unreachable',error:e.message,consistency,servedBy:`edge:${region}`,region,revision,sourceRevision}}
   }
-  metrics.bounded+=1;const replicaFreshness=freshness(Number(body.maxStalenessMs??defaultMaxStalenessMs));if(!replicaFreshness.fresh){metrics.deny+=1;metrics.unknown+=1;return{authority:'UNKNOWN',decision:'DENY',reason:'replica_freshness_requirement_not_met',consistency,servedBy:`edge:${region}`,region,revision,sourceRevision,replicaFreshness}}
-  const out=verifyLiveAuthority({principal:body.principal,actor:body.actor,edges:snapshot,sourceStates,requireFreshSources:true});if(out.decision==='ALLOW')metrics.allow+=1;else{metrics.deny+=1;if(out.authority==='UNKNOWN')metrics.unknown+=1}return{...out,consistency,servedBy:`edge:${region}`,region,revision,sourceRevision,stateHash,replicaFreshness};
+  metrics.bounded+=1;const replicaFreshness=freshness(Number(body.maxStalenessMs??defaultMaxStalenessMs));if(!replicaFreshness.fresh){
+    metrics.deny+=1;metrics.unknown+=1;
+    const denied={authority:'UNKNOWN',decision:'DENY',reason:'replica_freshness_requirement_not_met',principal:body.principal,actor:body.actor,sourceFreshness:[],evaluatedPathCount:0};
+    return{...denied,consistency,servedBy:`edge:${region}`,region,revision,sourceRevision,replicaFreshness,receipt:buildAuthorityReceipt(denied,{replicaFreshness,sequenceContinuityVerified:true})}
+  }
+  const out=verifyLiveAuthority({principal:body.principal,actor:body.actor,edges:snapshot,sourceStates,requireFreshSources:true});
+  if(out.decision==='ALLOW')metrics.allow+=1;else{metrics.deny+=1;if(out.authority==='UNKNOWN')metrics.unknown+=1}
+  return{...out,consistency,servedBy:`edge:${region}`,region,revision,sourceRevision,stateHash,replicaFreshness,receipt:buildAuthorityReceipt(out,{replicaFreshness,sequenceContinuityVerified:true})};
 }
 function recordUsage(req,body,result,startedAt){
   const apiKey=readBearerToken(req.headers.authorization)||fallbackUsageApiKey;

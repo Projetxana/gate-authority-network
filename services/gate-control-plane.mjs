@@ -5,6 +5,7 @@ import { readJson, readText, sendJson } from '../src/http-json.mjs';
 import { decodeJwtUnsafe, generateEs256KeyPair, signJwt, verifyEs256Jwt } from '../src/jws.mjs';
 import { evaluateSourceFreshness } from '../src/source-freshness.mjs';
 import { verifyLiveAuthority } from '../src/verify-live-authority.mjs';
+import { assertContiguousSequence, assertSigningKeyLifecycle } from '../src/source-artifact-policy.mjs';
 
 const eventType='https://gate.example/events/authority-edge-state';
 const trustAnchor=process.env.TRUST_ANCHOR_URL;
@@ -18,7 +19,7 @@ let gateUrl; let revision=0; let sourceRevision=0;
 function nowSec(){return Math.floor(Date.now()/1000)}
 function globMatch(pattern,value){const esc=pattern.replace(/[.+?^${}()|[\]\\]/g,'\\$&').replace(/\*/g,'.*');return new RegExp(`^${esc}$`).test(value)}
 function canonicalEdges(){return [...edges.values()].sort((a,b)=>a.edgeId.localeCompare(b.edgeId)).map(e=>({...e}))}
-function canonicalSourceStates(){return [...sourceStates.entries()].sort(([a],[b])=>a.localeCompare(b)).map(([source,s])=>({source,lastSeq:s.lastSeq,acceptedSeq:acceptedSourceSeq.get(source)??0,lastTs:s.lastTs,method:s.method,notAfterMs:s.notAfterMs,lastError:s.lastError??null}))}
+function canonicalSourceStates(){return [...sourceStates.entries()].sort(([a],[b])=>a.localeCompare(b)).map(([source,s])=>({source,checkpointSeq:s.checkpointSeq??s.lastSeq,lastSeq:s.checkpointSeq??s.lastSeq,acceptedSeq:acceptedSourceSeq.get(source)??0,lastTs:s.lastTs,method:s.method,notAfterMs:s.notAfterMs,lastError:s.lastError??null}))}
 function sourceFreshnessViews(){return canonicalSourceStates().map(s=>evaluateSourceFreshness(s))}
 function stateHash(edgeValues=canonicalEdges(),sourceValues=canonicalSourceStates()){return crypto.createHash('sha256').update(JSON.stringify({edges:edgeValues,sources:sourceValues})).digest('hex')}
 async function text(url){const r=await fetch(url,{headers:{accept:'application/entity-statement+jwt'}});if(!r.ok)throw new Error(`federation_http_${r.status}`);return r.text()}
@@ -42,8 +43,13 @@ async function loadSsfMetadata(issuer){
 }
 async function loadSetKey(issuer,kid){
   const md=await loadSsfMetadata(issuer);
-  let jwks=jwksCache.get(md.jwks_uri);if(!jwks){const r=await fetch(md.jwks_uri);if(!r.ok)throw new Error(`ssf_jwks_http_${r.status}`);jwks=await r.json();jwksCache.set(md.jwks_uri,jwks)}
-  const key=jwks.keys?.find(k=>k.kid===kid);if(!key)throw new Error('ssf_key_not_found');return key;
+  let jwks=jwksCache.get(md.jwks_uri);
+  let key=jwks?.keys?.find(k=>k.kid===kid);
+  if(!key){
+    const r=await fetch(md.jwks_uri);if(!r.ok)throw new Error(`ssf_jwks_http_${r.status}`);
+    jwks=await r.json();jwksCache.set(md.jwks_uri,jwks);key=jwks.keys?.find(k=>k.kid===kid);
+  }
+  if(!key)throw new Error('ssf_key_not_found');return key;
 }
 async function refreshSource(issuer,{strict=false}={}){
   try{
@@ -52,10 +58,15 @@ async function refreshSource(issuer,{strict=false}={}){
     const r=await fetch(uri,{headers:{accept:'application/jwt'}});if(!r.ok)throw new Error(`source_checkpoint_http_${r.status}`);
     const token=await r.text();const unsafe=decodeJwtUnsafe(token);const key=await loadSetKey(issuer,unsafe.protectedHeader.kid);
     const {payload}=verifyEs256Jwt({token,publicJwk:key,expectedTyp:'gate-source-checkpoint+jwt',issuer,audience:gateUrl});
-    if(!Number.isInteger(payload.last_seq)||payload.last_seq<0)throw new Error('invalid_source_checkpoint_sequence');
+    assertSigningKeyLifecycle(key,{iatMs:Number(payload.iat)*1000});
+    const checkpointSeq=Number(payload.checkpoint_seq??payload.last_seq);
+    if(!Number.isInteger(checkpointSeq)||checkpointSeq<0)throw new Error('invalid_source_checkpoint_sequence');
     if(!Number.isFinite(Number(payload.not_after_ms)))throw new Error('invalid_source_checkpoint_not_after');
-    const next={lastSeq:Number(payload.last_seq),lastTs:payload.last_ts??new Date(Number(payload.iat||0)*1000).toISOString(),method:payload.method||'signed-checkpoint',notAfterMs:Number(payload.not_after_ms),lastError:null};
-    const prev=sourceStates.get(issuer);sourceStates.set(issuer,next);
+    const prev=sourceStates.get(issuer);
+    const previousSeq=Number(prev?.checkpointSeq??prev?.lastSeq??-1);
+    if(Number.isInteger(previousSeq)&&previousSeq>=0&&checkpointSeq<previousSeq)throw new Error('stale_source_checkpoint');
+    const next={checkpointSeq,lastSeq:checkpointSeq,lastTs:payload.last_ts??new Date(Number(payload.iat||0)*1000).toISOString(),method:payload.method||'signed-checkpoint',notAfterMs:Number(payload.not_after_ms),lastError:null};
+    sourceStates.set(issuer,next);
     if(JSON.stringify(prev)!==JSON.stringify(next))sourceRevision+=1;
     return next;
   }catch(e){
@@ -68,11 +79,12 @@ async function ingestSet(token){
   const unsafe=decodeJwtUnsafe(token);const issuer=unsafe.payload.iss;if(!issuer)throw new Error('missing_set_issuer');
   const trust=await resolveFederatedIssuer(issuer);if(!trust.eventsSupported.includes(eventType))throw new Error('issuer_not_federated_for_event_type');
   const key=await loadSetKey(issuer,unsafe.protectedHeader.kid);const {payload}=verifyEs256Jwt({token,publicJwk:key,expectedTyp:'secevent+jwt',issuer,audience:gateUrl});
+  assertSigningKeyLifecycle(key,{iatMs:Number(payload.iat)*1000});
   if(!payload.jti)throw new Error('missing_set_jti');if(seenJti.has(payload.jti))throw new Error('set_replay_detected');
   const event=payload.events?.[eventType];if(!event)throw new Error('unsupported_event_type');if(!trust.principalPatterns.some(p=>globMatch(p,event.issuer_principal)))throw new Error('issuer_not_authorized_for_principal');
   if(!['ACTIVE','REVOKED'].includes(event.status))throw new Error('unsupported_authority_status');if(!Number.isInteger(event.sequence)||event.sequence<1)throw new Error('invalid_event_sequence');
   if(!Number.isInteger(event.source_sequence)||event.source_sequence<1)throw new Error('invalid_source_sequence');
-  const lastSource=acceptedSourceSeq.get(issuer)??0;if(event.source_sequence!==lastSource+1)throw new Error('source_sequence_gap');
+  const lastSource=acceptedSourceSeq.get(issuer)??0;assertContiguousSequence({acceptedSeq:lastSource,incomingSeq:event.source_sequence,staleError:'stale_source_sequence',gapError:'source_sequence_gap'});
   const validUntilMs=Date.parse(event.not_after);if(!Number.isFinite(validUntilMs))throw new Error('authority_not_after_required');
   const current=edges.get(event.edge_id);if(current&&event.sequence<=current.sequence)throw new Error('stale_authority_event');seenJti.add(payload.jti);
   const state={edgeId:event.edge_id,issuer:event.issuer_principal,subject:event.subject_principal,status:event.status,sequence:event.sequence,validUntil:event.not_after,revokedAt:event.status==='REVOKED'?(event.event_timestamp??new Date().toISOString()):null,reason:event.reason??null,source:{transmitter:issuer,sourceSequence:event.source_sequence,jti:payload.jti,iat:payload.iat,trustAnchor,principalPatterns:trust.principalPatterns}};

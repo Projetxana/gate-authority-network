@@ -1,4 +1,15 @@
 import { evaluateEdgeSourceFreshness, summarizeSourceFreshness } from './source-freshness.mjs';
+import { buildAuthorityReceipt } from './authority-receipt.mjs';
+
+
+function finalize(result, { requireFreshSources = false } = {}) {
+  return {
+    ...result,
+    receipt: buildAuthorityReceipt(result, {
+      sequenceContinuityVerified: requireFreshSources
+    })
+  };
+}
 
 function parseTimeMs(value) {
   if (value == null) return null;
@@ -16,9 +27,9 @@ export function verifyLiveAuthority({
   requireFreshSources = false,
   nowMs = Date.now()
 }) {
-  if (!principal || !actor) return { authority: 'INVALID', decision: 'DENY', reason: 'missing_principal_or_actor' };
+  if (!principal || !actor) return finalize({ authority: 'INVALID', decision: 'DENY', reason: 'missing_principal_or_actor', principal, actor, sourceFreshness: [], evaluatedPathCount: 0 }, { requireFreshSources });
   if (principal === actor) {
-    return {
+    return finalize({
       authority: 'VALID',
       decision: 'ALLOW',
       principal,
@@ -29,7 +40,7 @@ export function verifyLiveAuthority({
       freshnessLane: requireFreshSources ? 'issuer-derived' : 'graph-only',
       sourceFreshness: [],
       paths: [{ status: 'VALID', nodePath: [principal], edgeIds: [], checks: [] }]
-    };
+    }, { requireFreshSources });
   }
 
   const outgoing = new Map();
@@ -58,7 +69,7 @@ export function verifyLiveAuthority({
   }
 
   if (!candidates.length) {
-    return {
+    return finalize({
       authority: 'INVALID',
       decision: 'DENY',
       reason: 'no_authority_path',
@@ -68,7 +79,7 @@ export function verifyLiveAuthority({
       freshnessLane: requireFreshSources ? 'issuer-derived' : 'graph-only',
       sourceFreshness: [],
       paths: []
-    };
+    }, { requireFreshSources });
   }
 
   const evaluated = candidates.map(({ nodePath, edgePath }) => {
@@ -112,7 +123,7 @@ export function verifyLiveAuthority({
 
   const valid = evaluated.find(path => path.status === 'VALID');
   if (valid) {
-    return {
+    return finalize({
       authority: 'VALID',
       decision: 'ALLOW',
       principal,
@@ -124,12 +135,12 @@ export function verifyLiveAuthority({
       freshnessLane: requireFreshSources ? 'issuer-derived' : 'graph-only',
       sourceFreshness: summarizeSourceFreshness(valid.checks),
       paths: evaluated
-    };
+    }, { requireFreshSources });
   }
 
   const allChecks = evaluated.flatMap(path => path.checks ?? []);
   if (evaluated.some(path => path.status === 'UNKNOWN')) {
-    return {
+    return finalize({
       authority: 'UNKNOWN',
       decision: 'DENY',
       reason: 'no_active_path_and_authority_state_unknown',
@@ -139,10 +150,10 @@ export function verifyLiveAuthority({
       freshnessLane: requireFreshSources ? 'issuer-derived' : 'graph-only',
       sourceFreshness: summarizeSourceFreshness(allChecks),
       paths: evaluated
-    };
+    }, { requireFreshSources });
   }
 
-  return {
+  return finalize({
     authority: 'INVALID',
     decision: 'DENY',
     reason: 'all_authority_paths_revoked_or_invalid',
@@ -152,5 +163,5 @@ export function verifyLiveAuthority({
     freshnessLane: requireFreshSources ? 'issuer-derived' : 'graph-only',
     sourceFreshness: summarizeSourceFreshness(allChecks),
     paths: evaluated
-  };
+  }, { requireFreshSources });
 }

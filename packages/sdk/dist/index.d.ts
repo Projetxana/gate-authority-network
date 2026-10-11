@@ -23,13 +23,17 @@ export interface VerifyRequest {
 
 export interface GateSourceFreshness {
   source: string | null;
-  lastSeq: number | null;
+  checkpointSeq: number | null;
+  /** @deprecated Use checkpointSeq. */
+  lastSeq?: number | null;
   acceptedSeq: number | null;
   lastTs: string | null;
   method: string | null;
   notAfterMs: number | null;
   checkpointAgeMs?: number | null;
-  freshness: SourceFreshnessState;
+  state: SourceFreshnessState;
+  /** @deprecated Use state. */
+  freshness?: SourceFreshnessState;
   reason?: string | null;
 }
 
@@ -39,6 +43,40 @@ export interface GateReplicaFreshness {
   leaseRemainingMs: number;
   maxStalenessMs: number;
   fresh: boolean;
+}
+
+
+export interface GateAuthorityReceiptV2 {
+  version: "gate.authority-receipt.v2" | string;
+  authority: "VALID" | "INVALID" | "UNKNOWN";
+  decision: "ALLOW" | "DENY";
+  reason?: string | null;
+  principal?: string | null;
+  actor?: string | null;
+  selectedPath?: string[] | null;
+  selectedEdges?: string[] | null;
+  validPathCount: number;
+  evaluatedPathCount: number;
+  freshness: {
+    gateReplica: GateReplicaFreshness | null;
+    sources: Array<{
+      source: string | null;
+      checkpointSeq: number | null;
+      acceptedSeq: number | null;
+      lastTs: string | null;
+      notAfterMs: number | null;
+      checkpointAgeMs?: number | null;
+      method: string | null;
+      state: SourceFreshnessState;
+      reason?: string | null;
+    }>;
+  };
+  evidence: {
+    issuerCurrentStateIncluded: false;
+    signedSourceEvidence: boolean;
+    sequenceContinuityVerified: boolean;
+    hardExpiryEnforced: boolean;
+  };
 }
 
 export interface GateDecision {
@@ -55,6 +93,7 @@ export interface GateDecision {
   freshnessLane?: "issuer-derived" | "graph-only";
   sourceFreshness?: GateSourceFreshness[];
   replicaFreshness?: GateReplicaFreshness;
+  receipt?: GateAuthorityReceiptV2;
   evaluation?: {
     established: boolean;
     source?: string;
