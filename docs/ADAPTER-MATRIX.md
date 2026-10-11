@@ -7,8 +7,8 @@
 | x402 | Resource-server lifecycle after payment verification / before paid effect | `protocol=x402`, paid resource operation | ✅ x402 V2 lifecycle hook protected by hosted `gate.verify()` and metered as a Verified Effect |
 | AuthZEN | PEP-side after Authorization API decision, before effect | `protocol=authzen`, action/resource | ✅ AuthZEN 1.0 evaluation permit composed with hosted GATE live authority and network metering |
 | A2A | Receiving task executor before side effect | `protocol=a2a`, method/task resource | ✅ A2A 0.3 JSON-RPC `message/send` protected by hosted GATE and network metering |
-| AP2 / FIDO | Consume/bridge intent and delegated-authority evidence | `protocol=ap2` or source evidence mapping | Human intent evidence plus live authority verification |
-| OAuth / SSF | Source connector and resource-server integration | authority state / revocation / events | External issuer state changes GATE result without app rewrite |
+| AP2 / FIDO | Consume verified mandate / intent evidence before commerce effect | `protocol=ap2`, mandate type + effect | ✅ AP2 v0.2 pre-verified mandate evidence composed with hosted GATE live authority and metering; FIDO standardization tracked |
+| OAuth / SSF | Authority-source connector / continuous security event ingestion | signed SET + explicit source-to-edge mapping | ✅ Signed OpenID SSF / CAEP `session-revoked` changes the same GATE verify result ALLOW → DENY without app effect-code rewrite |
 
 ## Priority
 
