@@ -58,3 +58,13 @@ export declare function caepSessionRevokedToGateAuthorityEvent(
     jti?: string;
   }
 ): Record<string, unknown>;
+
+export declare const SSF_POLL_DELIVERY: 'urn:ietf:rfc:8936';
+export declare function discoverSsfTransmitter(options: any): Promise<any>;
+export declare function fetchSsfJwks(options: any): Promise<any>;
+export declare function createSsfPollStream(options: any): Promise<any>;
+export declare function getExistingSsfStream(options: any): Promise<any>;
+export declare function addSsfStreamSubject(options: any): Promise<{supported:boolean}>;
+export declare function pollSsfStream(options: any): Promise<{sets:Record<string,string>,moreAvailable:boolean}>;
+export declare function deleteSsfStream(options: any): Promise<void>;
+export declare function verifySsfSetWithJwks(token: string, options: any): {header:Record<string,any>,payload:Record<string,any>,jwk:JsonWebKey};

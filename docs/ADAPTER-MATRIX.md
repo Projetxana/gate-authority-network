@@ -8,7 +8,7 @@
 | AuthZEN | PEP-side after Authorization API decision, before effect | `protocol=authzen`, action/resource | ✅ AuthZEN 1.0 evaluation permit composed with hosted GATE live authority and network metering |
 | A2A | Receiving task executor before side effect | `protocol=a2a`, method/task resource | ✅ A2A 0.3 JSON-RPC `message/send` protected by hosted GATE and network metering |
 | AP2 / FIDO | Consume verified mandate / intent evidence before commerce effect | `protocol=ap2`, mandate type + effect | ✅ AP2 v0.2 pre-verified mandate evidence composed with hosted GATE live authority and metering; FIDO standardization tracked |
-| OAuth / SSF | Hosted/canonical authority-source connector | signed SET + explicit source-to-edge mapping | ✅ External signed SSF / CAEP source mapped through a trusted connector into the canonical GATE v7 project store; same canonical verify changes ALLOW → DENY |
+| OAuth / SSF | Hosted/canonical authority-source connector | signed SET + explicit source-to-edge mapping | ✅ External signed SSF / CAEP source mapped through a trusted connector into the canonical GATE v7 project store; same canonical verify changes ALLOW → DENY; independent caep.dev interop next |
 
 ## Priority
 
