@@ -8,6 +8,9 @@ const domain=process.env.AUTHORITY_DOMAIN;
 const gateUrl=process.env.GATE_NETWORK_URL||process.env.GATE_CONTROL_PLANE_URL;
 if(!domain||!gateUrl) throw new Error('AUTHORITY_DOMAIN and GATE_CONTROL_PLANE_URL are required');
 
+const sourceLeaseTtlMs=Number(process.env.SOURCE_LEASE_TTL_MS||1000);
+const defaultDelegationTtlMs=Number(process.env.DELEGATION_TTL_MS||15*60*1000);
+
 const templates = domain==='principal'
   ? new Map([
       ['edge-human-agent-a',{issuer:'user:jerome',subject:'agent:A@company-a'}],
@@ -26,7 +29,8 @@ const templates = domain==='principal'
 if(!templates.size) throw new Error(`unsupported AUTHORITY_DOMAIN: ${domain}`);
 
 const {privateKey,publicJwk}=generateEs256KeyPair({kid:`${domain}-signing`});
-const seq=new Map();
+const edgeSeq=new Map();
+let sourceSequence=0;
 const eventType='https://gate.example/events/authority-edge-state';
 let issuer;
 function nowSec(){return Math.floor(Date.now()/1000)}
@@ -38,25 +42,56 @@ function entityConfig(){
     privateKey
   });
 }
-function issueSet({edgeId,status,reason=null,sequence=null}){
+function issueCheckpoint(){
+  const nowMs=Date.now();
+  return signJwt({
+    header:{alg:'ES256',kid:publicJwk.kid,typ:'gate-source-checkpoint+jwt'},
+    payload:{
+      iss:issuer,
+      aud:gateUrl,
+      iat:nowSec(),
+      last_seq:sourceSequence,
+      last_ts:new Date(nowMs).toISOString(),
+      method:'signed-checkpoint',
+      not_after_ms:nowMs+sourceLeaseTtlMs
+    },
+    privateKey
+  });
+}
+function issueSet({edgeId,status,reason=null,sequence=null,validForMs=defaultDelegationTtlMs}){
   const edge=templates.get(edgeId); if(!edge) throw new Error('edge_not_owned_by_demo_transmitter');
-  const next=sequence ?? ((seq.get(edgeId)??0)+1); if(sequence==null) seq.set(edgeId,next);
-  const now=nowSec();
+  const next=sequence ?? ((edgeSeq.get(edgeId)??0)+1); if(sequence==null) edgeSeq.set(edgeId,next);
+  sourceSequence+=1;
+  const nowMs=Date.now();
+  const now=Math.floor(nowMs/1000);
   return signJwt({header:{alg:'ES256',kid:publicJwk.kid,typ:'secevent+jwt'},payload:{
     iss:issuer,aud:gateUrl,iat:now,jti:crypto.randomUUID(),sub:`urn:gate:authority-edge:${edgeId}`,
-    events:{[eventType]:{edge_id:edgeId,issuer_principal:edge.issuer,subject_principal:edge.subject,status,sequence:next,reason,event_timestamp:new Date(now*1000).toISOString()}}
+    events:{[eventType]:{
+      edge_id:edgeId,
+      issuer_principal:edge.issuer,
+      subject_principal:edge.subject,
+      status,
+      sequence:next,
+      source_sequence:sourceSequence,
+      reason,
+      event_timestamp:new Date(nowMs).toISOString(),
+      not_after:new Date(nowMs+Math.max(1,Number(validForMs))).toISOString()
+    }}
   },privateKey});
 }
-async function emit(body){const set=issueSet(body);let gate;try{gate=await pushSet(`${gateUrl}/Events`,set)}catch(e){gate={error:e.message,body:e.body}}return {set,gate}}
+async function emit(body){const set=issueSet(body);let gate;try{gate=await pushSet(`${gateUrl}/Events`,set)}catch(e){gate={error:e.message,body:e.body}}return {set,gate,sourceSequence}}
 const server=http.createServer(async(req,res)=>{
-  if(req.method==='GET'&&req.url==='/health') return sendJson(res,200,{ok:true,domain});
+  if(req.method==='GET'&&req.url==='/health') return sendJson(res,200,{ok:true,domain,sourceSequence,sourceLeaseTtlMs});
   if(req.method==='GET'&&req.url==='/jwks.json') return sendJson(res,200,{keys:[publicJwk]});
   if(req.method==='GET'&&req.url==='/.well-known/openid-federation'){
     const body=entityConfig(); res.writeHead(200,{'content-type':'application/entity-statement+jwt','content-length':Buffer.byteLength(body)}); return res.end(body);
   }
-  if(req.method==='GET'&&req.url==='/.well-known/ssf-configuration') return sendJson(res,200,{spec_version:'1_0',issuer,jwks_uri:`${issuer}/jwks.json`,delivery_methods_supported:['urn:ietf:rfc:8935'],events_supported:[eventType]});
+  if(req.method==='GET'&&req.url==='/.well-known/ssf-configuration') return sendJson(res,200,{spec_version:'1_0',issuer,jwks_uri:`${issuer}/jwks.json`,delivery_methods_supported:['urn:ietf:rfc:8935'],events_supported:[eventType],gate_source_checkpoint_uri:`${issuer}/.well-known/gate-source-checkpoint`});
+  if(req.method==='GET'&&req.url==='/.well-known/gate-source-checkpoint'){
+    const body=issueCheckpoint();res.writeHead(200,{'content-type':'application/jwt','content-length':Buffer.byteLength(body)});return res.end(body);
+  }
   if(req.method==='POST'&&req.url==='/demo/emit'){try{const body=await readJson(req);const out=await emit(body);return sendJson(res,out.gate?.accepted===false||out.gate?.error?409:200,out)}catch(e){return sendJson(res,400,{error:e.message})}}
-  if(req.method==='POST'&&req.url==='/demo/sign-only'){try{return sendJson(res,200,{set:issueSet(await readJson(req))})}catch(e){return sendJson(res,400,{error:e.message})}}
+  if(req.method==='POST'&&req.url==='/demo/sign-only'){try{return sendJson(res,200,{set:issueSet(await readJson(req)),sourceSequence})}catch(e){return sendJson(res,400,{error:e.message})}}
   return sendJson(res,404,{error:'not_found'});
 });
 const port=Number(process.env.PORT||0); await new Promise(resolve=>server.listen(port,host,resolve));

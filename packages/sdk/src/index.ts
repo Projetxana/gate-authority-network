@@ -3,6 +3,7 @@ export declare const GATE_SDK_VERSION = "0.1.0-dev.3";
 export declare const GATE_SANDBOX_URL = "https://ufqtoyakmrddqytrkcje.supabase.co/functions/v1/gate-sandbox";
 
 export type Consistency = "bounded" | "strict";
+export type SourceFreshnessState = "FRESH" | "STALE" | "UNKNOWN";
 
 export interface GateAction {
   protocol?: string;
@@ -20,6 +21,26 @@ export interface VerifyRequest {
   signal?: AbortSignal;
 }
 
+export interface GateSourceFreshness {
+  source: string | null;
+  lastSeq: number | null;
+  acceptedSeq: number | null;
+  lastTs: string | null;
+  method: string | null;
+  notAfterMs: number | null;
+  checkpointAgeMs?: number | null;
+  freshness: SourceFreshnessState;
+  reason?: string | null;
+}
+
+export interface GateReplicaFreshness {
+  scope: "gate-replica";
+  ageMs: number;
+  leaseRemainingMs: number;
+  maxStalenessMs: number;
+  fresh: boolean;
+}
+
 export interface GateDecision {
   authority: "VALID" | "INVALID" | "UNKNOWN";
   decision: "ALLOW" | "DENY";
@@ -30,6 +51,10 @@ export interface GateDecision {
   servedBy?: string;
   region?: string;
   revision?: number;
+  sourceRevision?: number;
+  freshnessLane?: "issuer-derived" | "graph-only";
+  sourceFreshness?: GateSourceFreshness[];
+  replicaFreshness?: GateReplicaFreshness;
   evaluation?: {
     established: boolean;
     source?: string;
@@ -37,6 +62,7 @@ export interface GateDecision {
     ageMs?: number;
     [key: string]: unknown;
   };
+  /** @deprecated Current v7 field refers to GATE snapshot freshness, not issuer freshness. */
   freshness?: {
     ageMs: number;
     leaseRemainingMs: number;
