@@ -26,7 +26,8 @@
     "smoke:authzen:hosted": "node scripts/run-hosted-authzen-verified-effect.mjs",
     "smoke:a2a:hosted": "node scripts/run-hosted-a2a-verified-effect.mjs",
     "smoke:ap2:hosted": "node scripts/run-hosted-ap2-verified-effect.mjs",
-    "smoke:ssf:caep": "node scripts/run-signed-ssf-caep-smoke.mjs"
+    "smoke:ssf:caep": "node scripts/run-signed-ssf-caep-smoke.mjs",
+    "smoke:ssf:hosted": "node scripts/run-hosted-ssf-ingestion.mjs"
   },
   "dependencies": {
     "@modelcontextprotocol/client": "2.2.0",
