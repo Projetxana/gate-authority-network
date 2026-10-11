@@ -37,3 +37,24 @@ export declare function applyCaepSessionRevokedToEdges(options: {
     signal: unknown
   ) => Promise<string[]> | string[];
 }): Promise<Array<Record<string, unknown>>>;
+
+export declare const GATE_AUTHORITY_EDGE_EVENT:
+  'urn:gate:event:authority-edge-state:v1';
+
+export declare function caepSessionRevokedToGateAuthorityEvent(
+  options: {
+    signal: ReturnType<typeof normalizeCaepSessionRevoked>;
+    mapping: {
+      subjectFormat: string;
+      subjectId: string;
+      edgeId: string;
+      issuerPrincipal: string;
+      subjectPrincipal: string;
+    };
+    bridgeIssuer: string;
+    audience: string;
+    sequence: number;
+    iatSec?: number;
+    jti?: string;
+  }
+): Record<string, unknown>;

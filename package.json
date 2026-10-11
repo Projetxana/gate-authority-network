@@ -27,7 +27,8 @@
     "smoke:a2a:hosted": "node scripts/run-hosted-a2a-verified-effect.mjs",
     "smoke:ap2:hosted": "node scripts/run-hosted-ap2-verified-effect.mjs",
     "smoke:ssf:caep": "node scripts/run-signed-ssf-caep-smoke.mjs",
-    "smoke:ssf:hosted": "node scripts/run-hosted-ssf-ingestion.mjs"
+    "smoke:ssf:hosted": "node scripts/run-hosted-ssf-ingestion.mjs",
+    "smoke:ssf:canonical": "node scripts/run-canonical-ssf-project-bridge.mjs"
   },
   "dependencies": {
     "@modelcontextprotocol/client": "2.2.0",

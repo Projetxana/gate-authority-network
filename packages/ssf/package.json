@@ -1,6 +1,6 @@
 {
   "name": "@gate-avn/ssf",
-  "version": "0.1.0-dev.1",
+  "version": "0.1.0-dev.2",
   "description": "OpenID Shared Signals / CAEP authority-source connector for GATE.",
   "type": "module",
   "main": "./src/index.mjs",
@@ -11,8 +11,15 @@
       "import": "./src/index.mjs"
     }
   },
-  "files": ["src", "README.md"],
-  "engines": { "node": ">=20" },
-  "publishConfig": { "access": "public" },
+  "files": [
+    "src",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "license": "Apache-2.0"
 }

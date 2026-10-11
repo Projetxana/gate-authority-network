@@ -146,3 +146,85 @@ export async function applyCaepSessionRevokedToEdges({
       : edge
   );
 }
+
+export const GATE_AUTHORITY_EDGE_EVENT =
+  'urn:gate:event:authority-edge-state:v1';
+
+export function caepSessionRevokedToGateAuthorityEvent({
+  signal,
+  mapping,
+  bridgeIssuer,
+  audience,
+  sequence,
+  iatSec = Math.floor(Date.now() / 1000),
+  jti = `ssf-bridge-${crypto.randomUUID()}`
+} = {}) {
+  if (!signal || signal.eventType !== CAEP_SESSION_REVOKED) {
+    throw new Error('caep_session_revoked_signal_required');
+  }
+
+  if (!mapping || typeof mapping !== 'object') {
+    throw new TypeError('SSF subject mapping is required');
+  }
+
+  const {
+    subjectFormat,
+    subjectId,
+    edgeId,
+    issuerPrincipal,
+    subjectPrincipal
+  } = mapping;
+
+  if (
+    signal.subject?.format !== subjectFormat ||
+    signal.subject?.id !== subjectId
+  ) {
+    throw new Error('ssf_subject_mapping_mismatch');
+  }
+
+  if (
+    typeof bridgeIssuer !== 'string' ||
+    !bridgeIssuer ||
+    typeof audience !== 'string' ||
+    !audience
+  ) {
+    throw new TypeError('bridgeIssuer and audience are required');
+  }
+
+  const seq = Number(sequence);
+  if (!Number.isInteger(seq) || seq < 1) {
+    throw new TypeError('positive sequence is required');
+  }
+
+  for (const [name, value] of Object.entries({
+    edgeId,
+    issuerPrincipal,
+    subjectPrincipal
+  })) {
+    if (typeof value !== 'string' || !value.trim()) {
+      throw new TypeError(`${name} is required`);
+    }
+  }
+
+  const eventTimestamp = new Date(
+    Number(signal.eventTimestamp) * 1000
+  ).toISOString();
+
+  return {
+    iss: bridgeIssuer,
+    aud: audience,
+    iat: iatSec,
+    jti,
+    events: {
+      [GATE_AUTHORITY_EDGE_EVENT]: {
+        edge_id: edgeId,
+        issuer_principal: issuerPrincipal,
+        subject_principal: subjectPrincipal,
+        status: 'REVOKED',
+        sequence: seq,
+        reason: 'ssf_caep_session_revoked',
+        event_timestamp: eventTimestamp
+      }
+    }
+  };
+}
