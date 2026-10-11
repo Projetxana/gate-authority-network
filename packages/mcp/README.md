@@ -65,3 +65,35 @@ Demo mode is not a production authority source.
 An MCP tool that merely calls `gate_verify` voluntarily is not a non-bypassable security boundary. Put effect-time enforcement in the trusted tool/resource/API execution path.
 
 Developer Preview. Not production software.
+
+## Effect-boundary guard — Network v1
+
+The Network v1 adoption layer adds a reusable MCP effect guard. The application keeps its own MCP tools; GATE runs immediately before the tool's real side effect.
+
+```js
+import {
+  createMcpEffectGuard,
+  createVerifiedEffectCounter
+} from '@gate-avn/mcp/effect-boundary';
+
+const counter = createVerifiedEffectCounter();
+const guard = createMcpEffectGuard({
+  gate,
+  principal: 'user:alice',
+  actor: 'agent:assistant@company',
+  consistency: 'strict',
+  counter
+});
+
+server.registerTool('send_email', toolDefinition, async input => {
+  const { result } = await guard.enforceToolCall(
+    { toolName: 'send_email', resource: `mailbox:${input.to}` },
+    async () => actuallySendEmail(input)
+  );
+  return result;
+});
+```
+
+Each completed authority decision guarding a concrete MCP effect produces one privacy-minimized **Verified Effect** event. `DENY` and `UNKNOWN / DENY` are counted as verification events but the underlying effect is never invoked.
+
+The local counter is a Stage 2 integration primitive, not billing infrastructure. Managed-network metering remains server-side.
