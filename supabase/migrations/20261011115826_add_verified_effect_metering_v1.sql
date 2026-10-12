@@ -1,3 +1,4 @@
+
 create table if not exists public.gate_verified_effect_events (
   id uuid primary key default gen_random_uuid(),
   verification_id text not null,
@@ -158,25 +159,28 @@ select
     as verified_effects_today,
   coalesce((select sum(effect_count) from last30), 0)::bigint
     as verified_effects_30d,
-  coalesce((select sum(allow_count) from last30), 0)::bigint as allow_30d,
-  coalesce((select sum(deny_count) from last30), 0)::bigint as deny_30d,
-  coalesce((select sum(unknown_count) from last30), 0)::bigint as unknown_30d,
-  coalesce((select sum(error_count) from last30), 0)::bigint as errors_30d,
-  coalesce((select sum(effect_count) from last30 where protocol='mcp'), 0)::bigint as mcp_30d,
-  coalesce((select sum(effect_count) from last30 where protocol='http'), 0)::bigint as http_30d,
-  coalesce((select sum(effect_count) from last30 where protocol='x402'), 0)::bigint as x402_30d,
-  coalesce((select sum(effect_count) from last30 where protocol='authzen'), 0)::bigint as authzen_30d,
-  coalesce((select sum(effect_count) from last30 where protocol='a2a'), 0)::bigint as a2a_30d,
-  coalesce((select sum(effect_count) from last30 where protocol='ap2'), 0)::bigint as ap2_30d,
+  coalesce((select sum(allow_count) from last30), 0)::bigint
+    as allow_30d,
+  coalesce((select sum(deny_count) from last30), 0)::bigint
+    as deny_30d,
+  coalesce((select sum(unknown_count) from last30), 0)::bigint
+    as unknown_30d,
+  coalesce((select sum(error_count) from last30), 0)::bigint
+    as errors_30d,
+  coalesce((select sum(effect_count) from last30 where protocol='mcp'), 0)::bigint
+    as mcp_30d,
+  coalesce((select sum(effect_count) from last30 where protocol='http'), 0)::bigint
+    as http_30d,
+  coalesce((select sum(effect_count) from last30 where protocol='x402'), 0)::bigint
+    as x402_30d,
+  coalesce((select sum(effect_count) from last30 where protocol='authzen'), 0)::bigint
+    as authzen_30d,
+  coalesce((select sum(effect_count) from last30 where protocol='a2a'), 0)::bigint
+    as a2a_30d,
+  coalesce((select sum(effect_count) from last30 where protocol='ap2'), 0)::bigint
+    as ap2_30d,
   count(distinct project_id) filter (
     where day = current_date and effect_count > 0
   )::bigint as active_effect_projects_today
 from last30;
-
-alter view public.gate_verified_effects_daily set (security_invoker = true);
-alter view public.gate_verified_effects_summary set (security_invoker = true);
-
-create index if not exists gate_verified_effect_events_api_key_idx
-  on public.gate_verified_effect_events (api_key_id)
-  where api_key_id is not null;
-
+;

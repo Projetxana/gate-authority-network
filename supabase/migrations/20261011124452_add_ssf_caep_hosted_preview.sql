@@ -1,3 +1,4 @@
+
 create table if not exists public.gate_ssf_preview_scenarios (
   id uuid primary key default gen_random_uuid(),
   token_hash text not null unique,
@@ -38,3 +39,4 @@ create index if not exists gate_ssf_preview_scenarios_expires_idx
 
 create index if not exists gate_ssf_preview_events_scenario_idx
   on public.gate_ssf_preview_events (scenario_id, received_at desc);
+;
