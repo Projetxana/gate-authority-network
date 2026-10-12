@@ -3,7 +3,7 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const CANONICAL_URL = "https://ufqtoyakmrddqytrkcje.supabase.co/functions/v1/gate-network";
+const CANONICAL_URL = `${SUPABASE_URL}/functions/v1/gate-network`;
 const CAEP_SESSION_REVOKED = "https://schemas.openid.net/secevent/caep/event-type/session-revoked";
 const POLL = "urn:ietf:rfc:8936";
 const GATE_EVENT = "urn:gate:event:authority-edge-state:v1";

@@ -3,7 +3,7 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const CANONICAL_URL = "https://ufqtoyakmrddqytrkcje.supabase.co/functions/v1/gate-network";
+const CANONICAL_URL = `${SUPABASE_URL}/functions/v1/gate-network`;
 const EVENT_TYPE = "urn:gate:event:authority-edge-state:v1";
 
 const H = {

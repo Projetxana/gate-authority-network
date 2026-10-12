@@ -1,7 +1,7 @@
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
 const SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-const PUBLIC_BASE = "https://ufqtoyakmrddqytrkcje.supabase.co/functions/v1/gate-network";
+const PUBLIC_BASE = `${SUPABASE_URL}/functions/v1/gate-network`;
 const EVENT_TYPE = "urn:gate:event:authority-edge-state:v1";
 const DAILY_REGISTRATION_LIMIT = 500;
 const DAILY_REGISTRATION_LIMIT_PER_IP = 3;

@@ -1,0 +1,31 @@
+project_id = "gate-authority-network"
+
+[functions.gate-network]
+verify_jwt = false
+
+[functions.gate-metrics]
+verify_jwt = false
+
+[functions.gate-billing]
+verify_jwt = false
+
+[functions.gate-billing-webhook]
+verify_jwt = false
+
+[functions.gate-sandbox]
+verify_jwt = false
+
+[functions.gate-beta]
+verify_jwt = false
+
+[functions.gate-ssf-bridge-preview]
+verify_jwt = false
+
+[functions.gate-ssf-connectors]
+verify_jwt = false
+
+[functions.gate-source-registry]
+verify_jwt = false
+
+[functions.gate-signed-sources]
+verify_jwt = false
