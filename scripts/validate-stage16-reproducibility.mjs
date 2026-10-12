@@ -91,7 +91,8 @@ const canonicalMigrations = [
   "20261011174749_harden_hosted_ssf_connector_indexes_stage13.sql",
   "20261011214324_authority_source_registry_stage14.sql",
   "20261011224956_multi_source_signed_push_stage15.sql",
-  "20261012133500_make_ssf_worker_schedule_portable.sql"
+  "20261012133500_make_ssf_worker_schedule_portable.sql",
+  "20261012203000_remove_unmarked_ssf_worker.sql"
 ];
 
 console.log("=== GATE Stage 16 reproducibility invariants ===");
@@ -243,6 +244,20 @@ if (
 }
 
 ok("portable SSF worker schedule tagged");
+
+const cleanupSsfMigration = read(
+  "supabase/migrations/20261012203000_remove_unmarked_ssf_worker.sql"
+);
+
+if (
+  !cleanupSsfMigration.includes(
+    "command not like '%gate-portable-ssf-worker-v1%'"
+  )
+) {
+  fail("historical SSF cleanup must preserve portable workers");
+}
+
+ok("historical SSF worker cleanup preserves tagged worker");
 
 const secretPatterns = [
   ["Stripe live key", /sk_live_[A-Za-z0-9]{8,}/],
