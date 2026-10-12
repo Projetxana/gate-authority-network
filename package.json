@@ -30,7 +30,8 @@
     "smoke:ssf:hosted": "node scripts/run-hosted-ssf-ingestion.mjs",
     "smoke:ssf:canonical": "node scripts/run-canonical-ssf-project-bridge.mjs",
     "smoke:ssf:independent": "node scripts/run-independent-caepdev-interop.mjs",
-    "example:ssf:byo": "node examples/ssf-byo-receiver.mjs"
+    "example:ssf:byo": "node examples/ssf-byo-receiver.mjs",
+    "ci:stage16": "node scripts/validate-stage16-reproducibility.mjs"
   },
   "dependencies": {
     "@modelcontextprotocol/client": "2.2.0",
