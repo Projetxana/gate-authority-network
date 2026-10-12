@@ -1,5 +1,8 @@
 project_id = "gate-authority-network"
 
+[db]
+major_version = 17
+
 [functions.gate-network]
 verify_jwt = false
 

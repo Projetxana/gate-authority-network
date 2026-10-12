@@ -139,6 +139,19 @@ ok("10 canonical product functions present");
 
 const config = read("supabase/config.toml");
 
+const dbSection = config.match(
+  /\[db\]([\s\S]*?)(?=\n\[|$)/
+);
+
+if (
+  !dbSection ||
+  !/major_version\s*=\s*17/.test(dbSection[1])
+) {
+  fail("PostgreSQL major_version must be pinned to 17");
+}
+
+ok("PostgreSQL major version pinned to 17");
+
 for (const fn of productFunctions) {
   const marker = `[functions.${fn}]`;
   const start = config.indexOf(marker);
