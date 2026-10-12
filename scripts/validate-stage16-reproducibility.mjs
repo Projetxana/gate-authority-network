@@ -230,6 +230,20 @@ if (!exists("scripts/configure-supabase-runtime.mjs")) {
 
 ok("portable runtime configuration helper present");
 
+const portableSsfMigration = read(
+  "supabase/migrations/20261012133500_make_ssf_worker_schedule_portable.sql"
+);
+
+if (
+  !portableSsfMigration.includes(
+    "/* gate-portable-ssf-worker-v1 */"
+  )
+) {
+  fail("portable SSF worker schedule marker missing");
+}
+
+ok("portable SSF worker schedule tagged");
+
 const secretPatterns = [
   ["Stripe live key", /sk_live_[A-Za-z0-9]{8,}/],
   ["Stripe test key", /sk_test_[A-Za-z0-9]{8,}/],

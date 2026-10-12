@@ -56,6 +56,7 @@ begin
 
   v_command := format(
     $sql$
+      /* gate-portable-ssf-worker-v1 */
       select net.http_post(
         url := %L,
         headers := jsonb_build_object(
