@@ -53,53 +53,96 @@ function safeId(v: string) {
 }
 
 function freshness(row: any) {
-  if (row.status === "paused") {
-    return { state: "paused", ageSeconds: null, staleAfterSeconds: row.stale_after_seconds };
-  }
-  if (row.status === "revoked") {
-    return { state: "revoked", ageSeconds: null, staleAfterSeconds: row.stale_after_seconds };
-  }
-  if (row.status === "error") {
-    return { state: "error", ageSeconds: null, staleAfterSeconds: row.stale_after_seconds };
-  }
+  const contract = row.freshness_contract || "poll_interval";
+  const base = {
+    contract,
+    ageSeconds: null as number | null,
+    staleAfterSeconds: row.stale_after_seconds
+  };
+
+  if (row.status === "paused") return { ...base, state: "paused" };
+  if (row.status === "revoked") return { ...base, state: "revoked" };
+  if (row.status === "error") return { ...base, state: "error" };
+
   if (row.last_error && row.last_error_at &&
       (!row.last_success_at || new Date(row.last_error_at).getTime() >= new Date(row.last_success_at).getTime())) {
-    return { state: "error", ageSeconds: null, staleAfterSeconds: row.stale_after_seconds };
+    return { ...base, state: "error" };
   }
-  if (!row.last_success_at) {
-    return { state: "unknown", ageSeconds: null, staleAfterSeconds: row.stale_after_seconds };
-  }
+
+  if (!row.last_success_at) return { ...base, state: "unknown" };
+
   const age = Math.max(0, Math.floor((Date.now() - new Date(row.last_success_at).getTime()) / 1000));
+
+  if (contract === "event_driven") {
+    return {
+      contract,
+      state: "observed",
+      ageSeconds: age,
+      staleAfterSeconds: null,
+      boundedFreshness: false,
+      note: "Event-driven source activity is observed, not a heartbeat or issuer-freshness guarantee."
+    };
+  }
+
+  if (contract === "checkpoint") {
+    const stale = Number(row.stale_after_seconds || 180);
+    if (age <= stale) return { contract, state: "fresh", ageSeconds: age, staleAfterSeconds: stale, boundedFreshness: true };
+    return { contract, state: "stale", ageSeconds: age, staleAfterSeconds: stale, boundedFreshness: true };
+  }
+
   const poll = Number(row.poll_interval_seconds || 60);
   const stale = Number(row.stale_after_seconds || Math.max(180, poll * 3));
-  if (age <= poll * 2) return { state: "fresh", ageSeconds: age, staleAfterSeconds: stale };
-  if (age <= stale) return { state: "aging", ageSeconds: age, staleAfterSeconds: stale };
-  return { state: "stale", ageSeconds: age, staleAfterSeconds: stale };
+  if (age <= poll * 2) return { contract, state: "fresh", ageSeconds: age, staleAfterSeconds: stale, boundedFreshness: true };
+  if (age <= stale) return { contract, state: "aging", ageSeconds: age, staleAfterSeconds: stale, boundedFreshness: true };
+  return { contract, state: "stale", ageSeconds: age, staleAfterSeconds: stale, boundedFreshness: true };
 }
 
-async function latestSsfEvent(source: any) {
-  if (source.adapter !== "ssf") return null;
-  const rows = await rest(
-    "gate_ssf_connector_events?connector_id=eq." + encodeURIComponent(source.adapter_resource_id) +
-    "&select=event_type,signing_alg,signing_kid,subject_present,canonical_status,canonical_sequence,received_at,processed_at" +
-    "&order=processed_at.desc.nullslast,received_at.desc&limit=1"
-  );
-  const e = Array.isArray(rows) ? rows[0] : null;
-  if (!e) return null;
-  return {
-    eventType: e.event_type,
-    signingAlg: e.signing_alg,
-    signingKid: e.signing_kid,
-    subjectPresent: e.subject_present,
-    canonicalStatus: e.canonical_status,
-    canonicalSequence: e.canonical_sequence,
-    receivedAt: e.received_at,
-    processedAt: e.processed_at
-  };
+async function latestSourceEvent(source: any) {
+  if (source.adapter === "ssf") {
+    const rows = await rest(
+      "gate_ssf_connector_events?connector_id=eq." + encodeURIComponent(source.adapter_resource_id) +
+      "&select=event_type,signing_alg,signing_kid,subject_present,canonical_status,canonical_sequence,received_at,processed_at" +
+      "&order=processed_at.desc.nullslast,received_at.desc&limit=1"
+    );
+    const e = Array.isArray(rows) ? rows[0] : null;
+    if (!e) return null;
+    return {
+      eventType: e.event_type,
+      signingAlg: e.signing_alg,
+      signingKid: e.signing_kid,
+      subjectPresent: e.subject_present,
+      canonicalStatus: e.canonical_status,
+      canonicalSequence: e.canonical_sequence,
+      receivedAt: e.received_at,
+      processedAt: e.processed_at
+    };
+  }
+
+  if (source.adapter === "signed_push") {
+    const rows = await rest(
+      "gate_signed_authority_source_events?source_id=eq." + encodeURIComponent(source.adapter_resource_id) +
+      "&select=edge_id,status,sequence,signing_alg,signing_kid,received_at,processed_at" +
+      "&order=processed_at.desc.nullslast,received_at.desc&limit=1"
+    );
+    const e = Array.isArray(rows) ? rows[0] : null;
+    if (!e) return null;
+    return {
+      eventType: "urn:gate:event:authority-edge-state:v1",
+      edgeId: e.edge_id,
+      signingAlg: e.signing_alg,
+      signingKid: e.signing_kid,
+      canonicalStatus: e.status,
+      canonicalSequence: e.sequence,
+      receivedAt: e.received_at,
+      processedAt: e.processed_at
+    };
+  }
+
+  return null;
 }
 
 async function present(source: any) {
-  const lastEvent = await latestSsfEvent(source);
+  const lastEvent = await latestSourceEvent(source);
   return {
     id: source.id,
     projectId: source.project_id,
@@ -111,6 +154,7 @@ async function present(source: any) {
     deliveryMethod: source.delivery_method,
     adapterResourceId: source.adapter_resource_id,
     pollIntervalSeconds: source.poll_interval_seconds,
+    freshnessContract: source.freshness_contract,
     ingestionFreshness: freshness(source),
     lastPollAt: source.last_poll_at,
     lastSuccessAt: source.last_success_at,
@@ -164,7 +208,7 @@ async function summary(req: Request) {
   if (!a) return json({ ok: false, error: "invalid_api_key" }, 401);
   const rows = await rowsForProject(a.projectId);
   const health: Record<string, number> = {
-    fresh: 0, aging: 0, stale: 0, error: 0, unknown: 0, paused: 0, revoked: 0
+    fresh: 0, aging: 0, stale: 0, observed: 0, error: 0, unknown: 0, paused: 0, revoked: 0
   };
   const adapters: Record<string, number> = {};
   const issuers = new Set<string>();
@@ -222,6 +266,16 @@ async function updateSource(req: Request, id: string) {
         })
       }
     );
+  } else if (source.adapter === "signed_push") {
+    await rest(
+      "gate_signed_authority_sources?id=eq." + encodeURIComponent(source.adapter_resource_id) +
+      "&project_id=eq." + encodeURIComponent(a.projectId),
+      {
+        method: "PATCH",
+        headers: { prefer: "return=minimal" },
+        body: JSON.stringify({ status: body.status, updated_at: new Date().toISOString() })
+      }
+    );
   } else {
     await rest(
       "gate_authority_sources?id=eq." + encodeURIComponent(id) +
@@ -252,9 +306,9 @@ Deno.serve(async (req: Request) => {
       return json({
         ok: true,
         service: "gate-source-registry",
-        stage: 14,
+        stage: 15,
         model: "project-scoped authority source registry",
-        freshness: "ingestion freshness; distinct from canonical authority/source freshness semantics"
+        freshness: "poll/checkpoint sources may have bounded ingestion freshness; event-driven sources report observed activity only; canonical issuer freshness remains separate"
       });
     }
 
