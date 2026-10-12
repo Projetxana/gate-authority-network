@@ -5,19 +5,9 @@
 -- The historical migration remains unchanged because it reflects the actual
 -- production migration history.
 
-do $$
-declare
-  v_job_id bigint;
-begin
-  for v_job_id in
-    select jobid
-    from cron.job
-    where jobname = 'gate-ssf-managed-worker-v1'
-  loop
-    perform cron.unschedule(v_job_id);
-  end loop;
-end
-$$;
+-- Applying this migration must not interrupt the existing worker.
+-- The current schedule remains active until gate_configure_ssf_worker()
+-- is explicitly called after the target Edge Functions are deployed.
 
 create or replace function public.gate_configure_ssf_worker(
   p_functions_base_url text
