@@ -16,6 +16,23 @@ MCP is one integration surface for GATE, not the product boundary. GATE also doe
 npm install @gate-avn/sdk@dev
 ```
 
+## Live Free GATE Network
+
+Canonical managed endpoint:
+
+https://ufqtoyakmrddqytrkcje.supabase.co/functions/v1/gate-network
+
+Current Free Developer Preview:
+
+- 50,000 verifications/month;
+- 1 authority issuer;
+- bounded consistency;
+- strict consistency not included.
+
+A new live project has no preloaded authority graph. Register an issuer and deliver signed authority events before expecting delegated authority to return ALLOW.
+
+See docs/QUICKSTART.md and docs/LIVE-ISSUER-QUICKSTART.md.
+
 ## Public Developer Preview sandbox
 
 Create a temporary API key at https://gate-phi-eosin.vercel.app/quickstart.html, then:
@@ -70,7 +87,7 @@ const { decision, result } = await gate.enforce(
       name: 'purchase_order_create',
       resource: 'purchase-order:1234'
     },
-    consistency: 'strict'
+    consistency: 'bounded'
   },
   async () => createPurchaseOrder()
 );
