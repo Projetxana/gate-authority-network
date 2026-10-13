@@ -1,6 +1,6 @@
 # GATE — Authority Verification Network
 
-**Developer Preview · 2026-10-07**
+**Stage 16 Public Baseline · Developer Preview**
 
 > Does a live delegation path from this principal to this actor still exist **right now**?
 
@@ -9,16 +9,16 @@
 It resolves whether a currently valid authority path still exists at effect time using live authority state from external trust domains. GATE does **not** mint a proprietary delegation token, replace OAuth, replace your policy engine, or require MCP.
 
 
-## GATE v7 — current Developer Preview
+## GATE Stage 16 — current public baseline
 
 > **Current operational boundary:** one Canadian primary database, **no production regional replicas**, and no independent third-party issuer propagation SLA. `maxStalenessMs` measures primary snapshot age only. The Developer Preview is **not enterprise GA**.
 
-- [Try the real hosted two-minute sandbox](https://gate-beta-nu.vercel.app/demo.html) — actual HTTP calls on a clearly labeled **synthetic** two-path graph.
-- [Connect your own ES256 signer](https://gate-beta-nu.vercel.app/integration.html) — live GATE v7 network API, using a disposable Free project.
-- [Read: A valid signature is not live authority](https://gate-beta-nu.vercel.app/article.html).
-- [Apply for the independent developer beta](https://gate-beta-nu.vercel.app/).
-- [V7 API, topology and limitations](docs/GATE-V7-LIVE-STATUS.md).
-- [Real ES256 quickstart](docs/LIVE-ISSUER-QUICKSTART.md).
+- [Start with the hosted sandbox](https://gate-phi-eosin.vercel.app/quickstart.html) — synthetic graph for learning GATE revocation semantics.
+- [Create a real Free GATE Network project](docs/QUICKSTART.md) — live gate-network with a real API key and managed quota.
+- [Connect your own ES256 authority source](docs/LIVE-ISSUER-QUICKSTART.md).
+- [Stage 16 public baseline release](https://github.com/Projetxana/gate-authority-network/releases/tag/stage16).
+- [Production / preview runtime boundary](docs/PRODUCTION-MANIFEST-V1.md).
+- [Current API, topology and limitations](docs/GATE-V7-LIVE-STATUS.md).
 
 ## Where GATE fits
 
@@ -47,23 +47,25 @@ Read: `docs/POSITIONING.md`, `docs/INTEGRATION-MODEL.md`, `docs/RELEASE-BOUNDARY
 
 ## Public Developer Quickstart
 
-- Quickstart: https://gate-phi-eosin.vercel.app/quickstart.html
-- Hosted sandbox: `https://ufqtoyakmrddqytrkcje.supabase.co/functions/v1/gate-sandbox`
-- Temporary API keys: 7 days
-- Quota: 500 verifications/project/day
+GATE exposes two separate onboarding paths.
 
-```bash
-npm install @gate-avn/sdk@dev
-```
+### Sandbox
 
-```js
-import { createSandboxClient } from '@gate-avn/sdk';
-const gate = createSandboxClient({ apiKey: process.env.GATE_API_KEY });
-const result = await gate.verify({ principal: 'user:demo', actor: 'agent:C@company-c' });
-console.log(result.authority, result.decision);
-```
+Use the hosted sandbox to learn GATE semantics on a synthetic authority graph:
 
-See `docs/QUICKSTART.md`.
+https://gate-phi-eosin.vercel.app/quickstart.html
+
+Temporary key: 7 days. Quota: 500 verifications/project/day.
+
+### Live Free Network
+
+Canonical endpoint:
+
+https://ufqtoyakmrddqytrkcje.supabase.co/functions/v1/gate-network
+
+Current Free Developer Preview: 50,000 verifications/month, 1 authority issuer, bounded consistency. Strict consistency is not included.
+
+Use GateClient from @gate-avn/sdk. See docs/QUICKSTART.md for the complete live-network flow.
 
 ## 5-minute demo
 
@@ -146,7 +148,9 @@ docs/              architecture, integration contract, due diligence
 npm install @gate-avn/sdk@dev
 ```
 
-Current SDK Developer Preview: `0.1.0-dev.3`
+Repository Stage 16 baseline: `0.1.0-dev.4`
+
+Published npm `@dev`: `0.1.0-dev.3`
 
 ### MCP server
 
@@ -154,7 +158,9 @@ Current SDK Developer Preview: `0.1.0-dev.3`
 npm install @gate-avn/mcp@dev
 ```
 
-Current MCP Developer Preview: `0.1.0-dev.5`
+Repository Stage 16 baseline: `0.1.0-dev.8`
+
+Published npm `@dev`: `0.1.0-dev.5`
 
 Official MCP Registry:
 
@@ -166,7 +172,9 @@ io.github.Projetxana/gate-authority-network
 
 GATE is publicly available as a Developer Preview on npm and in the Official MCP Registry.
 
-The SDK and MCP server are installable independently from the public npm registry. The MCP server is discoverable through the Official MCP Registry.
+The SDK and MCP server are currently installable from the public npm registry. The MCP server is also discoverable through the Official MCP Registry.
+
+The HTTP, x402, AuthZEN, A2A, AP2 and SSF adapters exist in the Stage 16 repository baseline but are not yet published as public npm packages.
 
 This remains experimental Developer Preview software and is not production-ready.
 
