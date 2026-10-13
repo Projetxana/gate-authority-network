@@ -259,6 +259,27 @@ if (
 
 ok("historical SSF worker cleanup preserves tagged worker");
 
+const distributedConsistencyTest = read(
+  "test/integration/distributed-consistency.test.mjs"
+);
+
+if (
+  distributedConsistencyTest.includes(
+    "path.join(root,'state','customers.json')"
+  )
+) {
+  fail("distributed integration test must not mutate repository customer state");
+}
+
+if (
+  !distributedConsistencyTest.includes("mkdtempSync") ||
+  !distributedConsistencyTest.includes("rmSync")
+) {
+  fail("distributed integration test must isolate and clean mutable state");
+}
+
+ok("distributed integration test isolates mutable customer state");
+
 const secretPatterns = [
   ["Stripe live key", /sk_live_[A-Za-z0-9]{8,}/],
   ["Stripe test key", /sk_test_[A-Za-z0-9]{8,}/],

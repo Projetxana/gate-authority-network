@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import net from 'node:net';
+import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawn } from 'node:child_process';
@@ -24,8 +26,11 @@ function mcpClient({token,pdpUrl,issuerUrl,customerPath,name}){const client=new 
 async function runScenario(){
   const keys=['trust','oauth','control','principal','a','b','rogue','east','west','pdpEast','pdpWest'];const ports={};for(const k of keys)ports[k]=await freePort();const u=Object.fromEntries(Object.entries(ports).map(([k,v])=>[k,`http://127.0.0.1:${v}`]));const eventType='https://gate.example/events/authority-edge-state';
   const members={[u.principal]:{principal_patterns:['user:*'],events_supported:[eventType]},[u.a]:{principal_patterns:['agent:*@company-a'],events_supported:[eventType]},[u.b]:{principal_patterns:['agent:*@company-b'],events_supported:[eventType]},[u.rogue]:{principal_patterns:['agent:*@rogue'],events_supported:[eventType]}};
-  const customerPath=path.join(root,'state','customers.json');resetCustomers(customerPath);let trust,control,principal,txA,txB,issuer,east,west,pdpEast,pdpWest,eastMcp,westMcp;
+  const tempRoot=fs.mkdtempSync(path.join(os.tmpdir(),'gate-stage16-customers-'));
+  const customerPath=path.join(tempRoot,'customers.json');
+  let trust,control,principal,txA,txB,issuer,east,west,pdpEast,pdpWest,eastMcp,westMcp;
   try{
+    resetCustomers(customerPath);
     trust=await startService('services/trust-anchor.mjs',{PORT:String(ports.trust),FEDERATION_MEMBERS_JSON:JSON.stringify(members)});
     control=await startService('services/gate-control-plane.mjs',{PORT:String(ports.control),TRUST_ANCHOR_URL:u.trust,LEASE_TTL_MS:'1000'});
     principal=await startService('services/authority-transmitter.mjs',{PORT:String(ports.principal),AUTHORITY_DOMAIN:'principal',GATE_CONTROL_PLANE_URL:u.control});
@@ -52,7 +57,7 @@ async function runScenario(){
     await postJson(`${west.url}/demo/network/heal`,{});const healed=await waitRevision(west.url,6);const healedRaw=await westMcp.client.callTool({name:'delete_customer_data',arguments:{customerId:'5678'}});const healedBlocked=parseTool(healedRaw);assert.equal(healedRaw.isError,true);assert.equal(healedBlocked.executed,false);assert.equal(healedBlocked.authzen.context.gate.authority,'INVALID');print('11. WEST HEALS, CATCHES UP, AND DENIES FROM THE REAL REVOKED STATE',{replica:healed,isError:healedRaw.isError,...healedBlocked});
     const mEast=await requestJson(`${east.url}/v1/metrics`);const mWest=await requestJson(`${west.url}/v1/metrics`);print('12. METERABLE VERIFICATION COUNTERS',{east:mEast,west:mWest,totalChecks:mEast.checks+mWest.checks});
     return{passed:true,bench};
-  }finally{if(eastMcp)await eastMcp.client.close().catch(()=>{});if(westMcp)await westMcp.client.close().catch(()=>{});await stop(pdpWest);await stop(pdpEast);await stop(west);await stop(east);await stop(issuer);await stop(txB);await stop(txA);await stop(principal);await stop(control);await stop(trust)}
+  }finally{if(eastMcp)await eastMcp.client.close().catch(()=>{});if(westMcp)await westMcp.client.close().catch(()=>{});await stop(pdpWest);await stop(pdpEast);await stop(west);await stop(east);await stop(issuer);await stop(txB);await stop(txA);await stop(principal);await stop(control);await stop(trust);fs.rmSync(tempRoot,{recursive:true,force:true})}
 }
 if(demoMode){try{const r=await runScenario();console.log('\n=== RESULT ===\nGATE v0.8 DISTRIBUTED CONSISTENCY DEMO PASSED');console.log(JSON.stringify({latency:r.bench,important:'bounded mode has a finite staleness window; strict mode trades availability/latency for current-state confirmation'},null,2))}catch(e){console.error(e);process.exitCode=1}}
 else test('regional replicas use signed freshness leases, bounded staleness, fail-closed partitions and live cross-domain revocation',async()=>{const r=await runScenario();assert.equal(r.passed,true)});
