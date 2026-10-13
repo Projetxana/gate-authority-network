@@ -160,7 +160,7 @@ npm install @gate-avn/mcp@dev
 
 Repository Stage 16 baseline: `0.1.0-dev.8`
 
-Published npm ``: `0.1.0-dev.5`
+Published npm `@dev`: `0.1.0-dev.5`
 
 Official MCP Registry:
 
