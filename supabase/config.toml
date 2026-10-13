@@ -32,3 +32,6 @@ verify_jwt = false
 
 [functions.gate-signed-sources]
 verify_jwt = false
+
+[functions.gate-billing-qa-webhook]
+verify_jwt = false
