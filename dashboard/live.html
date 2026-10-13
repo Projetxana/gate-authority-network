@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GATE — Create Live Project</title>
+<link rel="stylesheet" href="./styles.css">
+<style>
+.live-shell{width:min(1100px,calc(100% - 32px));margin:auto;padding:28px 0 60px}
+.live-nav{display:flex;justify-content:space-between;align-items:center;gap:18px;margin-bottom:30px}
+.live-links{display:flex;gap:10px;flex-wrap:wrap}
+.live-card{background:#fff;border:1px solid var(--border);border-radius:20px;padding:24px;box-shadow:var(--shadow)}
+.live-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}
+.live-wide{grid-column:1/-1}
+.live-card p{color:var(--muted)}
+.live-card input{width:100%;padding:13px 14px;border:1px solid var(--border);border-radius:12px;font:inherit;color:var(--text);background:#fff}
+.primary-button{border:0;border-radius:12px;padding:12px 16px;font-weight:850;background:linear-gradient(135deg,var(--blue),#4b94f4);color:#fff;cursor:pointer}
+.primary-button:disabled{opacity:.5;cursor:not-allowed}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.code,.secret{background:#0b1738;color:#eaf3ff;border-radius:14px;padding:15px;overflow:auto;font:13px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace}
+.secret{word-break:break-all;color:#aeeeff}
+.fact-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:14px}
+.fact{border:1px solid var(--border);border-radius:14px;padding:12px;background:#fbfcfe}
+.fact span{display:block;color:var(--muted);font-size:11px}
+.fact strong{display:block;margin-top:4px;font-size:14px;word-break:break-word}
+.ok{color:var(--green);font-weight:800}
+.warn{color:var(--amber);font-weight:800}
+.error{color:#b42318;font-weight:800}
+.note{font-size:12px;color:var(--muted)}
+.hero-panel.live-hero{display:block}
+.hero-panel.live-hero h1{font-size:clamp(34px,5vw,58px);max-width:900px}
+.hero-panel.live-hero p{font-size:17px;max-width:850px}
+@media(max-width:760px){.live-grid{grid-template-columns:1fr}.fact-grid{grid-template-columns:1fr}.live-nav{align-items:flex-start;flex-direction:column}}
+</style>
+</head>
+<body>
+<div class="live-shell">
+  <div class="live-nav">
+    <div class="brand"><div class="logo-mark">G</div><div><div class="eyebrow">GATE · STAGE 17</div><strong>Create Live Project</strong></div></div>
+    <div class="live-links">
+      <a class="refresh-button" href="./quickstart.html">Sandbox</a>
+      <a class="refresh-button" href="./">Adoption dashboard</a>
+    </div>
+  </div>
+
+  <section class="hero-panel live-hero">
+    <div class="section-kicker">REAL MANAGED NETWORK · FREE DEVELOPER PREVIEW</div>
+    <h1>Create a real GATE project.</h1>
+    <p>This is not the sandbox. It creates a persistent Free project on the canonical GATE Network, returns a real bearer API key, and lets you confirm the project against the live service.</p>
+    <p id="health" class="warn">Checking GATE Network…</p>
+  </section>
+
+  <div class="live-grid">
+    <section class="live-card">
+      <div class="section-kicker">STEP 1</div>
+      <h3>Create your Free project</h3>
+      <p>Free Developer Preview: 50,000 verifications/month, 1 authority issuer, bounded consistency.</p>
+      <input id="name" maxlength="80" value="My GATE project" aria-label="Project name">
+      <div class="actions"><button class="primary-button" id="create">Create Live Project</button></div>
+      <p class="note">Registration is rate-limited. The API key is shown in this tab only and is not stored in localStorage.</p>
+      <p id="createStatus" class="note"></p>
+    </section>
+
+    <section class="live-card">
+      <div class="section-kicker">STEP 2</div>
+      <h3>Project credentials</h3>
+      <div id="emptyState"><p>Create a project to reveal its live credentials.</p></div>
+      <div id="credentials" hidden>
+        <p class="note">GATE_API_KEY — treat this as a bearer secret.</p>
+        <div class="secret" id="key"></div>
+        <div class="actions">
+          <button class="refresh-button" id="copyKey">Copy key</button>
+          <button class="refresh-button" id="copyEnv">Copy env</button>
+        </div>
+        <div class="fact-grid">
+          <div class="fact"><span>Project ID</span><strong id="projectId"></strong></div>
+          <div class="fact"><span>Plan</span><strong id="plan"></strong></div>
+          <div class="fact"><span>Audience</span><strong id="audience"></strong></div>
+          <div class="fact"><span>Authority lease max</span><strong id="lease"></strong></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="live-card live-wide">
+      <div class="section-kicker">STEP 3</div>
+      <h3>Confirm the live project</h3>
+      <p>This authenticated call proves the returned API key works against the canonical managed network. It does not fabricate authority state.</p>
+      <div class="actions"><button class="primary-button" id="confirm" disabled>Confirm project</button></div>
+      <pre class="code" id="projectResult">Create a live project first.</pre>
+    </section>
+
+    <section class="live-card">
+      <div class="section-kicker">STEP 4</div>
+      <h3>Install and verify</h3>
+      <pre class="code">npm install @gate-avn/sdk@dev</pre>
+      <pre class="code" id="sdkCode">import { GateClient } from '@gate-avn/sdk';
+
+const gate = new GateClient({
+  endpoint: process.env.GATE_URL,
+  apiKey: process.env.GATE_API_KEY
+});
+
+const result = await gate.verify({
+  principal: 'user:alice',
+  actor: 'agent:procurement@company-c',
+  consistency: 'bounded'
+});
+
+console.log(result.authority, result.decision);</pre>
+      <button class="refresh-button" id="copyCode">Copy SDK code</button>
+      <p class="note">A fresh live project has no preloaded authority graph. Do not expect an arbitrary principal/actor pair to return ALLOW.</p>
+    </section>
+
+    <section class="live-card">
+      <div class="section-kicker">STEP 5</div>
+      <h3>Connect a real authority source</h3>
+      <p>Register an ES256 issuer and deliver signed authority events. GATE only returns ALLOW when a currently valid authority path exists.</p>
+      <div class="actions">
+        <a class="refresh-button" href="https://github.com/Projetxana/gate-authority-network/blob/main/docs/LIVE-ISSUER-QUICKSTART.md" target="_blank" rel="noreferrer">ES256 issuer quickstart ↗</a>
+        <a class="refresh-button" href="https://github.com/Projetxana/gate-authority-network/blob/main/docs/QUICKSTART.md" target="_blank" rel="noreferrer">Full quickstart ↗</a>
+      </div>
+      <p class="note">Current operational boundary: one Canadian primary, no production regional replicas, no independent third-party issuer propagation SLA.</p>
+    </section>
+  </div>
+
+  <footer><span>GATE · Live delegated authority-state resolution at effect time.</span><span>Developer Preview · not enterprise GA</span></footer>
+</div>
+
+<script>
+const BASE='https://ufqtoyakmrddqytrkcje.supabase.co/functions/v1/gate-network';
+let apiKey=null;
+let project=null;
+const $=id=>document.getElementById(id);
+
+async function request(url,options={}){
+  const response=await fetch(url,{cache:'no-store',...options});
+  const text=await response.text();
+  let data={};
+  try{data=text?JSON.parse(text):{}}catch{throw new Error('Invalid JSON response')}
+  if(!response.ok){
+    const error=new Error(data.error||`HTTP ${response.status}`);
+    error.details=data;
+    throw error;
+  }
+  return data;
+}
+
+$('create').onclick=async()=>{
+  const button=$('create');
+  button.disabled=true;
+  button.textContent='Creating…';
+  $('createStatus').textContent='';
+  try{
+    const data=await request(`${BASE}/projects/register`,{
+      method:'POST',
+      headers:{'content-type':'application/json'},
+      body:JSON.stringify({name:$('name').value||'My GATE project'})
+    });
+    apiKey=data.apiKey;
+    project=data;
+    $('key').textContent=apiKey;
+    $('projectId').textContent=data.project.id;
+    $('plan').textContent=data.project.plan;
+    $('audience').textContent=data.audience;
+    $('lease').textContent=`${data.authorityLease.maxSeconds} seconds`;
+    $('emptyState').hidden=true;
+    $('credentials').hidden=false;
+    $('confirm').disabled=false;
+    $('createStatus').textContent='Live project created.';
+    $('createStatus').className='ok';
+    button.textContent='Project created';
+  }catch(error){
+    button.disabled=false;
+    button.textContent='Create Live Project';
+    $('createStatus').textContent=error.message;
+    $('createStatus').className='error';
+  }
+};
+
+$('confirm').onclick=async()=>{
+  const button=$('confirm');
+  button.disabled=true;
+  button.textContent='Checking…';
+  try{
+    const data=await request(`${BASE}/v1/project`,{
+      headers:{authorization:`Bearer ${apiKey}`}
+    });
+    $('projectResult').textContent=JSON.stringify(data,null,2);
+    button.textContent='Confirmed ✓';
+  }catch(error){
+    $('projectResult').textContent=JSON.stringify({error:error.message,details:error.details||null},null,2);
+    button.disabled=false;
+    button.textContent='Confirm project';
+  }
+};
+
+$('copyKey').onclick=()=>navigator.clipboard.writeText(apiKey||'');
+$('copyEnv').onclick=()=>navigator.clipboard.writeText(`export GATE_URL='${BASE}'\nexport GATE_API_KEY='${apiKey||'gate_sk_...'}'`);
+$('copyCode').onclick=()=>navigator.clipboard.writeText($('sdkCode').textContent);
+
+request(`${BASE}/health`)
+  .then(data=>{
+    $('health').textContent=data.ok?'● GATE Network live':'GATE Network unavailable';
+    $('health').className=data.ok?'ok':'error';
+  })
+  .catch(()=>{
+    $('health').textContent='GATE Network unavailable';
+    $('health').className='error';
+  });
+</script>
+</body>
+</html>
