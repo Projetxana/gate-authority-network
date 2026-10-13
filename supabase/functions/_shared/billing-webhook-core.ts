@@ -327,6 +327,23 @@ export function startBillingWebhook(config) {
       const subId=stripeId(o.subscription);
       const customerId=stripeId(o.customer);
       const projectId=o.client_reference_id;
+      const existing=await billingRowBySub(subId);
+
+      if(
+        existing
+        &&projectId
+        &&existing.project_id!==projectId
+      ){
+        await recordOnly(
+          event,
+          payloadHash,
+          subId,
+          existing.project_id,
+          "checkout_project_binding_conflict"
+        );
+        return null;
+      }
+
       const project=await projectRecord(projectId);
 
       if(
@@ -443,9 +460,24 @@ export function startBillingWebhook(config) {
       const metadataProjectId=
         o.metadata&&o.metadata.gate_project_id;
 
+      if(
+        existing
+        &&metadataProjectId
+        &&existing.project_id!==metadataProjectId
+      ){
+        await recordOnly(
+          event,
+          payloadHash,
+          subId,
+          existing.project_id,
+          "subscription_project_binding_conflict"
+        );
+        return null;
+      }
+
       const projectId=
-        metadataProjectId
-        ||(existing&&existing.project_id)
+        (existing&&existing.project_id)
+        ||metadataProjectId
         ||null;
 
       const project=await projectRecord(projectId);
