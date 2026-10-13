@@ -148,7 +148,9 @@ docs/              architecture, integration contract, due diligence
 npm install @gate-avn/sdk@dev
 ```
 
-Current SDK Developer Preview: `0.1.0-dev.4`
+Repository Stage 16 baseline: `0.1.0-dev.4`
+
+Published npm `@dev`: `0.1.0-dev.3`
 
 ### MCP server
 
@@ -156,7 +158,9 @@ Current SDK Developer Preview: `0.1.0-dev.4`
 npm install @gate-avn/mcp@dev
 ```
 
-Current MCP Developer Preview: `0.1.0-dev.8`
+Repository Stage 16 baseline: `0.1.0-dev.8`
+
+Published npm ``: `0.1.0-dev.5`
 
 Official MCP Registry:
 
@@ -168,7 +172,9 @@ io.github.Projetxana/gate-authority-network
 
 GATE is publicly available as a Developer Preview on npm and in the Official MCP Registry.
 
-The SDK and MCP server are installable independently from the public npm registry. The MCP server is discoverable through the Official MCP Registry.
+The SDK and MCP server are currently installable from the public npm registry. The MCP server is also discoverable through the Official MCP Registry.
+
+The HTTP, x402, AuthZEN, A2A, AP2 and SSF adapters exist in the Stage 16 repository baseline but are not yet published as public npm packages.
 
 This remains experimental Developer Preview software and is not production-ready.
 
