@@ -93,6 +93,10 @@
       <div class="section-kicker">STEP 4</div>
       <h3>Install and verify</h3>
       <pre class="code">npm install @gate-avn/sdk@dev</pre>
+      <p>Run one real verification against the managed network. This consumes one verification from the monthly Free quota.</p>
+      <div class="actions"><button class="primary-button" id="verifyLive" disabled>Run first live verify</button></div>
+      <p class="note" id="verifyStatus">A fresh project should fail closed with DENY / no_authority_path.</p>
+      <pre class="code" id="verifyResult">Confirm the live project first.</pre>
       <pre class="code" id="sdkCode">import { GateClient } from '@gate-avn/sdk';
 
 const gate = new GateClient({
@@ -186,6 +190,7 @@ $('confirm').onclick=async()=>{
       headers:{authorization:`Bearer ${apiKey}`}
     });
     $('projectResult').textContent=JSON.stringify(data,null,2);
+    $('verifyLive').disabled=false;
     button.textContent='Confirmed ✓';
   }catch(error){
     $('projectResult').textContent=JSON.stringify({error:error.message,details:error.details||null},null,2);
@@ -208,5 +213,6 @@ request(`${BASE}/health`)
     $('health').className='error';
   });
 </script>
+<script src="./live-verify.js"></script>
 </body>
 </html>
