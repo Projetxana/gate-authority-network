@@ -20,3 +20,25 @@ single disposable GATE authority edge dedicated to this test stream.
 The general SSF verifier remains strict by default (`requireSubject = true`).
 A production connector should use source-specific subject mapping whenever the
 transmitter supplies a subject identifier.
+
+## Stage 17C revalidation — 2026-10-12
+
+The independent caep.dev interoperability path was revalidated against the
+canonical GATE network during Stage 17C.
+
+In this run, the externally signed CAEP `session-revoked` SET **did include a
+source subject**. GATE therefore used `source-subject` mapping rather than the
+historical stream-scoped fallback described above.
+
+Observed external evidence:
+
+- transmitter: `https://ssf.caep.dev`;
+- signing algorithm: RS256;
+- delivery: RFC 8936 POLL;
+- external subject present: yes;
+- canonical GATE transition: `VALID / ALLOW` to `INVALID / DENY`.
+
+The earlier missing-`sub_id` note remains historically accurate for the Stage
+11 run, but it is not representative of the Stage 17C validation.
+
+See `STAGE17C-INDEPENDENT-CAEP-PROOF.md`.
