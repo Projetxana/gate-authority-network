@@ -125,6 +125,80 @@ console.log(result.authority, result.decision);</pre>
       </div>
       <p class="note">Current operational boundary: one Canadian primary, no production regional replicas, no independent third-party issuer propagation SLA.</p>
     </section>
+
+    <section class="live-card live-wide">
+      <div class="section-kicker">STEP 6</div>
+      <h3>Upgrade without changing your integration</h3>
+      <p>
+        Free, Pro and Scale use the same project, API key, endpoint and
+        <code>gate.verify()</code> integration. A paid subscription only changes
+        the entitlements attached to the project.
+      </p>
+
+      <div class="fact-grid">
+        <div class="fact">
+          <span>Current plan</span>
+          <strong id="billingPlan">Confirm project first</strong>
+        </div>
+        <div class="fact">
+          <span>Usage this month</span>
+          <strong id="billingUsage">—</strong>
+        </div>
+        <div class="fact">
+          <span>Issuer limit</span>
+          <strong id="billingIssuers">—</strong>
+        </div>
+        <div class="fact">
+          <span>Strict consistency</span>
+          <strong id="billingStrict">—</strong>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="refresh-button" id="refreshBilling" disabled>
+          Refresh plan
+        </button>
+        <button class="refresh-button" id="preparePro" disabled>
+          Prepare Pro checkout
+        </button>
+        <button class="refresh-button" id="prepareScale" disabled>
+          Prepare Scale checkout
+        </button>
+        <button class="refresh-button" id="openPortal" disabled>
+          Manage billing
+        </button>
+      </div>
+
+      <p class="note">
+        Preparing checkout does not charge you. Stripe opens only after you
+        explicitly continue. Checkout opens in a new tab so this page can keep
+        the GATE API key in memory.
+      </p>
+
+      <p class="note">
+        Free: 50,000 verifications/month · 1 issuer · bounded consistency.
+        Pro: 1,000,000/month · 10 issuers · strict available.
+        Scale: 10,000,000/month · 100 issuers · strict available.
+        Current pricing is shown by Stripe at checkout.
+      </p>
+
+      <p id="billingStatus" class="note">Confirm a project first.</p>
+
+      <div id="checkoutReady" class="fact" hidden>
+        <span>Checkout prepared</span>
+        <strong id="checkoutPlan">—</strong>
+        <div class="actions">
+          <a
+            class="refresh-button"
+            id="checkoutLink"
+            href="#"
+            target="_blank"
+            rel="noopener noreferrer"
+          >Continue to Stripe ↗</a>
+        </div>
+      </div>
+    </section>
+
   </div>
 
   <footer><span>GATE · Live delegated authority-state resolution at effect time.</span><span>Developer Preview · not enterprise GA</span></footer>
@@ -134,6 +208,7 @@ console.log(result.authority, result.decision);</pre>
 const BASE='https://ufqtoyakmrddqytrkcje.supabase.co/functions/v1/gate-network';
 let apiKey=null;
 let project=null;
+window.gateLiveState=()=>({apiKey,project});
 const $=id=>document.getElementById(id);
 
 async function request(url,options={}){
@@ -191,6 +266,8 @@ $('confirm').onclick=async()=>{
     });
     $('projectResult').textContent=JSON.stringify(data,null,2);
     $('verifyLive').disabled=false;
+    $('plan').textContent=data.plan;
+    window.dispatchEvent(new CustomEvent('gate:project-confirmed',{detail:data}));
     button.textContent='Confirmed ✓';
   }catch(error){
     $('projectResult').textContent=JSON.stringify({error:error.message,details:error.details||null},null,2);
@@ -214,5 +291,6 @@ request(`${BASE}/health`)
   });
 </script>
 <script src="./live-verify.js"></script>
+<script src="./live-billing.js"></script>
 </body>
 </html>

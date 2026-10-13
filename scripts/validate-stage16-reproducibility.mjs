@@ -115,28 +115,41 @@ ok("Supabase config present");
 
 const functionRoot = path.join(root, "supabase/functions");
 
-const trackedFunctions = fs.readdirSync(functionRoot, {
+const functionDirectories = fs.readdirSync(functionRoot, {
   withFileTypes: true
 })
   .filter((x) => x.isDirectory())
   .map((x) => x.name)
   .sort();
 
-const expectedFunctions = [...productFunctions].sort();
+const deployableFunctions = functionDirectories
+  .filter((name) => !name.startsWith("_"));
 
-if (JSON.stringify(trackedFunctions) !== JSON.stringify(expectedFunctions)) {
+const missingCanonicalFunctions = productFunctions
+  .filter((fn) => !deployableFunctions.includes(fn));
+
+if (missingCanonicalFunctions.length) {
   fail(
-    `product function set changed\nexpected=${expectedFunctions.join(",")}\nactual=${trackedFunctions.join(",")}`
+    `canonical product function missing: ${missingCanonicalFunctions.join(",")}`
   );
 }
 
-for (const fn of productFunctions) {
+for (const fn of deployableFunctions) {
   if (!exists(`supabase/functions/${fn}/index.ts`)) {
     fail(`missing runtime source for ${fn}`);
   }
 }
 
-ok("10 canonical product functions present");
+ok(`${productFunctions.length} canonical product functions present`);
+
+const additiveFunctions = deployableFunctions
+  .filter((fn) => !productFunctions.includes(fn));
+
+if (additiveFunctions.length) {
+  ok(
+    `${additiveFunctions.length} additive function(s) preserve Stage 16: ${additiveFunctions.join(",")}`
+  );
+}
 
 const config = read("supabase/config.toml");
 
@@ -153,7 +166,7 @@ if (
 
 ok("PostgreSQL major version pinned to 17");
 
-for (const fn of productFunctions) {
+for (const fn of deployableFunctions) {
   const marker = `[functions.${fn}]`;
   const start = config.indexOf(marker);
 
