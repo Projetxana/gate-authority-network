@@ -1,6 +1,6 @@
 # GATE — Authority Verification Network
 
-**Stage 16 Public Baseline · Developer Preview**
+**Stage 17 Developer Preview · Live public adoption**
 
 > Does a live delegation path from this principal to this actor still exist **right now**?
 
@@ -9,16 +9,23 @@
 It resolves whether a currently valid authority path still exists at effect time using live authority state from external trust domains. GATE does **not** mint a proprietary delegation token, replace OAuth, replace your policy engine, or require MCP.
 
 
-## GATE Stage 16 — current public baseline
+## GATE Stage 17 — current Developer Preview
 
 > **Current operational boundary:** one Canadian primary database, **no production regional replicas**, and no independent third-party issuer propagation SLA. `maxStalenessMs` measures primary snapshot age only. The Developer Preview is **not enterprise GA**.
 
 - [Start with the hosted sandbox](https://gate-phi-eosin.vercel.app/quickstart.html) — synthetic graph for learning GATE revocation semantics.
 - [Create a real Free GATE Network project](docs/QUICKSTART.md) — live gate-network with a real API key and managed quota.
 - [Connect your own ES256 authority source](docs/LIVE-ISSUER-QUICKSTART.md).
-- [Stage 16 public baseline release](https://github.com/Projetxana/gate-authority-network/releases/tag/stage16).
+- [Stage 16 frozen public baseline release](https://github.com/Projetxana/gate-authority-network/releases/tag/stage16).
+- [Stage 17E Free → paid continuity and billing hardening](docs/STAGE17E-FREE-PAID-CONTINUITY.md).
+- [Stage 17D external problem validation](docs/STAGE17D-EXTERNAL-VALIDATION.md).
 - [Production / preview runtime boundary](docs/PRODUCTION-MANIFEST-V1.md).
 - [Current API, topology and limitations](docs/GATE-V7-LIVE-STATUS.md).
+
+Stage 17 has validated real Free onboarding, independent CAEP/SSF revocation
+interoperability, external problem validation, and Free-to-paid entitlement
+continuity. GATE remains a Developer Preview: independent adoption and
+enterprise-scale operation are the next validation targets.
 
 ## Where GATE fits
 
@@ -178,7 +185,7 @@ The HTTP, x402, AuthZEN, A2A, AP2 and SSF adapters exist in the Stage 16 reposit
 
 This remains experimental Developer Preview software and is not production-ready.
 
-Read next: `docs/DUE-DILIGENCE-2026-10-02.md` and `docs/PUBLIC-VALIDATION-PLAN.md`.
+Read next: `docs/STAGE17D-EXTERNAL-VALIDATION.md`, `docs/STAGE17E-FREE-PAID-CONTINUITY.md`, `docs/DUE-DILIGENCE-2026-10-02.md` and `docs/PUBLIC-VALIDATION-PLAN.md`.
 
 ## License
 
