@@ -25,6 +25,12 @@ function sameScope(a, b) {
   const x = normalizedScope(a);
   return x.kind === b.kind && x.issuer === b.issuer && x.id === b.id;
 }
+function assertOnlySupportedKeys(value, supported, code) {
+  if (!value || typeof value !== 'object' || Array.isArray(value) ||
+      Object.keys(value).some(key => !supported.includes(key))) {
+    throw new Error(code);
+  }
+}
 function isWholePositive(n) { return Number.isSafeInteger(n) && n > 0; }
 function isWholeNonnegative(n) { return Number.isSafeInteger(n) && n >= 0; }
 
@@ -63,6 +69,14 @@ export function verifyBoundedWorkIssuerEvidence({
     token:checkpointJwt, publicJwk:trust.publicJwk, expectedTyp:GATE_WORK_CHECKPOINT_TYP,
     issuer, audience
   }).payload;
+  assertOnlySupportedKeys(event, [
+    'iss', 'aud', 'iat', 'jti', 'project_id', 'scope', 'sequence',
+    'status', 'principal', 'actor', 'valid_until', 'delegations', 'permissions'
+  ], 'unsupported_signed_work_event_claim');
+  assertOnlySupportedKeys(checkpoint, [
+    'iss', 'aud', 'iat', 'jti', 'project_id', 'scope',
+    'checkpoint_seq', 'accepted_seq', 'not_after_ms'
+  ], 'unsupported_signed_work_checkpoint_claim');
   for (const payload of [event, checkpoint]) {
     assertArtifactBinding(payload, {expectedIssuer:issuer, expectedAudience:audience,
       bindingClaim:'project_id', expectedBinding:projectId});
@@ -101,6 +115,9 @@ export function verifyBoundedWorkIssuerEvidence({
   }
   const seenEdges = new Set();
   const edges = event.delegations.map(d => {
+    assertOnlySupportedKeys(d, [
+      'edgeId', 'issuer', 'subject', 'status', 'validUntil'
+    ], 'unsupported_signed_work_delegation_constraint');
     if (!d || typeof d !== 'object' || !goodId(d.edgeId) ||
         !goodId(d.issuer) || !goodId(d.subject) ||
         !['ACTIVE', 'REVOKED', 'UNKNOWN'].includes(d.status) ||
@@ -118,6 +135,9 @@ export function verifyBoundedWorkIssuerEvidence({
       status:d.status, validUntil:d.validUntil, authorityContext:scope };
   });
   const permissions = event.permissions.map(p => {
+    assertOnlySupportedKeys(p, [
+      'protocol', 'name', 'resource'
+    ], 'unsupported_signed_work_permission_constraint');
     if (!p || !goodId(p.name) || !goodId(p.protocol) || !goodId(p.resource) ||
         p.name === '*' || p.protocol === '*' || p.resource === '*') {
       throw new Error('invalid_signed_work_permission');
