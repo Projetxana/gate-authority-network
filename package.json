@@ -33,7 +33,8 @@
     "example:ssf:byo": "node examples/ssf-byo-receiver.mjs",
     "ci:stage16": "node scripts/validate-stage16-reproducibility.mjs",
     "smoke:mcp:subscription-authority": "bash scripts/run-mcp-subscription-authority-fixture.sh",
-    "smoke:mcp:subscription-live": "node scripts/run-live-gate-mcp-subscription.mjs"
+    "smoke:mcp:subscription-live": "node scripts/run-live-gate-mcp-subscription.mjs",
+    "smoke:oauth:bounded-work-collision": "node scripts/run-live-oauth-bounded-work-collision.mjs"
   },
   "dependencies": {
     "@modelcontextprotocol/client": "2.2.0",
