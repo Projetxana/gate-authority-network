@@ -1,6 +1,6 @@
 # GATE — First live verification + guarded local effect (Developer Preview)
 
-**Status:** reproducible developer activation candidate, tested with a mocked service; live-network execution by an independent developer is **still required**. Not a commercial release or security certification.
+**Status (2026-10-28):** local test suite passed and the developer team ran DENY → ALLOW → DENY on the real hosted Free Network using a disposable test project. **Independent external developer execution is still required.** Not a commercial release or security certification.
 
 ## Who should try this?
 

@@ -1,296 +1,129 @@
 <!doctype html>
-<html lang="fr">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="color-scheme" content="light" />
-  <title>GATE — Adoption Dashboard</title>
-  <meta name="description" content="Tableau de suivi public de l'adoption de GATE — Authority Verification Network." />
-  <link rel="stylesheet" href="./styles.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="dark" />
+  <title>GATE — Live Authority Verification for AI Agents | MCP & Delegation Revocation</title>
+  <meta name="description" content="A valid credential does not prove an AI agent still has authority. GATE verifies current delegated-authority state before sensitive MCP and API effects. Try the Free Developer Preview." />
+  <meta name="robots" content="index,follow" />
+  <link rel="canonical" href="https://gate-phi-eosin.vercel.app/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="GATE — Authority Verification Network" />
+  <meta property="og:title" content="GATE — Check authority before an agent acts" />
+  <meta property="og:description" content="Signed does not mean still authorized. Try live delegated-authority verification and revocation with GATE's Free Developer Preview." />
+  <meta property="og:url" content="https://gate-phi-eosin.vercel.app/" />
+  <meta name="twitter:card" content="summary" />
+  <link rel="stylesheet" href="./marketing.css" />
+  <script type="application/ld+json">{
+    "@context":"https://schema.org",
+    "@type":"SoftwareApplication",
+    "name":"GATE — Authority Verification Network",
+    "applicationCategory":"DeveloperApplication",
+    "operatingSystem":"Cross-platform (Node.js 20+)",
+    "url":"https://gate-phi-eosin.vercel.app/",
+    "downloadUrl":"https://www.npmjs.com/package/@gate-avn/sdk",
+    "description":"Developer Preview network service for checking current delegated-agent authority state before sensitive effects. Complements identity and application policy systems.",
+    "softwareVersion":"Developer Preview"
+  }</script>
 </head>
 <body>
-  <div class="app-shell">
-    <header class="topbar">
-      <div class="brand">
-        <div class="logo-mark">G</div>
-        <div>
-          <div class="eyebrow">AUTHORITY VERIFICATION NETWORK</div>
-          <h1>GATE — Suivi de l’adoption</h1>
-        </div>
-      </div>
-      <div class="top-actions">
-        <a class="refresh-button" href="./live.html" style="text-decoration:none">Create Live Project →</a>
-        <a class="refresh-button" href="./quickstart.html" style="text-decoration:none">Sandbox →</a>
-        <span class="live-pill"><span class="pulse"></span> Données publiques</span>
-        <button id="refreshButton" class="refresh-button" type="button">
-          <span>↻</span> Actualiser
-        </button>
-      </div>
+  <div class="site-shell">
+    <header class="site-nav" aria-label="Main navigation">
+      <a class="brand" href="./" aria-label="GATE home"><span class="brand-mark">G<span class="brand-dot">.</span></span><span class="brand-text"><strong>GATE</strong><small>AUTHORITY VERIFICATION NETWORK</small></span></a>
+      <nav class="nav-links" aria-label="Product navigation">
+        <a href="#how-it-works">How it works</a>
+        <a href="#developers">Developers</a>
+        <a href="#plans">Plans</a>
+        <a href="./adoption.html">Network adoption</a>
+      </nav>
+      <a class="nav-cta" href="./live.html">Start Free <span aria-hidden="true">↗</span></a>
     </header>
 
     <main>
-      <section class="hero-panel">
-        <div>
-          <div class="section-kicker">OBJECTIF</div>
-          <h2>Voir clairement si GATE est découvert, testé et réellement appelé.</h2>
-          <p>
-            Cette page sépare les téléchargements, l’usage Developer Preview et les futurs pilotes.
-            Une activation sandbox n’est pas présentée comme un déploiement production.
-          </p>
+      <section class="hero" aria-labelledby="main-heading">
+        <div class="hero-copy">
+          <div class="kicker"><span class="kicker-dot" aria-hidden="true"></span> DEVELOPER PREVIEW <span class="kicker-separator">/</span> REAL NETWORK, NOT A SIMULATION</div>
+          <h1 id="main-heading">A valid credential doesn't mean an agent <em>still has authority.</em></h1>
+          <p class="hero-lead">Tokens expire. Tasks change. Delegations get revoked. GATE checks the authority state your system has received, immediately before an agent's protected action — even when its credential remains valid.</p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="./live.html">Create a Free project <span aria-hidden="true">↗</span></a>
+            <a class="button button-secondary" href="#proof">See the revocation flow <span aria-hidden="true">↓</span></a>
+          </div>
+          <p class="hero-footnote"><span class="good-dot" aria-hidden="true"></span> Free: 50,000 verifications / month <span class="bullet">·</span> Node.js 20+ <span class="bullet">·</span> No credit card for Free signup</p>
+          <div class="integrates" aria-label="Supported integration surfaces"><span>WORKS ALONGSIDE</span><span>OAuth</span><span>MCP</span><span>AuthZEN</span><span>HTTP APIs</span></div>
         </div>
-        <div class="hero-status">
-          <span class="status-label">Dernière mise à jour</span>
-          <strong id="lastUpdated">—</strong>
-          <span id="globalStatus" class="status-ok">Chargement…</span>
-        </div>
-      </section>
-
-      <section class="metrics-grid" aria-label="Indicateurs principaux">
-        <article class="metric-card accent-blue">
-          <div class="metric-head">
-            <div>
-              <span class="metric-label">SDK — téléchargements</span>
-              <span class="metric-source">npm · 30 derniers jours</span>
-            </div>
-            <div class="metric-icon">↓</div>
+        <div class="hero-visual" id="proof">
+          <div class="visual-top"><span class="mini-tag"><span class="mini-square"></span> EFFECT-BOUNDARY CHECK</span><span class="mini-tag muted">ILLUSTRATIVE FLOW</span></div>
+          <div class="effect-subject"><span class="avatar-icon">A</span><div><strong>Agent requests a protected action</strong><small>principal: user:owner · actor: agent:assistant</small></div><span class="flow-direction" aria-hidden="true">↗</span></div>
+          <div class="flow-timeline" role="list" aria-label="Example authority decisions">
+            <div class="timeline-item" role="listitem"><span class="timeline-symbol allowed">✓</span><div><span class="state-title">Signed authority event received</span><small>Active grant available to GATE</small></div><span class="state-label allow-label">ACTIVE</span></div>
+            <div class="timeline-item" role="listitem"><span class="timeline-symbol allowed">✓</span><div><span class="state-title">Check before the effect</span><small>Current graph contains an active path</small></div><span class="state-label allow-label">ALLOW</span></div>
+            <div class="timeline-item revoke" role="listitem"><span class="timeline-symbol revoked">!</span><div><span class="state-title">Upstream delegation revoked</span><small>Signed revocation event reaches GATE</small></div><span class="state-label revoke-label">REVOKED</span></div>
+            <div class="timeline-item final-state" role="listitem"><span class="timeline-symbol denied">×</span><div><span class="state-title">Next effect is blocked</span><small>Same actor. No valid delegated-authority path.</small></div><span class="state-label deny-label">DENY</span></div>
           </div>
-          <div class="metric-value" id="sdk30">—</div>
-          <div class="metric-foot">
-            <span><strong id="sdk7">—</strong> sur 7 jours</span>
-            <span><strong id="sdkTotal">—</strong> depuis publication</span>
-          </div>
-        </article>
-
-        <article class="metric-card accent-teal">
-          <div class="metric-head">
-            <div>
-              <span class="metric-label">MCP — téléchargements</span>
-              <span class="metric-source">npm · 30 derniers jours</span>
-            </div>
-            <div class="metric-icon">⇩</div>
-          </div>
-          <div class="metric-value" id="mcp30">—</div>
-          <div class="metric-foot">
-            <span><strong id="mcp7">—</strong> sur 7 jours</span>
-            <span><strong id="mcpTotal">—</strong> depuis publication</span>
-          </div>
-        </article>
-
-        <article class="metric-card accent-green">
-          <div class="metric-head">
-            <div>
-              <span class="metric-label">MCP Registry</span>
-              <span class="metric-source">Official MCP Registry</span>
-            </div>
-            <div class="metric-icon">✓</div>
-          </div>
-          <div class="metric-value compact" id="registryStatus">—</div>
-          <div class="metric-foot">
-            <span>Version <strong id="registryVersion">—</strong></span>
-            <span id="registryPublished">—</span>
-          </div>
-        </article>
-
-        <article class="metric-card accent-violet">
-          <div class="metric-head">
-            <div>
-              <span class="metric-label">GitHub</span>
-              <span class="metric-source">Projetxana/gate-authority-network</span>
-            </div>
-            <div class="metric-icon">★</div>
-          </div>
-          <div class="github-values">
-            <div><strong id="stars">—</strong><span>Stars</span></div>
-            <div><strong id="forks">—</strong><span>Forks</span></div>
-            <div><strong id="issues">—</strong><span>Issues</span></div>
-          </div>
-          <div class="metric-foot">
-            <span>Branche <strong id="branch">—</strong></span>
-            <span>Public</span>
-          </div>
-        </article>
-      </section>
-
-      <section class="funnel-panel">
-        <div class="panel-title-row">
-          <div>
-            <div class="section-kicker">PARCOURS D’ADOPTION</div>
-            <h3>Découverte → Installation → Activation → Usage → Revenus</h3>
-          </div>
-          <div class="legend">
-            <span><i class="dot measured"></i> Mesuré</span>
-            <span><i class="dot partial"></i> Partiel</span>
-            <span><i class="dot pending"></i> À instrumenter</span>
-          </div>
-        </div>
-
-        <div class="funnel">
-          <article class="funnel-step measured-step">
-            <div class="step-top">
-              <span class="step-number">1</span>
-              <span class="step-state measured-badge">MESURÉ</span>
-            </div>
-            <h4>Découverte</h4>
-            <p>Présence publique et découvrabilité.</p>
-            <ul>
-              <li><span>GitHub public</span><strong>✓</strong></li>
-              <li><span>MCP Registry</span><strong>✓</strong></li>
-              <li><span>npm public</span><strong>✓</strong></li>
-            </ul>
-          </article>
-
-          <div class="flow-arrow">→</div>
-
-          <article class="funnel-step measured-step">
-            <div class="step-top">
-              <span class="step-number">2</span>
-              <span class="step-state measured-badge">MESURÉ</span>
-            </div>
-            <h4>Installation</h4>
-            <p>Téléchargements publics npm.</p>
-            <ul>
-              <li><span>SDK · 30 j</span><strong id="funnelSdk">—</strong></li>
-              <li><span>MCP · 30 j</span><strong id="funnelMcp">—</strong></li>
-              <li class="note"><span>Pas des utilisateurs uniques</span></li>
-            </ul>
-          </article>
-
-          <div class="flow-arrow">→</div>
-
-          <article class="funnel-step measured-step">
-            <div class="step-top">
-              <span class="step-number">3</span>
-              <span class="step-state measured-badge">MESURÉ</span>
-            </div>
-            <h4>Activation</h4>
-            <p>Premier <code>gate.verify()</code> d’un projet non interne.</p>
-            <ul>
-              <li><span>Preview / sandbox</span><strong id="previewActivatedProjects">0</strong></li>
-              <li><span>Pilotes</span><strong id="pilotActivatedProjects">0</strong></li>
-              <li><span>Payants</span><strong id="paidActivatedProjects">0</strong></li>
-            </ul>
-          </article>
-
-          <div class="flow-arrow">→</div>
-
-          <article class="funnel-step measured-step emphasis-step">
-            <div class="step-top">
-              <span class="step-number">4</span>
-              <span class="step-state measured-badge">KPI CENTRAL</span>
-            </div>
-            <h4>Verified Effects</h4>
-            <p>Autorité vérifiée immédiatement avant un effet concret.</p>
-            <div class="big-kpi" id="verifiedEffectsToday">0</div>
-            <div class="big-kpi-label">Verified Effects aujourd’hui</div>
-            <span class="telemetry-callout" id="verifiedEffects30">0 Verified Effects / 30 j</span>
-            <span class="telemetry-callout" id="verifiedEffectDecisionMix">ALLOW 0 · DENY 0 · UNKNOWN 0</span>
-            <span class="telemetry-callout" id="verifiedEffectProtocolMix">MCP 0 · HTTP 0 · x402 0</span>
-            <span class="telemetry-callout">gate.verify aujourd’hui : <strong id="verificationsToday">0</strong></span>
-            <span class="telemetry-callout" id="usage30">0 gate.verify() / 30 j</span>
-            <span class="telemetry-callout" id="usageMix">Preview 0 · Pilot/paid 0</span>
-          </article>
-
-          <div class="flow-arrow">→</div>
-
-          <article class="funnel-step future-step">
-            <div class="step-top">
-              <span class="step-number">5</span>
-              <span class="step-state future-badge">FUTUR</span>
-            </div>
-            <h4>Revenus</h4>
-            <p>Monétisation à l’usage.</p>
-            <ul>
-              <li><span>Client actif</span><strong>—</strong></li>
-              <li><span>Vérifications / client</span><strong>—</strong></li>
-              <li><span>Facturation</span><strong>—</strong></li>
-            </ul>
-          </article>
+          <div class="visual-footer"><span><span class="signal-line"></span> GATE authority state</span><span>REVOKED ≠ EXPIRED</span></div>
         </div>
       </section>
 
-      <section class="lower-grid">
-        <article class="chart-panel">
-          <div class="panel-title-row">
-            <div>
-              <div class="section-kicker">TENDANCE</div>
-              <h3>Téléchargements npm — 30 derniers jours</h3>
-            </div>
-            <div class="chart-legend">
-              <span><i class="line sdk-line"></i> SDK</span>
-              <span><i class="line mcp-line"></i> MCP</span>
-            </div>
-          </div>
-          <div class="chart-wrap">
-            <svg id="downloadsChart" viewBox="0 0 900 270" role="img" aria-label="Téléchargements npm quotidiens">
-              <text x="450" y="135" text-anchor="middle" class="chart-loading">Chargement des données…</text>
-            </svg>
-          </div>
-          <p class="data-note">
-            Les téléchargements npm comptent des téléchargements de paquets, pas des personnes uniques.
-            Les réinstallations, CI et automatisations peuvent être incluses.
-          </p>
-        </article>
-
-        <article class="next-panel">
-          <div class="section-kicker">PROCHAINE COUCHE</div>
-          <h3>Télémétrie GATE : infrastructure active</h3>
-
-          <div class="next-item">
-            <div class="next-icon">1</div>
-            <div>
-              <strong>Identifiant client / projet</strong>
-              <span>Clé API hachée et project_id non nominatif pour attribuer les vérifications.</span>
-            </div>
-          </div>
-
-          <div class="next-item">
-            <div class="next-icon">2</div>
-            <div>
-              <strong>Compteur gate.verify()</strong>
-              <span>Compteur actif : décision, latence et date — sans principal, actor, ressource ni paramètres.</span>
-            </div>
-          </div>
-
-          <div class="next-item">
-            <div class="next-icon">3</div>
-            <div>
-              <strong>Dashboard client</strong>
-              <span>Activations, projets actifs, vérifications / jour et latence sont maintenant disponibles.</span>
-            </div>
-          </div>
-
-          <div class="next-item">
-            <div class="next-icon">4</div>
-            <div>
-              <strong>Verified Effects / day</strong>
-              <span>Compteur réseau actif, idempotent par projet et protocole : la base de l’unité économique GATE.</span>
-            </div>
-          </div>
-        </article>
+      <section class="trust-strip" aria-label="Public release facts">
+        <div><strong>ES256</strong><span>Signed authority events</span></div>
+        <div><strong>ALLOW / DENY</strong><span>Live authority decision</span></div>
+        <div><strong>Fail closed</strong><span>UNKNOWN does not execute</span></div>
+        <div><strong>npm</strong><span>Public SDK + MCP packages</span></div>
       </section>
 
-      <section class="truth-panel">
-        <div>
-          <span class="truth-icon">i</span>
-          <div>
-            <strong>Principe de cette page</strong>
-            <p>Afficher uniquement des données mesurées. Les Verified Effects viennent du compteur réseau GATE et sont séparés du volume brut de gate.verify(). Le meter ne stocke ni principal, actor, ressource, paramètres, prompt, jeton ni contenu d’action.</p>
-          </div>
-        </div>
-        <div class="source-links">
-          <a href="https://www.npmjs.com/org/gate-avn" target="_blank" rel="noreferrer">npm ↗</a>
-          <a href="https://github.com/Projetxana/gate-authority-network" target="_blank" rel="noreferrer">GitHub ↗</a>
-          <a href="https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.Projetxana/gate-authority-network" target="_blank" rel="noreferrer">MCP Registry ↗</a>
+      <section class="section" id="how-it-works" aria-labelledby="approach-heading">
+        <div class="section-heading"><div><p class="eyebrow">THE MISSING QUESTION</p><h2 id="approach-heading">Authentication is not the end of authorization.</h2></div><p>GATE complements your identity provider and policy engine. It answers whether a delegated authority path is still valid according to the evidence available to the network.</p></div>
+        <div class="feature-grid">
+          <article class="feature-card"><div class="feature-symbol">01 <span>↗</span></div><h3>Know when delegation changes</h3><p>Accept signed ACTIVE and REVOKED authority events. Re-check rather than assuming a previously valid token proves ongoing authority.</p></article>
+          <article class="feature-card"><div class="feature-symbol">02 <span>◇</span></div><h3>Preserve valid alternate paths</h3><p>A revoked route need not eliminate independently authorized paths. GATE resolves the graph rather than checking a single token in isolation.</p></article>
+          <article class="feature-card"><div class="feature-symbol">03 <span>⊘</span></div><h3>Fail closed when evidence is missing</h3><p>Distinguish known invalid authority from UNKNOWN or stale evidence. No fresh, established authority means no protected effect.</p></article>
         </div>
       </section>
+
+      <section class="section developer-section" id="developers" aria-labelledby="developer-heading">
+        <div class="developer-copy"><p class="eyebrow">BUILT FOR DEVELOPERS</p><h2 id="developer-heading">From install to your first decision.</h2><p>Use GATE wherever you enforce effects: an MCP resource server, an API handler or your existing trusted execution boundary.</p>
+          <ol class="steps"><li><span>01</span><div><strong>Create a disposable Free project</strong><small>Receive a real project ID and private API key.</small></div></li><li><span>02</span><div><strong>Install the published SDK</strong><small>Pin a verified Developer Preview version.</small></div></li><li><span>03</span><div><strong>Deliver signed authority state</strong><small>Run the real-network grant → allow → revoke → deny example.</small></div></li></ol>
+          <a class="text-link" href="https://github.com/Projetxana/gate-authority-network/blob/main/docs/LAUNCH-FIRST-REAL-EFFECT.md" target="_blank" rel="noopener noreferrer">Open the signed-revocation quickstart <span aria-hidden="true">↗</span></a>
+        </div>
+        <div class="code-window"><div class="code-bar"><span class="window-dots"><i></i><i></i><i></i></span><span>Node.js · GATE Developer Preview</span><button class="copy-button" id="copyInstall" type="button" aria-label="Copy npm install command">Copy install</button></div>
+          <pre class="code-block" id="developerCode"><code><span class="comment"># Install from the public npm registry</span>
+<span class="command">npm install @gate-avn/sdk@0.1.0-dev.4</span>
+
+<span class="comment">// Before a protected action</span>
+<span class="keyword">import</span> { GateClient } <span class="keyword">from</span> <span class="string">'@gate-avn/sdk'</span>;
+
+<span class="keyword">const</span> gate = <span class="keyword">new</span> GateClient({
+  endpoint: process.env.GATE_URL,
+  apiKey: process.env.GATE_API_KEY
+});
+
+<span class="keyword">const</span> decision = <span class="keyword">await</span> gate.verify({
+  principal: <span class="string">'user:owner'</span>,
+  actor: <span class="string">'agent:assistant'</span>,
+  consistency: <span class="string">'bounded'</span>
+});
+
+<span class="keyword">if</span> (decision.decision !== <span class="string">'ALLOW'</span>) {
+  <span class="keyword">throw new</span> Error(<span class="string">'authority_not_established'</span>);
+}
+
+<span class="comment">// Then apply your own action policy before the effect.</span></code></pre>
+          <div class="code-footer"><span>SDK <strong>0.1.0-dev.4</strong></span><span>MCP <strong>0.1.0-dev.8</strong></span><a href="https://www.npmjs.com/package/@gate-avn/mcp" target="_blank" rel="noopener noreferrer">View MCP package ↗</a></div>
+        </div>
+      </section>
+
+      <section class="section comparison-section" aria-labelledby="position-heading"><div class="section-heading"><div><p class="eyebrow">DESIGNED TO COMPLEMENT YOUR STACK</p><h2 id="position-heading">Not another identity provider.</h2></div><p>Keep the systems you already trust. Add a current-state authority check where previously granted permissions may no longer hold.</p></div><div class="comparison-grid"><div class="comparison-box"><span class="tag">YOUR EXISTING STACK</span><h3>Identity + policy</h3><p>OAuth, your IdP, RBAC/ABAC, AuthZEN, and business constraints establish <em>who</em> the agent is and <em>what</em> it may do.</p></div><div class="plus-mark" aria-hidden="true">+</div><div class="comparison-box accent-box"><span class="tag">GATE</span><h3>Current authority state</h3><p>Does at least one valid delegated-authority path still exist, with sufficiently current evidence, when an effect is requested?</p></div></div></section>
+
+      <section class="section plans-section" id="plans" aria-labelledby="plans-heading"><div class="section-heading"><div><p class="eyebrow">START FREE, KEEP YOUR INTEGRATION</p><h2 id="plans-heading">A plan for the experiment you're running.</h2></div><p>Free, Pro and Scale share the same project integration. Plan entitlements change; check current availability and pricing at checkout.</p></div><div class="plan-grid"><article class="plan-card recommended"><span class="tag">START HERE</span><h3>Free</h3><p>Validate GATE against an actual managed network.</p><div class="plan-number">50K <small>/ month</small></div><div class="plan-detail">Verifications · 1 issuer · bounded</div><a class="button button-primary" href="./live.html">Create Free project ↗</a></article><article class="plan-card"><span class="tag subtle-tag">ADDITIONAL CAPACITY</span><h3>Pro</h3><p>More issuers and access to strict primary verification.</p><div class="plan-number">1M <small>/ month</small></div><div class="plan-detail">Verifications · 10 issuers · strict eligible</div><a class="button button-outline" href="./live.html">View upgrade path ↗</a></article><article class="plan-card"><span class="tag subtle-tag">LARGER TEAMS</span><h3>Scale</h3><p>Higher verification volume, same developer integration.</p><div class="plan-number">10M <small>/ month</small></div><div class="plan-detail">Verifications · 100 issuers · strict eligible</div><a class="button button-outline" href="./live.html">View upgrade path ↗</a></article></div><p class="plan-footnote">Developer Preview, not enterprise GA. Price and actual availability are shown in the billing flow; no SLA or production regional replicas are claimed.</p></section>
+
+      <section class="section truth-section" id="limits" aria-labelledby="truth-heading"><div class="truth-label">ENGINEERING HONESTY <span aria-hidden="true">/</span> CURRENT RELEASE</div><h2 id="truth-heading">What GATE proves — and what it doesn't.</h2><div class="truth-grid"><div><h3>Available today</h3><p>Managed Free project, signed authority events, network-backed delegated-path verification, npm SDK and MCP adapter, and a local effect-guard demonstration.</p></div><div><h3>Not claimed today</h3><p>No independent upstream revocation-delivery SLA, no hosted Stage 18 exact-work permits, no atomic external side-effect execution, no production regional replicas, and no enterprise certification.</p></div></div><p class="truth-note">The sample issuer is controlled by the developer. The API checks authority state that has reached GATE. Your tool server must separately enforce action/resource policy and prevent bypasses.</p></section>
+
+      <section class="closing" aria-labelledby="closing-heading"><div><p class="eyebrow">READY TO TEST THE BOUNDARY?</p><h2 id="closing-heading">Check authority before the next effect.</h2><p>Create a Free managed project and reproduce a signed revocation on the real GATE network.</p></div><div class="closing-actions"><a class="button button-primary" href="./live.html">Start Free <span aria-hidden="true">↗</span></a><a class="button button-secondary" href="https://github.com/Projetxana/gate-authority-network" target="_blank" rel="noopener noreferrer">Explore source ↗</a></div></section>
     </main>
-
-    <footer>
-      <span>GATE Developer Preview</span>
-      <span>Public adoption dashboard · <span id="footerTime">—</span></span>
-    </footer>
+    <footer class="footer"><a class="footer-brand" href="./"><span class="brand-mark">G<span class="brand-dot">.</span></span> GATE</a><p>Live delegated-authority state at the effect boundary. Developer Preview, not enterprise GA.</p><div class="footer-links"><a href="./live.html">Free project</a><a href="./quickstart.html">Sandbox</a><a href="./adoption.html">Adoption metrics</a><a href="https://github.com/Projetxana/gate-authority-network" target="_blank" rel="noopener noreferrer">GitHub</a><a href="https://www.npmjs.com/package/@gate-avn/sdk" target="_blank" rel="noopener noreferrer">npm</a></div></footer>
   </div>
-
-  <script src="./app.js"></script>
+  <script src="./marketing.js" defer></script>
 </body>
 </html>

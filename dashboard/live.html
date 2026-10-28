@@ -38,8 +38,9 @@
   <div class="live-nav">
     <div class="brand"><div class="logo-mark">G</div><div><div class="eyebrow">GATE · STAGE 17</div><strong>Create Live Project</strong></div></div>
     <div class="live-links">
+      <a class="refresh-button" href="./">Product home</a>
       <a class="refresh-button" href="./quickstart.html">Sandbox</a>
-      <a class="refresh-button" href="./">Adoption dashboard</a>
+      <a class="refresh-button" href="./adoption.html">Adoption dashboard</a>
     </div>
   </div>
 
@@ -117,9 +118,10 @@ console.log(result.authority, result.decision);</pre>
 
     <section class="live-card">
       <div class="section-kicker">STEP 5</div>
-      <h3>Connect a real authority source</h3>
-      <p>Register an ES256 issuer and deliver signed authority events. GATE only returns ALLOW when a currently valid authority path exists.</p>
+      <h3>Test signed issuer events and revocation</h3>
+      <p>Run a signed ACTIVE → ALLOW → REVOKED → DENY scenario using a developer-controlled ES256 test issuer. A genuinely independent upstream integration requires a separate authority source and measured delivery freshness.</p>
       <div class="actions">
+        <a class="refresh-button" href="https://github.com/Projetxana/gate-authority-network/blob/main/docs/LAUNCH-FIRST-REAL-EFFECT.md" target="_blank" rel="noreferrer">Try signed revocation ↗</a>
         <a class="refresh-button" href="https://github.com/Projetxana/gate-authority-network/blob/main/docs/LIVE-ISSUER-QUICKSTART.md" target="_blank" rel="noreferrer">ES256 issuer quickstart ↗</a>
         <a class="refresh-button" href="https://github.com/Projetxana/gate-authority-network/blob/main/docs/QUICKSTART.md" target="_blank" rel="noreferrer">Full quickstart ↗</a>
       </div>
