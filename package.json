@@ -36,13 +36,15 @@
     "smoke:mcp:subscription-live": "node scripts/run-live-gate-mcp-subscription.mjs"
   },
   "dependencies": {
-    "@modelcontextprotocol/client": "2.2.0",
-    "@modelcontextprotocol/server": "2.2.0",
-    "zod": "4.6.5",
-    "@x402/core": "2.24.0"
+    "@modelcontextprotocol/client": "2.4.0",
+    "@modelcontextprotocol/server": "2.4.0",
+    "zod": "4.6.6"
   },
   "engines": {
     "node": ">=20"
   },
-  "license": "Apache-2.0"
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@x402/core": "2.24.0"
+  }
 }
