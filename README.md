@@ -13,6 +13,8 @@ It resolves whether a currently valid authority path still exists at effect time
 
 > **Current operational boundary:** one Canadian primary database, **no production regional replicas**, and no independent third-party issuer propagation SLA. `maxStalenessMs` measures primary snapshot age only. The Developer Preview is **not enterprise GA**.
 
+- [GATE public product website](https://gate-phi-eosin.vercel.app/) — launch, Free plans, and supported developer paths.
+- [Signed revocation quickstart](docs/LAUNCH-FIRST-REAL-EFFECT.md) — actual GATE Network DENY → ALLOW → DENY with a self-controlled ES256 test issuer.
 - [Start with the hosted sandbox](https://gate-phi-eosin.vercel.app/quickstart.html) — synthetic graph for learning GATE revocation semantics.
 - [Create a real Free GATE Network project](docs/QUICKSTART.md) — live gate-network with a real API key and managed quota.
 - [Connect your own ES256 authority source](docs/LIVE-ISSUER-QUICKSTART.md).
@@ -157,7 +159,7 @@ npm install @gate-avn/sdk@dev
 
 Repository Stage 16 baseline: `0.1.0-dev.4`
 
-Published npm `@dev`: `0.1.0-dev.3`
+Published npm `@dev`: `0.1.0-dev.4` (verified from public npm registry on 2026-10-28)
 
 ### MCP server
 
@@ -167,7 +169,7 @@ npm install @gate-avn/mcp@dev
 
 Repository Stage 16 baseline: `0.1.0-dev.8`
 
-Published npm `@dev`: `0.1.0-dev.5`
+Published npm `@dev`: `0.1.0-dev.8` (verified from public npm registry on 2026-10-28)
 
 Official MCP Registry:
 

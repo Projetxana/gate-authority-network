@@ -1,45 +1,35 @@
-# GATE — Adoption Dashboard
+# GATE public website + adoption metrics
 
-Tableau de suivi public et sans backend pour GATE.
+This folder is the static Vercel root directory for the GATE Developer Preview.
 
-## Données mesurées automatiquement
+Routes:
 
-- Téléchargements npm du SDK sur 7 jours, 30 jours et depuis la publication.
-- Téléchargements npm du MCP sur 7 jours, 30 jours et depuis la publication.
-- Tendance quotidienne npm sur les 30 derniers jours.
-- Statut/version dans l'Official MCP Registry.
-- Stars, forks, issues et branche par défaut du dépôt GitHub.
+- `/` — **product landing page** in English, with Free onboarding, npm versions, effects/authority framing, explicit security boundaries and SEO metadata.
+- `/live.html` — real Free GATE project creation, verification and optional plan upgrade flows. Retained unchanged except for navigation / documentation copy.
+- `/quickstart.html` — the existing synthetic sandbox.
+- `/adoption.html` — the former home page, preserved with all IDs, `app.js` and API data calls for adoption metrics.
+- `/robots.txt`, `/sitemap.xml` — basic indexing discovery, URLs point to the existing Vercel domain. Update canonical/sitemap after assigning a custom production domain.
 
-## Ce qui n'est pas encore mesurable
+Neither the marketing home page nor its `marketing.js` reads keys, stores user data, sends analytics, or fabricates adoption metrics. `adoption.html` keeps its own existing telemetry, which is a different purpose.
 
-Le tableau **n'invente pas** les métriques suivantes :
+## Local test
 
-- installations uniques ;
-- nombre de développeurs uniques ;
-- premier `gate.verify()` ;
-- nombre de vérifications GATE par jour ;
-- clients actifs ;
-- usage par client ;
-- revenus.
-
-Ces métriques nécessitent l'instrumentation du service GATE (clé/projet + compteur de vérifications).
-
-## Lancer localement
-
-Depuis ce dossier :
-
-```bash
+```sh
+cd dashboard
 python3 -m http.server 8080
+# open http://localhost:8080
 ```
 
-Puis ouvrir :
+From the repository root:
 
-```text
-http://localhost:8080
+```sh
+node --test test/marketing-site.test.mjs
+npm test
+npm run check
 ```
 
-## Déploiement Vercel
+## Deploy
 
-Ce dossier est statique. Il peut être utilisé directement comme `Root Directory` d'un projet Vercel.
+Vercel Root Directory remains `dashboard`. Use a GitHub branch preview first. A merge to main may trigger a production deploy depending on the Vercel integration.
 
-Aucune variable d'environnement n'est nécessaire pour la version publique du dashboard.
+**Developer Preview limitations:** a single Canadian primary, no production replicas or independently guaranteed upstream delivery, no hosted Stage18 signed exact-work permit production service. The Free script's issuer is developer-controlled and only a local guarded effect is performed.
