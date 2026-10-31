@@ -91,17 +91,33 @@ export function createMcpEffectGuard({
       const denyUntrustedOverride = reason => {
         throw new GateDeniedError({authority: 'UNKNOWN', decision: 'DENY', reason});
       };
+      // A configured trusted identity resolver must never fall back to a
+      // caller-supplied value, including if it returns undefined/null/blank.
+      if (principal !== undefined &&
+          (typeof trustedPrincipal !== 'string' || !trustedPrincipal.trim())) {
+        denyUntrustedOverride('trusted_principal_unavailable');
+      }
+      if (actor !== undefined &&
+          (typeof trustedActor !== 'string' || !trustedActor.trim())) {
+        denyUntrustedOverride('trusted_actor_unavailable');
+      }
       if (trustedPrincipal && requestPrincipal !== undefined && requestPrincipal !== trustedPrincipal) {
         denyUntrustedOverride('principal_override_rejected');
       }
       if (trustedActor && requestActor !== undefined && requestActor !== trustedActor) {
         denyUntrustedOverride('actor_override_rejected');
       }
-      const resolvedPrincipal = trustedPrincipal ?? requestPrincipal;
-      const resolvedActor = trustedActor ?? requestActor;
+      // Only a server handler that has independently validated caller identity
+      // should use the unconfigured, request-supplied identity path.
+      const resolvedPrincipal = principal === undefined ? requestPrincipal : trustedPrincipal;
+      const resolvedActor = actor === undefined ? requestActor : trustedActor;
 
-      if (!resolvedPrincipal) throw new TypeError('principal is required');
-      if (!resolvedActor) throw new TypeError('actor is required');
+      if (typeof resolvedPrincipal !== 'string' || !resolvedPrincipal.trim()) {
+        throw new TypeError('principal is required');
+      }
+      if (typeof resolvedActor !== 'string' || !resolvedActor.trim()) {
+        throw new TypeError('actor is required');
+      }
 
       const effectiveConsistency = requestConsistency ?? consistency;
       if (!['bounded', 'strict'].includes(effectiveConsistency)) throw new TypeError('unsupported consistency');

@@ -1,12 +1,12 @@
 # Stage 17 Pilot Readiness P0-B — Live MCP guarded effect
 
-Status: **candidate; independent LIVE run not yet performed.**
+Status: **operator-run hosted Free E2E passed on 2026-10-30; unaffiliated cold trial pending.**
 
 ## Scope
 
 Tests a real MCP `tools/call` in a child `stdio` server, which uses `createMcpEffectGuard` at the trusted effect boundary and `GateClient` to query the **hosted Free network**. The test creates a single developer-owned disposable ES256 issuer, sends signed ACTIVE and REVOKED events, and permits exactly **one harmless local file marker**.
 
-This is **not** a test of independently operated external issuer propagation, stage18 task-scoped permits, business-policy authorization, actual side-effect delivery, production performance, customer adoption or a security certification. It does not change production services.
+This is **not** a test of independently operated external issuer propagation, stage18 task-scoped permits, business-policy authorization, real external/business side effects, production performance, customer adoption or a security certification. It does not change production services.
 
 ## Prerequisites
 
@@ -47,11 +47,24 @@ The exact reason and `UNKNOWN`/`INVALID` status may vary on initial missing auth
 ### Safety and limitations
 
 - The script refuses a Free project that already has an active issuer.
-- If issuer cleanup prints a WARNING, manually revoke the **disposable issuer** in the project before reusing it.
+- If issuer cleanup prints a WARNING, the script now exits nonzero; manually revoke the **disposable issuer** in the project before reusing it.
 - The script uses a short-lived ES256 key held in process memory, a unique principal/actor and a temporary effect file; it removes its temporary file on exit.
 - The MCP tool never accepts principal/actor as client input; those are trusted server-side parameters.
 - The Stage 17 network checks a delegated authority **path**, not the action's business policy or task scope. The marker is a safe test action, not a real operation authorization claim.
 - Before/after revocation is tested in sequence; it is **not** a propagation-latency SLA.
+
+## Hosted network evidence (operator-reported, 2026-10-30)
+
+```text
+PASS before_grant: INVALID / DENY; effects=0
+PASS after_signed_active: VALID / ALLOW; effects=1
+PASS after_revocation: INVALID / DENY; effects=1
+PASS: actual MCP tools/call + hosted GATE signed revoke + no second effect
+LIMIT: developer-controlled ES256 issuer, disposable local effect, bounded Free; NOT independent issuer, scoped work permit, or SLA.
+CLEANUP: test issuer trust revoked
+```
+
+This records an operator-supplied terminal result, **not** a cold installation by an unaffiliated developer, independent external-issuer verification, or production certification. The generic guard review requires testing that missing trusted identity-resolver results cannot be replaced by caller identities.
 
 ## Promotion condition
 
