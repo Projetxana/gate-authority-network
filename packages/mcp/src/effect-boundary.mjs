@@ -85,16 +85,35 @@ export function createMcpEffectGuard({
       if (!toolName) throw new TypeError('toolName is required');
       if (typeof effect !== 'function') throw new TypeError('effect must be a function');
 
-      const resolvedPrincipal =
-        requestPrincipal ?? (typeof principal === 'function' ? await principal() : principal);
-      const resolvedActor =
-        requestActor ?? (typeof actor === 'function' ? await actor() : actor);
+      // A tool caller must not replace identities pinned by the trusted tool server.
+      const trustedPrincipal = typeof principal === 'function' ? await principal() : principal;
+      const trustedActor = typeof actor === 'function' ? await actor() : actor;
+      const denyUntrustedOverride = reason => {
+        throw new GateDeniedError({authority: 'UNKNOWN', decision: 'DENY', reason});
+      };
+      if (trustedPrincipal && requestPrincipal !== undefined && requestPrincipal !== trustedPrincipal) {
+        denyUntrustedOverride('principal_override_rejected');
+      }
+      if (trustedActor && requestActor !== undefined && requestActor !== trustedActor) {
+        denyUntrustedOverride('actor_override_rejected');
+      }
+      const resolvedPrincipal = trustedPrincipal ?? requestPrincipal;
+      const resolvedActor = trustedActor ?? requestActor;
 
       if (!resolvedPrincipal) throw new TypeError('principal is required');
       if (!resolvedActor) throw new TypeError('actor is required');
 
       const effectiveConsistency = requestConsistency ?? consistency;
-      const effectiveMaxStaleness = requestMaxStalenessMs ?? maxStalenessMs;
+      if (!['bounded', 'strict'].includes(effectiveConsistency)) throw new TypeError('unsupported consistency');
+      if (consistency === 'strict' && effectiveConsistency !== 'strict') {
+        denyUntrustedOverride('strict_consistency_downgrade_rejected');
+      }
+      // Per-call requests may tighten, never relax, the trusted freshness budget.
+      const effectiveMaxStaleness = Number.isFinite(maxStalenessMs)
+        ? (Number.isFinite(requestMaxStalenessMs)
+          ? Math.min(maxStalenessMs, requestMaxStalenessMs)
+          : maxStalenessMs)
+        : requestMaxStalenessMs;
 
       const action = {
         protocol: 'mcp',
@@ -113,7 +132,14 @@ export function createMcpEffectGuard({
           : {})
       };
 
-      const decisionResult = await gate.verify(request);
+      const rawDecision = await gate.verify(request);
+      // Permit only an explicit, internally consistent VALID / ALLOW.
+      // This also guards any caller-supplied GateClient or test adapter.
+      const decisionResult = rawDecision?.decision === 'ALLOW' && rawDecision?.authority === 'VALID'
+        ? rawDecision
+        : rawDecision?.decision === 'DENY'
+          ? rawDecision
+          : {authority: 'UNKNOWN', decision: 'DENY', reason: 'malformed_or_contradictory_gate_result'};
 
       const verifiedEffect = counter.record({
         protocol: 'mcp',
