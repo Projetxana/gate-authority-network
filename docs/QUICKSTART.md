@@ -27,7 +27,7 @@ The sandbox provides:
 Install:
 
 ```bash
-npm install @gate-avn/sdk@dev
+npm install @gate-avn/sdk@0.1.0-dev.4
 ```
 
 Use the sandbox client:
@@ -101,7 +101,7 @@ curl -sS   "$GATE_URL/v1/project"   -H "authorization: Bearer $GATE_API_KEY"
 Install the SDK:
 
 ```bash
-npm install @gate-avn/sdk@dev
+npm install @gate-avn/sdk@0.1.0-dev.4
 ```
 
 Use the canonical client:

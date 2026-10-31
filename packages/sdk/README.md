@@ -13,7 +13,7 @@ MCP is one integration surface for GATE, not the product boundary. GATE also doe
 ## Install
 
 ```bash
-npm install @gate-avn/sdk@dev
+npm install @gate-avn/sdk@0.1.0-dev.4
 ```
 
 ## Live Free GATE Network
