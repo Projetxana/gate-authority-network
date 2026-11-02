@@ -1,6 +1,6 @@
 {
   "name": "@gate-avn/mcp",
-  "version": "0.1.0-dev.8",
+  "version": "0.1.0-dev.9",
   "description": "MCP adapter for GATE live cross-domain delegated authority-state resolution.",
   "type": "module",
   "bin": {
