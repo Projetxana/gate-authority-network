@@ -63,3 +63,6 @@ jobs:
 
       - name: Package contract
         run: npm run pack:check
+
+      - name: MCP candidate archive consumer security
+        run: npm run test:mcp:package
