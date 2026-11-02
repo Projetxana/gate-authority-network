@@ -92,12 +92,21 @@ server.registerTool(
   }
 );
 
+
 server.registerTool(
   'gate_status',
   {
     title: 'GATE status',
-    description: 'Report verifier mode and current edge/demo state.',
+    description:
+      'Inspect the configured GATE verifier mode and operational status. ' +
+      'Use this tool for setup checks and troubleshooting, not to authorize an action. ' +
+      'In demo mode, it reports the local simulated authority graph. ' +
+      'In network mode, it requests the configured endpoint health information. ' +
+      'A healthy response does not prove that an actor has permission to act. ' +
+      'Use gate_verify at the trusted effect boundary for authority decisions. ' +
+      'If the status request fails, do not assume access is allowed.',
     inputSchema: z.object({}),
+
     annotations: {
       readOnlyHint: true,
       destructiveHint: false,
