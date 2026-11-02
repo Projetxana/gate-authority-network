@@ -14,9 +14,11 @@ test('Free MCP example explicitly opts into bounded consistency', () => {
   assert.doesNotMatch(readme, /consistency: 'strict',\s*\n\s*counter/);
 });
 
-test('public trial MCP examples use the validated published version', () => {
+test('MCP candidate examples pin the package version and disclose unpublished status', () => {
   const readme = read('packages/mcp/README.md');
-  assert.match(readme, /npx @gate-avn\/mcp@0\.1\.0-dev\.8/);
+  const version = JSON.parse(read('packages/mcp/package.json')).version;
+  assert.ok(readme.includes(`npx @gate-avn/mcp@${version}`));
+  assert.match(readme, /not yet published/);
   assert.doesNotMatch(readme, /npx @gate-avn\/mcp(?:\s|\n|$)/);
   assert.doesNotMatch(readme, /npx @gate-avn\/mcp@dev/);
 });

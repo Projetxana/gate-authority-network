@@ -5,7 +5,7 @@ import { serveStdio } from '@modelcontextprotocol/server/stdio';
 import * as z from 'zod/v4';
 import { GateClient } from '@gate-avn/sdk';
 
-const VERSION = '0.1.0-dev.8';
+const VERSION = '0.1.0-dev.9';
 const args = new Set(process.argv.slice(2));
 
 if (args.has('--help') || args.has('-h')) {
@@ -18,7 +18,7 @@ Usage:
 
 Environment:
   GATE_URL                 GATE edge URL (required outside demo mode)
-  GATE_API_KEY             Optional bearer token
+  GATE_API_KEY             Bearer key required for authenticated Free Network calls
   GATE_TIMEOUT_MS          Request timeout, default 2000
 `);
   process.exit(0);
