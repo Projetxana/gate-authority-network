@@ -62,18 +62,40 @@ const actionSchema = z.object({
   parameters: z.record(z.string(), z.unknown()).optional()
 });
 
+
 server.registerTool(
   'gate_verify',
   {
-    title: 'Verify live authority',
+    title: 'Verify live delegated authority',
     description:
-      'Check whether an actor still has a live authority path from a principal immediately before an action.',
+      'Verify whether an AI agent currently has a valid delegated authority path ' +
+      'from a principal for a requested action. Call immediately before a protected ' +
+      'operation, using trusted principal, actor and action context. ' +
+      'The verifier evaluates current authority evidence, including upstream ' +
+      'revocation and alternative delegation paths, subject to the configured ' +
+      'consistency and freshness guarantees. ' +
+      'Inspect the returned decision: ALLOW, DENY or UNKNOWN authority. ' +
+      'UNKNOWN must not permit the protected action. ' +
+      'A standalone verification response does not enforce authorization: ' +
+      'the trusted execution boundary must enforce the decision. ' +
+      'Live network verification requires a configured GATE endpoint and ' +
+      'appropriate credentials. Demo mode is simulated and not production authority.',
     inputSchema: z.object({
-      principal: z.string().min(1),
-      actor: z.string().min(1),
-      action: actionSchema.optional(),
-      consistency: z.enum(['bounded', 'strict']).optional(),
-      maxStalenessMs: z.number().nonnegative().optional()
+      principal: z.string().min(1).describe(
+        'Trusted identifier of the principal delegating authority.'
+      ),
+      actor: z.string().min(1).describe(
+        'Identifier of the agent or actor attempting the operation.'
+      ),
+      action: actionSchema.optional().describe(
+        'Action context being verified, including protocol, operation and resource when available.'
+      ),
+      consistency: z.enum(['bounded', 'strict']).optional().describe(
+        'Requested consistency level. Free Developer Preview supports bounded only.'
+      ),
+      maxStalenessMs: z.number().nonnegative().optional().describe(
+        'Maximum acceptable authority snapshot age in milliseconds, subject to the network freshness contract.'
+      )
     }),
     annotations: {
       readOnlyHint: true,
@@ -92,12 +114,22 @@ server.registerTool(
   }
 );
 
+
+
 server.registerTool(
   'gate_status',
   {
     title: 'GATE status',
-    description: 'Report verifier mode and current edge/demo state.',
+    description:
+      'Inspect the configured GATE verifier mode and operational status. ' +
+      'Use this tool for setup checks and troubleshooting, not to authorize an action. ' +
+      'In demo mode, it reports the local simulated authority graph. ' +
+      'In network mode, it requests the configured endpoint health information. ' +
+      'A healthy response does not prove that an actor has permission to act. ' +
+      'Use gate_verify at the trusted effect boundary for authority decisions. ' +
+      'If the status request fails, do not assume access is allowed.',
     inputSchema: z.object({}),
+
     annotations: {
       readOnlyHint: true,
       destructiveHint: false,
