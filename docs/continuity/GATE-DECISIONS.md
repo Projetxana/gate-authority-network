@@ -32,3 +32,7 @@ Aucune décision nouvelle de migration, de déploiement, de changement de sécur
 - Mission 012 établit un parcours interne réel via npm/tools/call/Free/bounded avec émetteur local ; ce n'est pas un utilisateur indépendant ou une source tierce. Le registre GATE-ADOPTION.md conserve cette distinction.
 
 Source de gouvernance : directive propriétaire « Pilotage unifié GATE » dans cette conversation, 2 novembre 2026. La PR conserve ces décisions ; elles ne constituent pas une nouvelle architecture ni une autorisation de publier/fusionner/déployer.
+
+## Autorisation ciblée — suite du parcours indépendant
+
+Le propriétaire confirme avoir fusionné la PR #25 ; vérification GitHub : merge e437c58f7d99a838691b842ecc8ec288bd5ef3b7. Après explication du déclencheur Vercel, il autorise explicitement l'envoi de docs/free-mcp-independent-trial et sa prévisualisation automatique. La création et les contrôles de sa PR sont inclus ; aucune fusion de cette nouvelle PR, publication npm ou promotion en production n'est autorisée. Ce n'est pas une autorisation générale de déploiement futur.

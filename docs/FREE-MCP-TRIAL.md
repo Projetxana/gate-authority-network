@@ -13,7 +13,7 @@ You will use npm `@gate-avn/mcp@0.1.0-dev.9` and `@gate-avn/sdk@0.1.0-dev.4`, a 
 
 ## 1. Download the small, pinned trial harness
 
-No repository clone is required. Run these commands in a terminal. They create a fresh temporary folder and download three reviewable files, not a package archive. The source is pinned to the public Mission 012 continuity commit, `919d2bb6bdac75a310fe6e75baf65ad86f6255dd` (PR #25); it is deliberately not a floating main URL. That PR is awaiting owner merge, but its pinned files are public.
+No repository clone is required. Run these commands in a terminal. They create a fresh temporary folder and download three reviewable files, not a package archive. The source is pinned to the public Mission 012 continuity commit, `919d2bb6bdac75a310fe6e75baf65ad86f6255dd` (PR #25); it is deliberately not a floating main URL. PR #25 is now merged; the immutable source URL keeps this trial reproducible.
 
 ```sh
 GATE_FREE_TRIAL_DIR="$(mktemp -d /tmp/gate-free-trial.XXXXXX)"
