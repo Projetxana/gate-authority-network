@@ -1,0 +1,10 @@
+{
+  "name": "gate-mission012-free-validation",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@gate-avn/mcp": "0.1.0-dev.9",
+    "@gate-avn/sdk": "0.1.0-dev.4"
+  },
+  "scripts": {"validate": "node validate-free.mjs"}
+}

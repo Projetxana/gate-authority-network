@@ -1,10 +1,11 @@
-# GATE — reprise d’une nouvelle conversation
+# GATE — reprise du pilotage unifié
 
-1. Lire `AGENTS.md`, puis `docs/continuity/GATE-CURRENT-STATE.md`, `GATE-DECISIONS.md` et `GATE-NEXT-ACTIONS.md`. Consulter `GATE-ARCHITECTURE.md` et ses sources pour toute question technique.
-2. Vérifier sur GitHub le SHA actuel de main et l’état des PR, en particulier #16 et la PR documentaire. Ne pas prendre cet instantané pour l’état courant.
-3. Identifier le dépôt, le dossier, la branche et le worktree avec `pwd`, `git remote -v`, `git worktree list --porcelain`, `git status --short` et `git rev-parse HEAD`. Ne pas publier de credentials présents dans une URL distante. Ne pas utiliser ni modifier un worktree contenant des changements locaux non commités ; privilégier le dossier isolé propre approprié.
-4. Comparer les changements avec l’inventaire CURRENT-STATE. Conserver tous les fichiers non commités ; ne pas stash, nettoyer, restaurer ou copier ces fichiers sans instruction explicite.
-5. Exposer les faits vérifiés, les preuves historiques et les inconnues. Si main a avancé, relire les sources touchées avant de proposer une suite.
-6. Proposer la prochaine action ciblée au pilote ChatGPT principal, avec portée et validation attendue. L’exécutant attend une instruction explicite ; aucune nouvelle architecture, fusion, migration ou mise en production implicite.
+1. Lire AGENTS.md puis GATE-CURRENT-STATE.md, GATE-DECISIONS.md, GATE-NEXT-ACTIONS.md et GATE-ADOPTION.md. La directive propriétaire du 2 novembre remplace le modèle pilote ailleurs / exécutant local.
+2. Identifier checkout, branche, HEAD, remote, worktrees et statut avant écriture. Préserver les changements d'autrui ; ne pas stash, restaurer, nettoyer ni supprimer un travail existant. Réutiliser un checkout propre approprié ou créer un clone isolé.
+3. Revérifier main distant, PR, CI, versions/intégrités npm et Glama si pertinent. Distinguer source main, archive publiée, dist-tag, schéma indexé et version déployée. Ne pas publier pour les rendre artificiellement identiques.
+4. Lire le guide et la preuve Mission 012 : interne, émetteur contrôlé. Ne pas recréer de projets pour rafraîchir un rapport sans besoin de validation précis et autorisation.
+5. Avancer sur les tâches techniques autorisées ; le propriétaire valide publication, fusion, déploiement, secrets et changements de sécurité. CI verte ne vaut pas approbation. Aucun transfert routinier de commandes entre conversations.
+6. Prioriser difficultés des utilisateurs indépendants, registre d'adoption et ticket #10. Aucun nouveau stage/fonctionnalité sans besoin vérifié ; garder PR #16 distincte du produit disponible.
+7. Enregistrer résultats et décisions durables par branche/PR GitHub avec source, commit, date et limites. Jamais de secret, JWS complet ou données client privées. La fusion reste au propriétaire.
 
-La continuité repose sur ces fichiers versionnés et une revérification à chaque reprise. Elle ne suppose ni mémoire automatique entre conversations ni surveillance permanente. Après chaque mission autorisée, actualiser les faits pertinents et faire relire la documentation selon le même circuit de branche/PR.
+Architecture : GATE-ARCHITECTURE.md et sources, en tenant compte de leur date historique. Vérifier cette PR de gouvernance avant de supposer les changements intégrés à main. Aucun réveil automatique ou travail hors session configuré par ces documents.

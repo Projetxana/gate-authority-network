@@ -14,10 +14,21 @@ Les entrées suivantes consignent des règles déjà écrites ou des fusions obs
 
 Les SHA indiqués comme références de contenu ne sont pas nécessairement les commits d’introduction du fichier. Les fusions #17 à #21 sont détaillées dans CURRENT-STATE.
 
-## Instructions de gouvernance de cette mission
+## Gouvernance historique — remplacée le 2 novembre 2026
 
-ChatGPT principal pilote ; l’exécutant agit sur instructions explicites et demande approbation pour les opérations sensibles listées dans AGENTS.md. Source : instruction utilisateur MISSION 003 ; ce ne sont pas des décisions techniques historiques déduites du code.
+Le modèle MISSION 003 (pilote ChatGPT / exécutant local) est historique et remplacé par la directive propriétaire ci-dessous.
 
 ## Non-décisions
 
 Aucune décision nouvelle de migration, de déploiement, de changement de sécurité ou de fusion Stage18. La présence d’un prototype, un test vert historique ou un objectif commercial ne constitue pas une approbation. Les niveaux de fraîcheur réellement déployés, la readiness production et l’adoption indépendante exigent encore des preuves.
+
+## Décisions durables — directive propriétaire du 2 novembre 2026
+
+- Cet environnement devient le point principal de développement et pilotage GATE : analyse, code, tests, préparation des PR, validation des packages et suivi des corrections autonomes dans le périmètre autorisé.
+- Le propriétaire conserve la validation de toute publication, fusion, déploiement, modification de secret et changement de sécurité. Pas d'approbation déduite d'un test vert.
+- Fin du transfert systématique de commandes/résultats entre conversations. Le contexte durable est enregistré dans GitHub par branche/PR ; chaque nouvelle session relit le dossier continuity et revérifie les faits.
+- État unique dans GATE-CURRENT-STATE.md ; preuve détaillée par référence. Distinguer disponible, expérimental, rapporté, exécuté et adoption externe.
+- Aucun nouveau stage ni fonctionnalité sans besoin utilisateur vérifié. Objectif prioritaire : utilisateurs indépendants et premiers clients payants avant le 19 janvier 2027, sans maquiller les gates.
+- Mission 012 établit un parcours interne réel via npm/tools/call/Free/bounded avec émetteur local ; ce n'est pas un utilisateur indépendant ou une source tierce. Le registre GATE-ADOPTION.md conserve cette distinction.
+
+Source de gouvernance : directive propriétaire « Pilotage unifié GATE » dans cette conversation, 2 novembre 2026. La PR conserve ces décisions ; elles ne constituent pas une nouvelle architecture ni une autorisation de publier/fusionner/déployer.
