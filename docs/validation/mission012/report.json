@@ -1,0 +1,139 @@
+{
+  "startedAt": "2026-11-03T02:26:36.924Z",
+  "packages": {
+    "mcp": "0.1.0-dev.9",
+    "sdk": "0.1.0-dev.4"
+  },
+  "consistency": "bounded",
+  "checks": [
+    {
+      "name": "local_unknown_fail_closed",
+      "status": "PASS",
+      "authority": "UNKNOWN",
+      "decision": "DENY",
+      "effects": 0,
+      "reason": "GATE_AUTHORITY_DENIED",
+      "fixtureRequests": 0,
+      "scope": "local fixture, not hosted GATE"
+    },
+    {
+      "name": "local_http_fail_closed",
+      "status": "PASS",
+      "authority": "UNKNOWN",
+      "decision": "DENY",
+      "effects": 0,
+      "reason": "HTTP_OR_NETWORK_ERROR",
+      "fixtureRequests": 1,
+      "scope": "local fixture, not hosted GATE"
+    },
+    {
+      "name": "local_disconnect_fail_closed",
+      "status": "PASS",
+      "authority": "UNKNOWN",
+      "decision": "DENY",
+      "effects": 0,
+      "reason": "DISCONNECT",
+      "fixtureRequests": 1,
+      "scope": "local fixture, not hosted GATE"
+    },
+    {
+      "name": "local_timeout_fail_closed",
+      "status": "PASS",
+      "authority": "UNKNOWN",
+      "decision": "DENY",
+      "effects": 0,
+      "reason": "TIMEOUT",
+      "fixtureRequests": 1,
+      "scope": "local fixture, not hosted GATE"
+    },
+    {
+      "name": "local_malformed_fail_closed",
+      "status": "PASS",
+      "authority": "UNKNOWN",
+      "decision": "DENY",
+      "effects": 0,
+      "reason": "MALFORMED_JSON",
+      "fixtureRequests": 1,
+      "scope": "local fixture, not hosted GATE"
+    },
+    {
+      "name": "new_disposable_free_project",
+      "status": "PASS",
+      "plan": "free",
+      "activeIssuers": 0,
+      "fingerprint": "1f8fa40ca802d969"
+    },
+    {
+      "name": "hosted_before_grant",
+      "status": "PASS",
+      "authority": "INVALID",
+      "decision": "DENY",
+      "effects": 0,
+      "counter": {
+        "total": 1,
+        "allow": 0,
+        "deny": 1
+      },
+      "scope": "real MCP tools/call and hosted Free GATE"
+    },
+    {
+      "name": "es256_public_issuer_registered",
+      "status": "PASS",
+      "scope": "new disposable project only"
+    },
+    {
+      "name": "signed_active_accepted",
+      "status": "PASS"
+    },
+    {
+      "name": "hosted_after_signed_grant",
+      "status": "PASS",
+      "authority": "VALID",
+      "decision": "ALLOW",
+      "effects": 1,
+      "counter": {
+        "total": 2,
+        "allow": 1,
+        "deny": 1
+      },
+      "scope": "real MCP tools/call and hosted Free GATE"
+    },
+    {
+      "name": "signed_revocation_accepted",
+      "status": "PASS"
+    },
+    {
+      "name": "hosted_after_signed_revocation",
+      "status": "PASS",
+      "authority": "INVALID",
+      "decision": "DENY",
+      "effects": 1,
+      "counter": {
+        "total": 3,
+        "allow": 1,
+        "deny": 2
+      },
+      "scope": "real MCP tools/call and hosted Free GATE"
+    },
+    {
+      "name": "issuer_trust_revoked_and_verified",
+      "status": "PASS",
+      "activeIssuers": 0
+    }
+  ],
+  "cleanup": {
+    "status": "PASS",
+    "issuer": "urn:gate:mission012:a9b9b330-ca93-416b-a7c7-b20d7eaf9e0b",
+    "keyId": "mission012-a9b9b330-ca93-416b-a7c7-b20d7eaf9e0b",
+    "activeIssuers": 0
+  },
+  "projectFingerprint": "1f8fa40ca802d969",
+  "status": "PASS",
+  "finishedAt": "2026-11-03T02:26:40.233Z",
+  "limits": [
+    "Local UNKNOWN and network faults are controlled fixtures, not hosted UNKNOWN evidence.",
+    "Controlled local issuer, not independent third-party authority.",
+    "Only one disposable local marker; no business effect.",
+    "Project records and metered usage remain; issuer trust is revoked, project deletion is not implemented."
+  ]
+}
