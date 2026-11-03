@@ -21,3 +21,7 @@ Inscrire seulement une observation ou preuve reçue : date/fuseau, identifiant a
 Pour un paiement : transaction réelle volontaire pour GATE, portée Developer Preview comprise, date et référence privée consultable par le propriétaire. GitHub ne conserve que la référence anonymisée et le résultat utile, jamais adresse personnelle, données bancaires, facture privée ou clé. Ne pas modifier la facturation pour fabriquer une preuve.
 
 Étiqueter « rapporté » ou « exécuté » selon la provenance. Absence de preuve ici ne signifie pas absence universelle d'utilisateurs. Une difficulté d'onboarding doit être comprise avant de justifier une fonctionnalité.
+
+## Prepared independent-trial entry path
+
+Use [FREE-MCP-TRIAL](../FREE-MCP-TRIAL.md) and the [feedback form](../adoption/FREE-MCP-TRIAL-FEEDBACK.md). The internal cold-install check passed but creates no independent-user entry. Public outreach has not been sent; the form asks about the actual workflow, current alternative, obstacles, time to ALLOW, assistance, revocation, cleanup and day-7 return rather than asking for stars or a Glama score. No participant or willingness-to-pay evidence is invented.

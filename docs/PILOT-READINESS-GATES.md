@@ -45,3 +45,9 @@
 ## Responsibility rule
 
 Never substitute green unit tests, a public package, a live endpoint, or a marketing site for evidence from an unaffiliated first-time user. Do not move the gate to GO to meet a calendar target; the 90-day challenge is for real adoption, not superficial publishing milestones.
+
+## Public-package onboarding follow-up — 2026-11-02
+
+The [no-clone Free MCP trial](FREE-MCP-TRIAL.md) now pins published MCP dev.9 and SDK dev.4. The old dev.8 distribution row above is historical. Mission 012 proved the hosted sequence internally with a controlled issuer; it did not close P0-F. Current internal [cold-install preflight evidence](validation/COLD-TRIAL-PREFLIGHT-20261102.json) verifies immutable public harness downloads, hashes, npm ci, CLI version, five local fail-closed probes and refusal to create a project without the explicit opt-in. The deliberately missing opt-in exits 1 as expected; it is not a hosted trial failure or a new hosted PASS.
+
+Fresh checks: 137 repository tests, syntax check and 34 security regressions against the npm-installed consumer pass. The source main and the published archive still differ in CLI descriptions after PR #24. No package publication, tag change or independent-adoption claim is made. Keep the HOLD decision until the remaining gates are evidenced.
