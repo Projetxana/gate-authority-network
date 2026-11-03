@@ -14,6 +14,7 @@ It resolves whether a currently valid authority path still exists at effect time
 > **Current operational boundary:** one Canadian primary database, **no production regional replicas**, and no independent third-party issuer propagation SLA. `maxStalenessMs` measures primary snapshot age only. The Developer Preview is **not enterprise GA**.
 
 - [GATE public product website](https://gate-phi-eosin.vercel.app/) — launch, Free plans, and supported developer paths.
+- [Independent Free MCP trial — no repository clone](docs/FREE-MCP-TRIAL.md) — published MCP dev.9, signed grant/revoke, one disposable local effect, and a feedback checklist.
 - [Signed revocation quickstart](docs/LAUNCH-FIRST-REAL-EFFECT.md) — actual GATE Network DENY → ALLOW → DENY with a self-controlled ES256 test issuer.
 - [Start with the hosted sandbox](https://gate-phi-eosin.vercel.app/quickstart.html) — synthetic graph for learning GATE revocation semantics.
 - [Create a real Free GATE Network project](docs/QUICKSTART.md) — live gate-network with a real API key and managed quota.
@@ -76,7 +77,7 @@ Current Free Developer Preview: 50,000 verifications/month, 1 authority issuer, 
 
 Use GateClient from @gate-avn/sdk. See docs/QUICKSTART.md for the complete live-network flow.
 
-## 5-minute demo
+## Repository development demo
 
 Requirements: Node.js 20+.
 
@@ -154,22 +155,24 @@ docs/              architecture, integration contract, due diligence
 ### SDK
 
 ```bash
-npm install @gate-avn/sdk@dev
+npm install @gate-avn/sdk@0.1.0-dev.4
 ```
 
 Repository Stage 16 baseline: `0.1.0-dev.4`
 
-Published npm `@dev`: `0.1.0-dev.4` (verified from public npm registry on 2026-10-28)
+Published SDK version used by the trial: `0.1.0-dev.4`.
 
 ### MCP server
 
 ```bash
-npm install @gate-avn/mcp@dev
+npm install @gate-avn/mcp@0.1.0-dev.9
 ```
 
 Repository Stage 16 baseline: `0.1.0-dev.8`
 
-Published npm `@dev`: `0.1.0-dev.8` (verified from public npm registry on 2026-10-28)
+Published npm `@dev`: `0.1.0-dev.9`; `@latest` remains `0.1.0-dev.2` (public registry checked 2026-11-02). Pin the trial version explicitly.
+
+The current repository CLI descriptions differ from the published dev.9 archive after PR #24. The trial installs from npm and does not substitute workspace code. Glama indexing and npm publication are separate: discovery is not proof of an independent successful integration.
 
 Official MCP Registry:
 

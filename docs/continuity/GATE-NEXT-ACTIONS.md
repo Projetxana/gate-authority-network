@@ -13,3 +13,7 @@ Référence : [état courant](GATE-CURRENT-STATE.md). Priorité propriétaire : 
 | 7 | Préparer une offre limitée conforme à la Developer Preview et obtenir un paiement réel externe | Gates applicables, validation des opérations sensibles et volonté du client |
 
 Ne pas ajouter de fonctionnalité ni stage spéculatif. La PR #16 demeure expérimentale avec son interdiction de fusion ; ne pas déployer ses brouillons SQL. Aucun paiement QA, étoile, téléchargement ou score Glama ne remplace un utilisateur indépendant ou un client.
+
+## Current execution result
+
+The next prioritized onboarding correction is now implemented and tested locally: English no-clone trial, pinned public packages, explicit project-creation opt-in, and sanitized feedback. See GATE-CURRENT-STATE.md and the preflight evidence. The owner has now authorized sending this documentation branch with the existing automatic Preview trigger. The follow-up merge still needs owner approval; no new npm release or runtime feature is needed for this correction. An invitation can be prepared but not sent without explicit audience authorization.

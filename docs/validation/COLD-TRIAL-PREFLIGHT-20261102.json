@@ -1,0 +1,106 @@
+{
+  "status": "PASS",
+  "scope": "internal cold-install preflight; not independent adoption; no hosted GATE request or new project",
+  "baseMain": "8eaf31454c2811f4f3dc4350e59f1a78e28d901f",
+  "continuitySourceCommit": "919d2bb6bdac75a310fe6e75baf65ad86f6255dd",
+  "runtime": {
+    "node": "v24.21.0",
+    "npm": "11.21.0"
+  },
+  "setup": {
+    "source": "public immutable GitHub URLs from FREE-MCP-TRIAL.md",
+    "files": [
+      "package.json",
+      "package-lock.json",
+      "validate-free.mjs"
+    ],
+    "sha256": "all three match guide",
+    "npmCiExit": 0,
+    "cliVersion": "0.1.0-dev.9"
+  },
+  "permissionNegativeTest": {
+    "observedExit": 1,
+    "expectedExit": 1,
+    "observedFailure": "CHECK_FAILED explicit --create-disposable-project required",
+    "checks": [
+      {
+        "name": "local_unknown_fail_closed",
+        "status": "PASS",
+        "authority": "UNKNOWN",
+        "decision": "DENY",
+        "effects": 0,
+        "reason": "GATE_AUTHORITY_DENIED",
+        "fixtureRequests": 0,
+        "scope": "local fixture, not hosted GATE"
+      },
+      {
+        "name": "local_http_fail_closed",
+        "status": "PASS",
+        "authority": "UNKNOWN",
+        "decision": "DENY",
+        "effects": 0,
+        "reason": "HTTP_OR_NETWORK_ERROR",
+        "fixtureRequests": 1,
+        "scope": "local fixture, not hosted GATE"
+      },
+      {
+        "name": "local_disconnect_fail_closed",
+        "status": "PASS",
+        "authority": "UNKNOWN",
+        "decision": "DENY",
+        "effects": 0,
+        "reason": "DISCONNECT",
+        "fixtureRequests": 1,
+        "scope": "local fixture, not hosted GATE"
+      },
+      {
+        "name": "local_timeout_fail_closed",
+        "status": "PASS",
+        "authority": "UNKNOWN",
+        "decision": "DENY",
+        "effects": 0,
+        "reason": "TIMEOUT",
+        "fixtureRequests": 1,
+        "scope": "local fixture, not hosted GATE"
+      },
+      {
+        "name": "local_malformed_fail_closed",
+        "status": "PASS",
+        "authority": "UNKNOWN",
+        "decision": "DENY",
+        "effects": 0,
+        "reason": "MALFORMED_JSON",
+        "fixtureRequests": 1,
+        "scope": "local fixture, not hosted GATE"
+      }
+    ],
+    "cleanup": {
+      "status": "NOT_REQUIRED"
+    }
+  },
+  "npmConsumerSecurity": {
+    "passed": 34,
+    "failed": 0,
+    "exit": 0
+  },
+  "repository": {
+    "npmCiExit": 0,
+    "npmTestExit": 0,
+    "passed": 137,
+    "failed": 0,
+    "npmRunCheckExit": 0
+  },
+  "distribution": {
+    "mcp": {
+      "version": "0.1.0-dev.9",
+      "resolved": "https://registry.npmjs.org/@gate-avn/mcp/-/mcp-0.1.0-dev.9.tgz",
+      "integrity": "sha512-sch/WMrOXqlMcUfVxIQHhryvwCvUtrHDn26Ylm8nMBK3tgf/f7O5W60OBQxwjiuFYzv4MkG9rPSNFTzOZ32fJQ=="
+    },
+    "sdk": {
+      "version": "0.1.0-dev.4",
+      "resolved": "https://registry.npmjs.org/@gate-avn/sdk/-/sdk-0.1.0-dev.4.tgz",
+      "integrity": "sha512-CXIFWvckUFpd9+SJrUtFUPDlaCu9kGeHd5rtU1B07bB7g8BvlD9T6SSe4sQehJT5uHFRf/9dejjlaKXk/WRrMg=="
+    }
+  },
+  "delivery": "local commit only; no push, deployment, publication or outbound invitation"
+}

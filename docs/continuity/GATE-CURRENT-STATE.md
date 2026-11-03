@@ -43,3 +43,11 @@ sha512-sch/WMrOXqlMcUfVxIQHhryvwCvUtrHDn26Ylm8nMBK3tgf/f7O5W60OBQxwjiuFYzv4MkG9r
 4. Après revue des gates applicables, préparer une offre honnête et obtenir un premier paiement volontaire externe avant le **19 janvier 2027**. Ne compter ni paiement QA ni promesse de readiness production.
 
 Pas d'envoi de contacts externes sans instruction explicite. Le travail technique et son suivi continuent ici sans transfert obligatoire entre conversations. Détails : [actions](GATE-NEXT-ACTIONS.md), [décisions](GATE-DECISIONS.md), [reprise](GATE-HANDOFF.md). L'[inventaire du 30 octobre](GATE-CURRENT-STATE-20261030.md) est historique ; aucun ancien worktree n'a été modifié par cette reprise.
+
+## Local follow-up — independent-trial onboarding
+
+The next authorized task fixes a verified acquisition obstacle: the README consumed by Glama still advertised dev.8 and a repository-dependent trial, while the real npm trial uses dev.9. The local branch `docs/free-mcp-independent-trial` adds an English [no-clone guide](../FREE-MCP-TRIAL.md), an optional sanitized [feedback form](../adoption/FREE-MCP-TRIAL-FEEDBACK.md), explicit npm pins in the repository README and a correction of the historical unpublished-candidate claim. Package files and security/runtime code are unchanged.
+
+[Fresh internal preflight](../validation/COLD-TRIAL-PREFLIGHT-20261102.json): public immutable harness download and hashes, npm ci, CLI dev.9, five local MCP probes and 34 npm-consumer security tests PASS. Without the creation opt-in the runner refuses with exit 1, as expected; no new hosted project was created. Repository 137 tests and syntax PASS. This is operator QA, not an independent trial.
+
+PR #25 is confirmed MERGED on 2026-11-03 at 02:47:29 UTC (November 2 America/Toronto); current remote main is e437c58f7d99a838691b842ecc8ec288bd5ef3b7. The owner explicitly authorized sending docs/free-mcp-independent-trial with its automatic Vercel Preview. This authorization does not include merging this follow-up or promoting it to production. Existing hosting settings are unchanged. A genuinely independent participant is still needed; sending an invitation requires explicit recipient/audience authorization.
