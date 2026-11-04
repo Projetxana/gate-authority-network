@@ -16,7 +16,7 @@ test('product home is in English, points to a real Free project, and exposes cor
   assert.match(home, /href="\.\/live\.html"/);
   assert.match(home, /href="\.\/adoption\.html"/);
   assert.match(home, /@gate-avn\/sdk@0\.1\.0-dev\.4/);
-  assert.match(home, /MCP <strong>0\.1\.0-dev\.8<\/strong>/);
+  assert.match(home, /MCP <strong>0\.1\.0-dev\.9<\/strong>/);
   assert.match(home, /<link rel="canonical"/);
   assert.match(home, /<meta name="description"/);
   assert.match(home, /<h1 id="main-heading">/);
