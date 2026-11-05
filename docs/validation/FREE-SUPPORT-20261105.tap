@@ -1,0 +1,76 @@
+TAP version 13
+# Subtest: loopback SDK/guard 401 invalid_api_key
+ok 1 - loopback SDK/guard 401 invalid_api_key
+  ---
+  duration_ms: 34.326541
+  type: 'test'
+  ...
+# Subtest: loopback SDK/guard 403 issuer_limit_reached
+ok 2 - loopback SDK/guard 403 issuer_limit_reached
+  ---
+  duration_ms: 6.268875
+  type: 'test'
+  ...
+# Subtest: loopback SDK/guard 403 untrusted_authority_issuer
+ok 3 - loopback SDK/guard 403 untrusted_authority_issuer
+  ---
+  duration_ms: 1.85625
+  type: 'test'
+  ...
+# Subtest: loopback SDK/guard 403 issuer_not_authorized_for_principal
+ok 4 - loopback SDK/guard 403 issuer_not_authorized_for_principal
+  ---
+  duration_ms: 2.251125
+  type: 'test'
+  ...
+# Subtest: loopback SDK/guard 403 strict_consistency_not_in_plan
+ok 5 - loopback SDK/guard 403 strict_consistency_not_in_plan
+  ---
+  duration_ms: 1.621625
+  type: 'test'
+  ...
+# Subtest: loopback SDK/guard 429 daily_registration_limit_per_client_reached
+ok 6 - loopback SDK/guard 429 daily_registration_limit_per_client_reached
+  ---
+  duration_ms: 1.628375
+  type: 'test'
+  ...
+# Subtest: loopback SDK/guard 429 monthly_verification_limit_reached
+ok 7 - loopback SDK/guard 429 monthly_verification_limit_reached
+  ---
+  duration_ms: 1.278958
+  type: 'test'
+  ...
+# Subtest: loopback SDK/guard 200 UNKNOWN/DENY
+ok 8 - loopback SDK/guard 200 UNKNOWN/DENY
+  ---
+  duration_ms: 1.366
+  type: 'test'
+  ...
+# Subtest: loopback SDK/guard 200 INVALID/DENY
+ok 9 - loopback SDK/guard 200 INVALID/DENY
+  ---
+  duration_ms: 1.333
+  type: 'test'
+  ...
+# Subtest: loopback SDK/guard 200 VALID/ALLOW
+ok 10 - loopback SDK/guard 200 VALID/ALLOW
+  ---
+  duration_ms: 3.362333
+  type: 'test'
+  ...
+# Subtest: an ALLOW counter is not a completed-effect counter
+ok 11 - an ALLOW counter is not a completed-effect counter
+  ---
+  duration_ms: 0.175625
+  type: 'test'
+  ...
+1..11
+# tests 11
+# suites 0
+# pass 11
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 189.221417
