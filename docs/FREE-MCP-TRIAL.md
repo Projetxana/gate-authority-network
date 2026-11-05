@@ -11,6 +11,8 @@ You will use npm `@gate-avn/mcp@0.1.0-dev.9` and `@gate-avn/sdk@0.1.0-dev.4`, a 
 - The run uses a few metered Free checks and a rate-limited registration slot. No payment or card. The project/usage records remain afterward; cleanup revokes issuer trust, not the project itself.
 - This is a Developer Preview, not enterprise GA. GATE checks authority evidence it has received. Your application still owns authentication and action/resource policy. No independent upstream-freshness SLA, atomic check/effect transaction or Stage 18 permit is demonstrated.
 
+This trial does not mutate the effective target/arguments or test credential-specific applicability of an alternative path. Its project API key authenticates requests to GATE; it is not a downstream OAuth agent credential. Action context and an ALLOW counter do not prove action-policy authorization or a completed effect. Use the local marker to check actual execution. Passing this trial must not be described as proof of those broader binding properties.
+
 ## 1. Download the small, pinned trial harness
 
 No repository clone is required. Run these commands in a terminal. They create a fresh temporary folder and download three reviewable files, not a package archive. The source is pinned to the public Mission 012 continuity commit, `919d2bb6bdac75a310fe6e75baf65ad86f6255dd` (PR #25); it is deliberately not a floating main URL. PR #25 is now merged; the immutable source URL keeps this trial reproducible.

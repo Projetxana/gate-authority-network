@@ -48,6 +48,8 @@
     <div class="section-kicker">REAL MANAGED NETWORK · FREE DEVELOPER PREVIEW</div>
     <h1>Create a real GATE project.</h1>
     <p>This is not the sandbox. It creates a persistent Free project on the canonical GATE Network, returns a real bearer API key, and lets you confirm the project against the live service.</p>
+    <p>Trying MCP signed revocation? <a class="refresh-button" href="https://github.com/Projetxana/gate-authority-network/blob/main/docs/FREE-MCP-TRIAL.md" target="_blank" rel="noreferrer">Open the no-clone Free MCP trial ↗</a></p>
+    <p class="note">That guide creates its own disposable project after explicit opt-in. Follow it without creating a project here first. Use the form below for manual setup instead.</p>
     <p id="health" class="warn">Checking GATE Network…</p>
   </section>
 
@@ -93,7 +95,7 @@
     <section class="live-card">
       <div class="section-kicker">STEP 4</div>
       <h3>Install and verify</h3>
-      <pre class="code">npm install @gate-avn/sdk@dev</pre>
+      <pre class="code">npm install @gate-avn/sdk@0.1.0-dev.4</pre>
       <p>Run one real verification against the managed network. This consumes one verification from the monthly Free quota.</p>
       <div class="actions"><button class="primary-button" id="verifyLive" disabled>Run first live verify</button></div>
       <p class="note" id="verifyStatus">A fresh project should fail closed with DENY / no_authority_path.</p>
