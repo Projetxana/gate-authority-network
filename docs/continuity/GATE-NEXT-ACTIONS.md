@@ -8,3 +8,6 @@ Référence : [état courant](GATE-CURRENT-STATE.md). Une priorité active : pre
 4. Lire l'issue #4 d'Arjun pendant les reprises actives. Pas de nouveau commentaire ou changement d'architecture sans autorisation. Les reproductions déjà réalisées restent sur leur branche ; aucun nouveau stage/API spéculatif.
 
 Le paiement doit correspondre à un achat réel externe pour un bénéfice identifié, pas un paiement test ou un compteur ALLOW. Aucun prix, billing, secret, package npm ou déploiement modifié pendant cette préparation.
+
+
+Contexte durable conservé : [état antérieur archivé intégralement](GATE-CURRENT-STATE.md#conservation-de-continuité-avant-fusion-de-28). Les gates P0-A à P0-F restent applicables ; aucun test opérateur ne clôt l'essai indépendant P0-F. La PR #16 reste hors de cette autorisation, sans fusion de ses expériences ou SQL. L'objectif historique de trois essais, une intégration et 3–5 confirmations crédibles reste distinct du prochain jalon immédiat : un premier essai Free indépendant. Aucun changement de tags/npm/Auto-Release autorisé. [Anciennes actions datées](https://github.com/Projetxana/gate-authority-network/blob/7835dceb6ac3b70c02b4398941000464e4f545ae/docs/continuity/GATE-NEXT-ACTIONS.md).
