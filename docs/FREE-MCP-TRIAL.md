@@ -75,6 +75,8 @@ The first five PASS lines are separate local controls: UNKNOWN, HTTP 503, discon
 
 ## 4. Check cleanup and record your own outcome
 
+For installation, 401/403/429, UNKNOWN/DENY or cleanup problems, use the [short troubleshooting procedure](FREE-TRIAL-SUPPORT.md) before retrying. In particular, a registration timeout can occur after the service created a project; do not loop registrations.
+
 ```sh
 cat report.json
 wc -l disposable-effect.log
@@ -83,6 +85,8 @@ wc -l disposable-effect.log
 Expect exit code 0, `status: PASS`, `cleanup.status: PASS`, `activeIssuers: 0`, and one marker line. Your report is your evidence; the operator's earlier report is not an independent trial. The generated public issuer ID is not a credential, but review any file before sharing it. Never share an API key, JWS, private key or process dump.
 
 If HTTP 401/403, 429, TLS/network failure or cleanup failure occurs, stop and record the sanitized step/code. Do not switch endpoints, disable TLS, use a customer key, change IP to bypass rate limits or loop project registrations. A partial run is not PASS. If cleanup fails or the process is killed, the project may retain a trusted issuer; the short grant lease does not replace trust revocation. Ask the project owner for authorized recovery using the public issuer identifiers in the report. No existing secret should be changed to bypass a failure.
+
+Running without `--create-disposable-project` intentionally ends with exit code 1 and `CHECK_FAILED explicit --create-disposable-project required`, even if the five local controls passed. This is a refused hosted opt-in, not a completed trial. A completed hosted run must meet every outcome above. Use a fresh temporary directory for another run: the harness refuses an existing effect marker. Preserve only the sanitized result needed for support; never work around that check by deleting the marker and rerunning in place.
 
 ## 5. Tell us what happened, not only whether it passed
 

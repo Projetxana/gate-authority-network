@@ -25,3 +25,12 @@ Pour un paiement : transaction réelle volontaire pour GATE, portée Developer P
 ## Prepared independent-trial entry path
 
 Use [FREE-MCP-TRIAL](../FREE-MCP-TRIAL.md) and the [feedback form](../adoption/FREE-MCP-TRIAL-FEEDBACK.md). The internal cold-install check passed but creates no independent-user entry. Public outreach has not been sent; the form asks about the actual workflow, current alternative, obstacles, time to ALLOW, assistance, revocation, cleanup and day-7 return rather than asking for stars or a Glama score. No participant or willingness-to-pay evidence is invented.
+
+
+## Contrôle actif et préparation support — 5 novembre 2026
+
+Recherche Gmail ciblée des trois contacts après le 4 novembre : deux messages d'Arjun déjà traités, pas de nouveau retour trouvé, aucune page restante. Issues #10 et #4 sans commentaire au contrôle ; aucun contact ni relance. Trois invitations initiales, une revue offline indépendante ; zéro nouvel essai Free indépendant, intégration Free tierce ou paiement client documenté. Les preuves historiques de fixture indépendant restent distinctes.
+
+[Contrôle UX/support](../validation/FREE-SUPPORT-20261105.json) : pages/guide/retour accessibles, installation vierge et cinq contrôles locaux MCP zéro effet ; onze diagnostics SDK/guard et six tests marketing PASS. Aucun projet hébergé créé. Ce contrôle opérateur n'augmente pas l'adoption. Offre pilote affinée avec mesure des effets terminés fournie par le participant ; le compteur de décisions existant ne prouve pas leur exécution.
+
+Cinq approches supplémentaires préparées en privé, aucun envoi ; quatre canaux email publiés et un canal de messagerie non confirmé. Aucun intérêt, essai ou intention de paiement attribué à ces contacts. Brouillons et coordonnées hors dépôt. Pas de changement de prix ou de facturation.

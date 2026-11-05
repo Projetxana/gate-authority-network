@@ -1,0 +1,131 @@
+{
+  "hashes": "3/3 PASS",
+  "npm_ci_exit": 0,
+  "cli_exit": 0,
+  "cli_version": "0.1.0-dev.9",
+  "preflight_exit": 1,
+  "checks": [
+    {
+      "name": "local_unknown_fail_closed",
+      "status": "PASS",
+      "authority": "UNKNOWN",
+      "decision": "DENY",
+      "effects": 0,
+      "reason": "GATE_AUTHORITY_DENIED",
+      "fixtureRequests": 0,
+      "scope": "local fixture, not hosted GATE"
+    },
+    {
+      "name": "local_http_fail_closed",
+      "status": "PASS",
+      "authority": "UNKNOWN",
+      "decision": "DENY",
+      "effects": 0,
+      "reason": "HTTP_OR_NETWORK_ERROR",
+      "fixtureRequests": 1,
+      "scope": "local fixture, not hosted GATE"
+    },
+    {
+      "name": "local_disconnect_fail_closed",
+      "status": "PASS",
+      "authority": "UNKNOWN",
+      "decision": "DENY",
+      "effects": 0,
+      "reason": "DISCONNECT",
+      "fixtureRequests": 1,
+      "scope": "local fixture, not hosted GATE"
+    },
+    {
+      "name": "local_timeout_fail_closed",
+      "status": "PASS",
+      "authority": "UNKNOWN",
+      "decision": "DENY",
+      "effects": 0,
+      "reason": "TIMEOUT",
+      "fixtureRequests": 1,
+      "scope": "local fixture, not hosted GATE"
+    },
+    {
+      "name": "local_malformed_fail_closed",
+      "status": "PASS",
+      "authority": "UNKNOWN",
+      "decision": "DENY",
+      "effects": 0,
+      "reason": "MALFORMED_JSON",
+      "fixtureRequests": 1,
+      "scope": "local fixture, not hosted GATE"
+    }
+  ],
+  "failure": "CHECK_FAILED explicit --create-disposable-project required",
+  "cleanup": {
+    "status": "NOT_REQUIRED"
+  },
+  "hosted_project_created": false,
+  "checkedAt": "2026-11-05T13:25:37.173802+00:00",
+  "baseMain": "7835dceb6ac3b70c02b4398941000464e4f545ae",
+  "runtime": "v24.21.0",
+  "supportDiagnostics": {
+    "passed": 11,
+    "failed": 0,
+    "scope": "published SDK/guard against loopback HTTP fixtures; no hosted call; not MCP transport conformance",
+    "command": "GATE_REVIEW_CONSUMER_ROOT=/absolute/path/to/isolated/npm/install node --test docs/validation/free-support.test.mjs",
+    "sha256": "a778f37fe340f9791809e62a80725da3f673000217a861779bb487104d06663d",
+    "consumer": "fresh npm ci from immutable public lockfile, no workspace links"
+  },
+  "marketingTests": {
+    "passed": 6,
+    "failed": 0
+  },
+  "syntaxCheckExit": 0,
+  "diffCheckExit": 0,
+  "publicAccess": {
+    "site": 200,
+    "live": 200,
+    "guide": 200,
+    "feedback": 200,
+    "health": 200
+  },
+  "npm": {
+    "mcp": {
+      "version": "0.1.0-dev.9",
+      "dev": "0.1.0-dev.9",
+      "latest": "0.1.0-dev.2"
+    },
+    "sdk": {
+      "version": "0.1.0-dev.4",
+      "dev": "0.1.0-dev.4",
+      "latest": "0.1.0-dev.1"
+    }
+  },
+  "publicHealth": {
+    "registrationGlobalPerDay": 500,
+    "registrationPerClientPerDay": 3,
+    "maxLeaseSeconds": 900
+  },
+  "feedback": {
+    "issue10Comments": 0,
+    "issue4Comments": 0,
+    "newInvitationRepliesFound": 0,
+    "scope": "targeted Gmail search after Nov 4; two already handled Arjun messages, no further page"
+  },
+  "adoption": {
+    "initialInvitations": 3,
+    "independentOfflineReviews": 1,
+    "newIndependentFreeTrialsDocumented": 0,
+    "thirdPartyFreeIntegrationsDocumented": 0,
+    "customerPaymentsDocumented": 0
+  },
+  "limits": [
+    "No new hosted project or complete hosted sequence exercised.",
+    "Free UI/source quotas are not a fresh authenticated project entitlement check.",
+    "Client fixtures do not exhaust live quotas or establish server enforcement.",
+    "Local support changes are not deployed.",
+    "Five new drafts prepared, zero contacts; four public email channels and one messaging channel unavailable.",
+    "No security/runtime/package/billing/architecture modification."
+  ],
+  "uiScriptsUnchanged": true,
+  "localBrowserHelpVisible": true,
+  "scopeReview": "PASS",
+  "credentialPatternScan": "PASS; limited pattern scan, not proof against every possible secret",
+  "supportTapSha256": "d3c0bb9451144335d34633f14f80d8097ffe90e106febd798cf4f2b9b9f483b3"
+}

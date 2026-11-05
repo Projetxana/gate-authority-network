@@ -1,19 +1,10 @@
-# GATE — prochaines actions du pilotage unifié
+# GATE — prochaine action prioritaire
 
-Référence : [état courant](GATE-CURRENT-STATE.md). Priorité propriétaire : utilisateurs indépendants et premiers clients réellement payants avant le 19 janvier 2027. Ne pas abaisser les gates pour atteindre cette date.
+Référence : [état courant](GATE-CURRENT-STATE.md). Une priorité active : premier essai Free indépendant, puis intégration tierce et paiement réel volontaire avant le 19 janvier 2027.
 
-| Priorité | Action autorisée / résultat attendu | Dépendance |
-|---|---|---|
-| 1 | Faire relire et fusionner la PR de gouvernance ; conserver la preuve Mission 012 | Fusion validée par le propriétaire |
-| 2 | Préparer un essai à froid du guide pour un développeur indépendant ; consigner erreurs, premier ALLOW, révocation, retour J7 | Participant indépendant à identifier ; aucun message externe envoyé sans instruction |
-| 3 | Corriger les erreurs réellement observées et valider la correction par tests/PR | Besoin utilisateur vérifié ; sécurité soumise au propriétaire |
-| 4 | Réconcilier la documentation npm/Glama et l'écart main/archive, sans nouvelle publication implicite | Nouvelle version/publication ou réglage de distribution : validation propriétaire |
-| 5 | Réexaminer les gates P0-A à P0-F à partir des preuves récentes ; ne pas transformer QA interne en P0-F | Revue sécurité/runtime et essai indépendant encore nécessaires |
-| 6 | Collecter 3–5 confirmations crédibles, trois essais indépendants puis une intégration tierce via #10 | Preuves assainies dans GATE-ADOPTION.md |
-| 7 | Préparer une offre limitée conforme à la Developer Preview et obtenir un paiement réel externe | Gates applicables, validation des opérations sensibles et volonté du client |
+1. Aide Free préparée sur `fix/free-trial-support`, depuis main PR27 fusionnée. [Preuves](../validation/FREE-SUPPORT-20261105.json) : installation vierge, cinq contrôles MCP locaux, onze diagnostics SDK/guard et six tests marketing. Avant publication : approbation du push, d'une PR en brouillon et de sa Preview automatique. Fusion/production exigent un autre accord. Le lien GitHub main du nouveau document reste indisponible avant sa fusion ; vérifier ce point après l'accord concerné.
+2. Après mise à disposition, observer un premier essai indépendant et consigner assistance, délai au premier ALLOW, effets et cleanup. Pas de recréation de projet sans besoin ni de relance non approuvée. L'aide couvre également les étapes échouées ; ne pas effacer les échecs du registre.
+3. Cinq nouveaux brouillons exploratoires et une proposition de pilote limitée sont préparés dans le dossier privé du propriétaire. Aucun envoi. Quatre canaux email publiés ; canal de messagerie du cinquième non confirmé. Ne pas transformer la pertinence technique en intérêt commercial. Proposition payante seulement sur besoin réel, périmètre accepté et accord distinct.
+4. Lire l'issue #4 d'Arjun pendant les reprises actives. Pas de nouveau commentaire ou changement d'architecture sans autorisation. Les reproductions déjà réalisées restent sur leur branche ; aucun nouveau stage/API spéculatif.
 
-Ne pas ajouter de fonctionnalité ni stage spéculatif. La PR #16 demeure expérimentale avec son interdiction de fusion ; ne pas déployer ses brouillons SQL. Aucun paiement QA, étoile, téléchargement ou score Glama ne remplace un utilisateur indépendant ou un client.
-
-## Current execution result
-
-The next prioritized onboarding correction is now implemented and tested locally: English no-clone trial, pinned public packages, explicit project-creation opt-in, and sanitized feedback. See GATE-CURRENT-STATE.md and the preflight evidence. The owner has now authorized sending this documentation branch with the existing automatic Preview trigger. The follow-up merge still needs owner approval; no new npm release or runtime feature is needed for this correction. An invitation can be prepared but not sent without explicit audience authorization.
+Le paiement doit correspondre à un achat réel externe pour un bénéfice identifié, pas un paiement test ou un compteur ALLOW. Aucun prix, billing, secret, package npm ou déploiement modifié pendant cette préparation.
