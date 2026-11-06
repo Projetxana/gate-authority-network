@@ -1,6 +1,54 @@
 export const GATE_SDK_VERSION = '0.1.0-dev.4';
 export const GATE_SANDBOX_URL = 'https://ufqtoyakmrddqytrkcje.supabase.co/functions/v1/gate-sandbox';
 
+// Closed vocabulary: never copy arbitrary error text, headers or response bodies.
+const diagnosticCodes = new Set([
+  'invalid_api_key', 'principal_and_actor_required', 'invalid_consistency',
+  'invalid_max_staleness_ms', 'strict_consistency_not_in_plan',
+  'monthly_verification_limit_reached', 'plan_entitlements_missing',
+  'client_supplied_replica_snapshots_not_supported', 'invalid_region',
+  'invalid_json', 'internal_error', 'authority_store_unavailable',
+  'canonical_snapshot_stale', 'authority_snapshot_invalid',
+  'authority_snapshot_timestamp_invalid', 'authority_snapshot_clock_skew',
+  'canonical_primary_required', 'regional_replica_not_configured',
+  'authority_lease_expired', 'no_authority_path',
+  'all_authority_paths_revoked_or_invalid', 'authority_issuer_revoked',
+  'upstream_authority_revoked'
+]);
+
+function verificationHttpError(response, result) {
+  const status = response.status;
+  const diagnostics = {};
+  for (const key of ['error', 'reason']) {
+    if (diagnosticCodes.has(result?.[key])) diagnostics[key] = result[key];
+  }
+  if (['VALID', 'INVALID', 'UNKNOWN'].includes(result?.authority)) diagnostics.authority = result.authority;
+  if (['ALLOW', 'DENY'].includes(result?.decision)) diagnostics.decision = result.decision;
+  const raw = result?.freshness;
+  if (raw && typeof raw === 'object' && !Array.isArray(raw)) {
+    const freshness = {};
+    for (const key of ['ageMs', 'leaseRemainingMs', 'maxStalenessMs', 'snapshotAgeMs',
+      'effectiveSnapshotLimitMs', 'lastEventAgeMs', 'replicaLagMs', 'externalIssuerLagMs']) {
+      if (raw[key] === null && key !== 'effectiveSnapshotLimitMs') freshness[key] = null;
+      else if (Number.isSafeInteger(raw[key]) && raw[key] >= 0) freshness[key] = raw[key];
+    }
+    for (const key of ['fresh', 'isPrimary']) if (typeof raw[key] === 'boolean') freshness[key] = raw[key];
+    if (raw.snapshotAt === null) freshness.snapshotAt = null;
+    else if (typeof raw.snapshotAt === 'string' &&
+      /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?(?:Z|[+-]\d{2}:\d{2})$/.test(raw.snapshotAt) &&
+      Number.isFinite(Date.parse(raw.snapshotAt))) freshness.snapshotAt = raw.snapshotAt;
+    if (['canonical-primary', 'unavailable', 'postgres-replica-unverified'].includes(raw.source)) freshness.source = raw.source;
+    if (Object.keys(freshness).length) diagnostics.freshness = Object.freeze(freshness);
+  }
+  const error = new Error(diagnostics.error || `gate_http_${status}`);
+  // Non-enumerable: callers opt into reading diagnostics; no automatic reporting.
+  Object.defineProperties(error, {
+    status: {value: status},
+    diagnostics: {value: Object.freeze(diagnostics)}
+  });
+  return error;
+}
+
 export class GateDeniedError extends Error {
   constructor(decision) {
     super(decision?.reason || 'gate_authority_denied');
@@ -48,8 +96,11 @@ export class GateClient {
       const text = await response.text();
       let result;
       try { result = text ? JSON.parse(text) : {}; }
-      catch { throw new Error(`gate_invalid_json:${response.status}`); }
-      if (!response.ok) throw new Error(result?.error || `gate_http_${response.status}`);
+      catch {
+        if (!response.ok) throw verificationHttpError(response, null);
+        throw new Error(`gate_invalid_json:${response.status}`);
+      }
+      if (!response.ok) throw verificationHttpError(response, result);
       return action ? { ...result, action } : result;
     } finally {
       if (timeout) clearTimeout(timeout);
