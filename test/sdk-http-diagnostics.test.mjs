@@ -35,7 +35,7 @@ test('unknown text, secrets, headers, payload and prototype keys are not retaine
   });
 });
 test('invalid JSON HTTP error retains status only; successful invalid JSON remains an error',async()=>{
-  await assert.rejects(client('not-json').verify(input),e=>e.status===503&&e.message==='gate_http_503');
+  await assert.rejects(client('not-json').verify(input),e=>e.status===503&&e.message==='gate_invalid_json:503');
   await assert.rejects(client('not-json',200).verify(input),/gate_invalid_json:200/);
 });
 test('successful response preserves complete snapshot fields and existing action behavior',async()=>{

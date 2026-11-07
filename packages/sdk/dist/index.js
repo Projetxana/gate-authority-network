@@ -16,7 +16,7 @@ const diagnosticCodes = new Set([
   'upstream_authority_revoked'
 ]);
 
-function verificationHttpError(response, result) {
+function verificationHttpError(response, result, invalidJson = false) {
   const status = response.status;
   const diagnostics = {};
   for (const key of ['error', 'reason']) {
@@ -40,7 +40,7 @@ function verificationHttpError(response, result) {
     if (['canonical-primary', 'unavailable', 'postgres-replica-unverified'].includes(raw.source)) freshness.source = raw.source;
     if (Object.keys(freshness).length) diagnostics.freshness = Object.freeze(freshness);
   }
-  const error = new Error(diagnostics.error || `gate_http_${status}`);
+  const error = new Error(invalidJson ? `gate_invalid_json:${status}` : diagnostics.error || `gate_http_${status}`);
   // Non-enumerable: callers opt into reading diagnostics; no automatic reporting.
   Object.defineProperties(error, {
     status: {value: status},
@@ -97,7 +97,7 @@ export class GateClient {
       let result;
       try { result = text ? JSON.parse(text) : {}; }
       catch {
-        if (!response.ok) throw verificationHttpError(response, null);
+        if (!response.ok) throw verificationHttpError(response, null, true);
         throw new Error(`gate_invalid_json:${response.status}`);
       }
       if (!response.ok) throw verificationHttpError(response, result);
