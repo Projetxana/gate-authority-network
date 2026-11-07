@@ -103,13 +103,35 @@ export interface GateDecision {
   };
   /** @deprecated Current v7 field refers to GATE snapshot freshness, not issuer freshness. */
   freshness?: {
-    ageMs: number;
-    leaseRemainingMs: number;
-    maxStalenessMs: number;
+    ageMs?: number | null;
+    leaseRemainingMs?: number | null;
+    maxStalenessMs?: number | null;
+    /** SQL statement timestamp, not issuer-event or commit time. */
+    snapshotAt?: string | null;
+    /** Primary-read age at evaluation, not freshness at dispatch. */
+    snapshotAgeMs?: number | null;
+    effectiveSnapshotLimitMs?: number;
+    source?: string;
+    isPrimary?: boolean;
+    lastEventAgeMs?: number | null;
+    replicaLagMs?: number | null;
+    externalIssuerLagMs?: number | null;
     fresh: boolean;
   };
   action?: GateAction;
   [key: string]: unknown;
+}
+
+/** Non-2xx verification error; diagnostics never constitute an admission decision. */
+export interface GateHttpError extends Error {
+  readonly status: number;
+  readonly diagnostics: Readonly<{
+    error?: string;
+    reason?: string;
+    authority?: "VALID" | "INVALID" | "UNKNOWN";
+    decision?: "ALLOW" | "DENY";
+    freshness?: Readonly<Partial<NonNullable<GateDecision["freshness"]>>>;
+  }>;
 }
 
 export interface GateClientOptions {
