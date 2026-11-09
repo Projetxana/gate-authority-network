@@ -3,5 +3,10 @@
     "api/npm-stats.js": {
       "maxDuration": 10
     }
+  },
+  "git": {
+    "deploymentEnabled": {
+      "validation/tymofii-lra-r3-20261110": false
+    }
   }
 }
