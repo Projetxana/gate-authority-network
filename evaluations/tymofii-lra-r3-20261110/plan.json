@@ -1,0 +1,309 @@
+{
+  "schema": "gate-lra-run-plan.v1",
+  "scheduledStart": "2026-11-10T14:00:00-05:00",
+  "scheduledStartUTC": "2026-11-10T19:00:00Z",
+  "timezone": "America/Toronto",
+  "executionAuthorized": false,
+  "historicalHealthAttempts": 1,
+  "hardAttemptCap": 50,
+  "plannedTotalAttempts": 42,
+  "guardedCalls": 23,
+  "signedEvents": 11,
+  "plannedCleanupCalls": 3,
+  "cleanupStartsByMs": 720000,
+  "hardWindowMs": 900000,
+  "caseLeadMs": 5000,
+  "requestTimeoutMs": 5000,
+  "automaticRetries": 0,
+  "profiles": {
+    "full": [
+      "LRA-01",
+      "LRA-02",
+      "LRA-04",
+      "LRA-06",
+      "LRA-08",
+      "LRA-10"
+    ],
+    "reduced": [
+      "LRA-02",
+      "LRA-04",
+      "LRA-08",
+      "LRA-10"
+    ]
+  },
+  "mappingRevision2Sha256": "d37419a43bfbcd1a22c791018197898ccea7627ae4c1faad4c1018bc2f194b9e",
+  "mappingRevision3Received": false,
+  "vectorRevision": 3,
+  "vectorSha256": "3b7b3fb97682fb967801641b8ed680a9cae608ff57738a594fc6f0314aac1bb6",
+  "cases": [
+    {
+      "case": "LRA-01",
+      "callCount": 4,
+      "timeline": [
+        {
+          "event": "call",
+          "at_ms": 0,
+          "worker": "w1",
+          "grant": "g1",
+          "operation": "read",
+          "id": "LRA-01-r1",
+          "truth": "active"
+        },
+        {
+          "event": "call",
+          "at_ms": 30000,
+          "worker": "w1",
+          "grant": "g1",
+          "operation": "read",
+          "id": "LRA-01-r2",
+          "truth": "active"
+        },
+        {
+          "event": "call",
+          "at_ms": 60000,
+          "worker": "w1",
+          "grant": "g1",
+          "operation": "read",
+          "id": "LRA-01-r3",
+          "truth": "active"
+        },
+        {
+          "event": "call",
+          "at_ms": 119000,
+          "worker": "w1",
+          "grant": "g1",
+          "operation": "read",
+          "id": "LRA-01-r4",
+          "truth": "active"
+        }
+      ],
+      "signedEvents": 1
+    },
+    {
+      "case": "LRA-02",
+      "callCount": 4,
+      "timeline": [
+        {
+          "event": "call",
+          "at_ms": 0,
+          "worker": "w1",
+          "grant": "g1",
+          "operation": "read",
+          "id": "LRA-02-r1",
+          "truth": "active"
+        },
+        {
+          "event": "revoke",
+          "at_ms": 10000,
+          "grant": "g1"
+        },
+        {
+          "event": "call",
+          "at_ms": 30000,
+          "worker": "w1",
+          "grant": "g1",
+          "operation": "read",
+          "id": "LRA-02-r2",
+          "truth": "revoked"
+        },
+        {
+          "event": "call",
+          "at_ms": 60000,
+          "worker": "w1",
+          "grant": "g1",
+          "operation": "read",
+          "id": "LRA-02-r3",
+          "truth": "revoked"
+        },
+        {
+          "event": "call",
+          "at_ms": 119000,
+          "worker": "w1",
+          "grant": "g1",
+          "operation": "read",
+          "id": "LRA-02-r4",
+          "truth": "revoked"
+        }
+      ],
+      "signedEvents": 2
+    },
+    {
+      "case": "LRA-04",
+      "callCount": 1,
+      "timeline": [
+        {
+          "event": "revoke",
+          "at_ms": 10000,
+          "grant": "g1"
+        },
+        {
+          "event": "call",
+          "at_ms": 121000,
+          "worker": "w1",
+          "grant": "g1",
+          "operation": "read",
+          "id": "LRA-04-r1",
+          "truth": "revoked"
+        }
+      ],
+      "signedEvents": 2
+    },
+    {
+      "case": "LRA-06",
+      "callCount": 3,
+      "timeline": [
+        {
+          "event": "call",
+          "at_ms": 0,
+          "worker": "w1",
+          "grant": "g1",
+          "operation": "read",
+          "id": "LRA-06-r1",
+          "truth": "active"
+        },
+        {
+          "event": "revoke",
+          "at_ms": 10000,
+          "grant": "g1"
+        },
+        {
+          "event": "call",
+          "at_ms": 30000,
+          "worker": "w1",
+          "grant": "g1",
+          "operation": "read",
+          "id": "LRA-06-r2",
+          "truth": "revoked"
+        },
+        {
+          "event": "call",
+          "at_ms": 30000,
+          "worker": "w1",
+          "grant": "g2",
+          "operation": "read",
+          "id": "LRA-06-r3",
+          "truth": "active"
+        }
+      ],
+      "signedEvents": 3
+    },
+    {
+      "case": "LRA-08",
+      "callCount": 5,
+      "timeline": [
+        {
+          "event": "call",
+          "at_ms": 0,
+          "worker": "w1",
+          "grant": "g1",
+          "operation": "read",
+          "id": "LRA-08-r1",
+          "truth": "active"
+        },
+        {
+          "event": "call",
+          "at_ms": 0,
+          "worker": "w2",
+          "grant": "g1",
+          "operation": "read",
+          "id": "LRA-08-r2",
+          "truth": "active"
+        },
+        {
+          "event": "revoke",
+          "at_ms": 10000,
+          "grant": "g1"
+        },
+        {
+          "event": "call",
+          "at_ms": 30000,
+          "worker": "w1",
+          "grant": "g1",
+          "operation": "read",
+          "id": "LRA-08-r3",
+          "truth": "revoked"
+        },
+        {
+          "event": "call",
+          "at_ms": 30000,
+          "worker": "w2",
+          "grant": "g1",
+          "operation": "read",
+          "id": "LRA-08-r4",
+          "truth": "revoked"
+        },
+        {
+          "event": "call",
+          "at_ms": 121000,
+          "worker": "w2",
+          "grant": "g1",
+          "operation": "read",
+          "id": "LRA-08-r5",
+          "truth": "revoked"
+        }
+      ],
+      "signedEvents": 2
+    },
+    {
+      "case": "LRA-10",
+      "callCount": 6,
+      "timeline": [
+        {
+          "event": "call",
+          "at_ms": 0,
+          "worker": "w1",
+          "grant": "g1",
+          "operation": "read",
+          "id": "LRA-10-r1",
+          "truth": "active"
+        },
+        {
+          "event": "call",
+          "at_ms": 30000,
+          "worker": "w1",
+          "grant": "g1",
+          "operation": "read",
+          "id": "LRA-10-r2",
+          "truth": "active"
+        },
+        {
+          "event": "call",
+          "at_ms": 60000,
+          "worker": "w1",
+          "grant": "g1",
+          "operation": "read",
+          "id": "LRA-10-r3",
+          "truth": "active"
+        },
+        {
+          "event": "call",
+          "at_ms": 90000,
+          "worker": "w1",
+          "grant": "g1",
+          "operation": "read",
+          "id": "LRA-10-r4",
+          "truth": "active"
+        },
+        {
+          "event": "call",
+          "at_ms": 119000,
+          "worker": "w1",
+          "grant": "g1",
+          "operation": "read",
+          "id": "LRA-10-r5",
+          "truth": "active"
+        },
+        {
+          "event": "call",
+          "at_ms": 121000,
+          "worker": "w1",
+          "grant": "g1",
+          "operation": "read",
+          "id": "LRA-10-r6",
+          "truth": "active"
+        }
+      ],
+      "signedEvents": 1
+    }
+  ]
+}

@@ -1,0 +1,113 @@
+{
+  "schema": "gate-lra-result.v1",
+  "runStatus": "NOT TESTED",
+  "hostedRequestsSent": 0,
+  "historicalHealthAttempts": 1,
+  "plannedAttempts": 42,
+  "hardCap": 50,
+  "mappingRevision": 3,
+  "mappingBaseline": 2,
+  "vectorRevision": 3,
+  "runner": {
+    "name": null,
+    "role": null,
+    "attribution": "NOT TESTED",
+    "authorshipLimits": "Tymofii authored vectors; GATE team authored implementation and preparation; a vector-author run is not an unaffiliated lab certification"
+  },
+  "scheduledStart": "2026-11-10T14:00:00-05:00",
+  "cases": [
+    {
+      "id": "LRA-01",
+      "status": "NOT TESTED",
+      "coverage": "mapped-v7-contract",
+      "plannedCalls": 4,
+      "observedCalls": null,
+      "rawResults": null,
+      "callbacksAdmitted": null,
+      "callbacksStarted": null,
+      "callbacksCompleted": null,
+      "actualEffects": null
+    },
+    {
+      "id": "LRA-02",
+      "status": "NOT TESTED",
+      "coverage": "mapped-v7-contract",
+      "plannedCalls": 4,
+      "observedCalls": null,
+      "rawResults": null,
+      "callbacksAdmitted": null,
+      "callbacksStarted": null,
+      "callbacksCompleted": null,
+      "actualEffects": null
+    },
+    {
+      "id": "LRA-04",
+      "status": "NOT TESTED",
+      "coverage": "mapped-v7-contract",
+      "plannedCalls": 1,
+      "observedCalls": null,
+      "rawResults": null,
+      "callbacksAdmitted": null,
+      "callbacksStarted": null,
+      "callbacksCompleted": null,
+      "actualEffects": null
+    },
+    {
+      "id": "LRA-06",
+      "status": "NOT TESTED",
+      "coverage": "PARTIAL",
+      "plannedCalls": 3,
+      "observedCalls": null,
+      "rawResults": null,
+      "callbacksAdmitted": null,
+      "callbacksStarted": null,
+      "callbacksCompleted": null,
+      "actualEffects": null
+    },
+    {
+      "id": "LRA-08",
+      "status": "NOT TESTED",
+      "coverage": "PARTIAL",
+      "plannedCalls": 5,
+      "observedCalls": null,
+      "rawResults": null,
+      "callbacksAdmitted": null,
+      "callbacksStarted": null,
+      "callbacksCompleted": null,
+      "actualEffects": null
+    },
+    {
+      "id": "LRA-10",
+      "status": "NOT TESTED",
+      "coverage": "mapped-v7-contract",
+      "plannedCalls": 6,
+      "observedCalls": null,
+      "rawResults": null,
+      "callbacksAdmitted": null,
+      "callbacksStarted": null,
+      "callbacksCompleted": null,
+      "actualEffects": null
+    }
+  ],
+  "cleanup": {
+    "status": "NOT TESTED",
+    "trustWithdrawn": null,
+    "activeIssuers": null,
+    "projectDeleted": false,
+    "projectDeletionClaimed": false
+  },
+  "independentHostedUseConfirmed": false,
+  "revenueConfirmed": false,
+  "limitations": [
+    "no P1 original instantaneous observation",
+    "no credential/grant binding",
+    "no hosted fault injection",
+    "no atomic check/effect",
+    "no current upstream issuer-state SLA",
+    "no new guarantees from test safety interlock"
+  ],
+  "mappingSha256": "0ad66be335a92d284b3da23a789b59b4d57ee8bf25504de66cf23344504dc9ed",
+  "mappingDocumentaryApproved": true,
+  "hostedExecutionAuthorized": false,
+  "planSha256": "615ac7c26fc913df585df69868b154247530716d31022168a7848b0ed70242d3"
+}

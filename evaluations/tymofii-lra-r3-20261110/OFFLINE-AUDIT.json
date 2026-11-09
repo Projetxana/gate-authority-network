@@ -1,0 +1,68 @@
+{
+  "date": "2026-11-09",
+  "scope": "selected runner-r3 source and offline preparation only",
+  "node": "24.21.0",
+  "npm": "11.21.0",
+  "platform": "darwin arm64",
+  "testerExactRuntimeValidated": false,
+  "offlineTests": {
+    "pass": 23,
+    "fail": 0,
+    "exitCode": 0
+  },
+  "fullMock": {
+    "attemptsIncludingHistoricHealth": 42,
+    "guardedCalls": 23,
+    "signedEvents": 11,
+    "durableLocalMarkers": 15,
+    "cleanup": "PASS",
+    "virtualElapsedMs": 661070,
+    "hosted": false
+  },
+  "reducedMock": {
+    "attempts": 31,
+    "guardedCalls": 16,
+    "cleanup": "PASS",
+    "approvedForHostedExecution": false
+  },
+  "dependencies": {
+    "sdk": "0.1.0-dev.4",
+    "mcp": "0.1.0-dev.9",
+    "lockedRegistryTarballs": 5,
+    "integrity": "SHA512 verified by npm ci",
+    "installScriptsExecuted": false
+  },
+  "coreSourceUnchangedFromSelectedRunnerR3": [
+    "cli.mjs",
+    "ops.mjs",
+    "runtime.mjs",
+    "mock.mjs",
+    "monitor.mjs",
+    "plan.json",
+    "package-lock.json",
+    "r3-approval.test.mjs",
+    "evidence/GATE-LRA-MAPPING-r3.md",
+    "evidence/deployed-v7.ts"
+  ],
+  "packagingAdjustments": [
+    "r3 comparison baseline",
+    "r3 test mapping path",
+    "npm test includes both test files",
+    "minimal disabled template metadata",
+    "README/RUNBOOK/manifests"
+  ],
+  "secretReview": {
+    "knownSecretPatternsFound": 0,
+    "privateFilesIncluded": false,
+    "review": "source reviewed; synthetic fixtures and public vector-author attribution retained; no private correspondence/run logs/recovery data"
+  },
+  "hostedAuthorization": false,
+  "hostedEvidenceFromThisValidation": false,
+  "limits": [
+    "not exact tester Node/npm patch versions",
+    "mock timing is not hosted duration",
+    "no day-of deployed-service verification yet",
+    "JSON authorization is an operational human gate, not a signed capability",
+    "publication may trigger CI and Vercel; push remains unapproved"
+  ]
+}
