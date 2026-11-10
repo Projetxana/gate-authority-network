@@ -1,0 +1,48 @@
+{
+  "preparedDate": "2026-11-10",
+  "scheduledDate": "2026-11-12",
+  "node24": "24.21.0",
+  "npm24": "11.21.0",
+  "node20": "v20.20.2",
+  "npm20": "10.9.10",
+  "platform": "macOS arm64",
+  "offlineTests": {
+    "node24": {
+      "pass": 24,
+      "fail": 0,
+      "exitCode": 0
+    },
+    "node20": {
+      "pass": 24,
+      "fail": 0,
+      "exitCode": 0
+    }
+  },
+  "fullSimulation": {
+    "mode": "OFFLINE_SYNTHETIC",
+    "attempts": 42,
+    "protectedCalls": 23,
+    "signedEvents": 11,
+    "durableEffects": 15,
+    "elapsedVirtualMs": 661070,
+    "cleanup": "PASS",
+    "exitCode": 0
+  },
+  "planChangesOnly": [
+    "scheduledStart",
+    "scheduledStartUTC"
+  ],
+  "mappingR3Unchanged": true,
+  "lockedDependenciesUnchanged": true,
+  "dependencies": {
+    "sdk": "0.1.0-dev.4",
+    "mcp": "0.1.0-dev.9"
+  },
+  "newAdversarialTest": "Reject old dates/service check/plan hash, early/late start and oversized window",
+  "hostedCalls": 0,
+  "executionAuthorized": false,
+  "dayOfServiceRecheck": "PENDING",
+  "testerNewVersionConfirmation": "PENDING",
+  "linuxCI": "Not reproduced; previous GitHub attempt remains FAILURE",
+  "privacy": "No private email, run folder, API key, private key or recovery data included"
+}

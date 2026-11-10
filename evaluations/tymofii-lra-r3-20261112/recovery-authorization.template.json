@@ -1,0 +1,12 @@
+{
+  "recoveryAuthorized": false,
+  "owner": "J\u00e9r\u00f4me",
+  "approvalId": null,
+  "planSha256": null,
+  "runDirectory": null,
+  "action": null,
+  "attemptsBefore": null,
+  "approvedStart": null,
+  "approvedEnd": null,
+  "note": "One explicitly approved cleanup action; no test or project creation; remaining global cap50 applies."
+}
