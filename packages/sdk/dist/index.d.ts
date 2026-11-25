@@ -1,5 +1,5 @@
 export type GateSource = "sdk" | "mcp" | "api" | "internal" | "unknown";
-export declare const GATE_SDK_VERSION = "0.1.0-dev.4";
+export declare const GATE_SDK_VERSION = "0.1.0-dev.5";
 export declare const GATE_SANDBOX_URL = "https://ufqtoyakmrddqytrkcje.supabase.co/functions/v1/gate-sandbox";
 
 export type Consistency = "bounded" | "strict";
@@ -103,10 +103,18 @@ export interface GateDecision {
   };
   /** @deprecated Current v7 field refers to GATE snapshot freshness, not issuer freshness. */
   freshness?: {
-    ageMs: number;
-    leaseRemainingMs: number;
-    maxStalenessMs: number;
+    ageMs?: number | null;
+    leaseRemainingMs?: number | null;
+    maxStalenessMs?: number | null;
     fresh: boolean;
+    source?: string | null;
+    isPrimary?: boolean;
+    snapshotAt?: string | null;
+    snapshotAgeMs?: number | null;
+    effectiveSnapshotLimitMs?: number;
+    lastEventAgeMs?: number | null;
+    replicaLagMs?: number | null;
+    externalIssuerLagMs?: number | null;
   };
   action?: GateAction;
   [key: string]: unknown;

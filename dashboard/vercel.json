@@ -3,5 +3,10 @@
     "api/npm-stats.js": {
       "maxDuration": 10
     }
+  },
+  "git": {
+    "deploymentEnabled": {
+      "release/p0-sdk-mcp-20261118": false
+    }
   }
 }

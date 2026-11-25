@@ -19,7 +19,7 @@
     "node": ">=20"
   },
   "dependencies": {
-    "@gate-avn/sdk": "0.1.0-dev.4"
+    "@gate-avn/sdk": "0.1.0-dev.5"
   },
   "peerDependencies": {
     "@x402/core": ">=2.24.0 <3"
