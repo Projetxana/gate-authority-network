@@ -4,16 +4,11 @@ MCP is an adapter for GATE, not GATE's product boundary. The core resolver remai
 
 MCP adapter exposing GATE live cross-domain delegated authority-state resolution.
 
-## Release candidate — not yet published
+## Published baseline and private review candidates
 
-Version `0.1.0-dev.9` is prepared locally. Commands below target that exact version
-and become usable from npm only after a separately approved publication. Existing
-npm tags and the MCP Registry manifest remain unchanged. Do not substitute the
-older published guard for this candidate.
+The local hardening candidate is **not yet published**. Public npm `0.1.0-dev.9` exists. Commands below install that immutable published baseline, not the security hardening currently under local review. Private archives may retain its version label for testing and must never be presented as the same published bytes. The official MCP Registry still advertises dev.8 at the 18 November 2026 check.
 
-Requires Node.js 20+ and npm. For a local candidate, install the verified `.tgz`
-in a separate project. See `docs/MCP-DISTRIBUTION-CANDIDATE.md` in the repository
-for the packaging and archive-test procedure.
+Requires Node.js 20+ and npm. Developer Preview only. Hosted v7 checks received authority state using a bounded primary snapshot, not a live read of an upstream issuer. The guard is a pre-effect check, not business authorization or an atomic transaction. A separate release, new versions and approval are required before distributing local corrections.
 
 ## Public Developer Preview sandbox
 
@@ -161,3 +156,9 @@ const guard = createMcpEffectGuard({
 ```
 
 The network meter stores the verification ID, protocol, normalized operation, authority/decision and serving metadata. It does not send principal, actor, resource, parameters, prompts, credentials, tokens or payload content.
+
+## Private P0 release candidate
+
+Unpublished candidate: SDK 0.1.0-dev.5 / MCP 0.1.0-dev.10. The older public installation commands above do not install this hardening. Contradictory authority decisions and explicitly invalid freshness are rejected before a callback. Legacy VALID/ALLOW without freshness remains compatible and does not establish a freshness guarantee. Each effect boundary must be upgraded; calling verify alone does not enforce a decision. No exact-dispatch binding, business authorization or check/effect atomicity is added.
+
+After an explicitly approved publication only, the pinned candidate installation would be `npm install @gate-avn/mcp@0.1.0-dev.10` or `npx @gate-avn/mcp@0.1.0-dev.10 --version`. These commands do not work against the registry before publication; use reviewed local archives for internal validation. This candidate is not yet published.

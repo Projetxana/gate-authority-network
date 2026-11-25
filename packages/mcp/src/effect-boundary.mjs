@@ -1,3 +1,4 @@
+import { permitsEffect } from './admission-policy.mjs';
 import { randomUUID } from 'node:crypto';
 import { GateDeniedError } from '@gate-avn/sdk';
 
@@ -70,6 +71,11 @@ export function createMcpEffectGuard({
     throw new TypeError('gate.verify is required');
   }
 
+  if (!['bounded', 'strict'].includes(consistency)) throw new TypeError('unsupported consistency');
+  if (maxStalenessMs !== undefined && (!Number.isFinite(maxStalenessMs) || maxStalenessMs < 0)) {
+    throw new TypeError('maxStalenessMs must be a finite non-negative number');
+  }
+
   return {
     counter,
 
@@ -119,6 +125,9 @@ export function createMcpEffectGuard({
         throw new TypeError('actor is required');
       }
 
+      if (requestMaxStalenessMs !== undefined && (Number.isFinite(requestMaxStalenessMs) ? requestMaxStalenessMs < 0 : maxStalenessMs === undefined)) {
+        denyUntrustedOverride('invalid_max_staleness_ms');
+      }
       const effectiveConsistency = requestConsistency ?? consistency;
       if (!['bounded', 'strict'].includes(effectiveConsistency)) throw new TypeError('unsupported consistency');
       if (consistency === 'strict' && effectiveConsistency !== 'strict') {
@@ -151,7 +160,7 @@ export function createMcpEffectGuard({
       const rawDecision = await gate.verify(request);
       // Permit only an explicit, internally consistent VALID / ALLOW.
       // This also guards any caller-supplied GateClient or test adapter.
-      const decisionResult = rawDecision?.decision === 'ALLOW' && rawDecision?.authority === 'VALID'
+      const decisionResult = permitsEffect(rawDecision, { maxStalenessMs: effectiveMaxStaleness, consistency: effectiveConsistency })
         ? rawDecision
         : rawDecision?.decision === 'DENY'
           ? rawDecision

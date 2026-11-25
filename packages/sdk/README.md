@@ -4,7 +4,9 @@ Developer Preview client for GATE, the live authority-state resolver for delegat
 
 GATE answers one narrow question at effect time:
 
-> Does a live delegation path from this principal to this actor still exist right now?
+> Does the authority-state snapshot received by GATE contain a valid delegation path from this principal to this actor?
+
+Hosted v7 bounded mode uses a primary snapshot up to 5 seconds old. This does not guarantee delivery of upstream revocations, credential-specific applicability, business authorization, exact dispatch binding or atomic check/effect. Local hardening under review is not included in the public dev.4 baseline installed below.
 
 GATE does not replace OAuth, AuthZEN, Cedar, OPA, Permit, Cerbos, OpenFGA, MCP, A2A, or your business-policy PDP.
 
@@ -113,3 +115,9 @@ const reporter = createVerifiedEffectReporter({
   apiKey: process.env.GATE_API_KEY
 });
 ```
+
+## Private P0 release candidate
+
+Unpublished candidate: SDK 0.1.0-dev.5 / MCP 0.1.0-dev.10. The older public installation commands above do not install this hardening. Contradictory authority decisions and explicitly invalid freshness are rejected before a callback. Legacy VALID/ALLOW without freshness remains compatible and does not establish a freshness guarantee. Each effect boundary must be upgraded; calling verify alone does not enforce a decision. No exact-dispatch binding, business authorization or check/effect atomicity is added.
+
+After an explicitly approved publication only: `npm install @gate-avn/sdk@0.1.0-dev.5`. Until then, internal validation uses the hashed local archive. This candidate is not yet published.
